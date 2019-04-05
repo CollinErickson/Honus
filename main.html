@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Honus</title>
+    <!-- Load jQuery from Google's CDN -->
+    <!-- Load jQuery UI CSS  -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    
+    <!-- Load jQuery JS -->
+    <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+    <!-- Load jQuery UI Main JS  -->
+    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    
+    <!-- Load SCRIPT.JS which will create datepicker for input field  -->
+    <script type="text/javascript"  src="./scripts/script.js"></script>
+    <script type="text/javascript"  src="./scripts/xmlToJson.js"></script>
+    
+    <link rel="stylesheet" type="text/css"  href="./stylesheets/stylesheet.css" />
+</head>
+
+
+
+<body>
+
+<table id="toptable"><tr>
+	<td>
+		<h3 align='center' style='color:magenta;cursor:pointer;padding-right:8px;' onclick='window.location.href="/"'>Honus<h1>
+	</td>
+	<td>
+		Team:
+	</td>
+	<td>
+		<select name="team" id="selectteam">
+			<option value="ANA" >ANA</option><option value="ARI" >ARI</option><option value="ATL" >ATL</option><option value="BAL" >BAL</option>
+			<option value="BOS" >BOS</option><option value="CHA" >CHA</option><option value="CHN" >CHN</option><option value="CIN" >CIN</option>
+			<option value="CLE" >CLE</option><option value="COL" >COL</option><option value="DET" >DET</option><option value="HOU" >HOU</option>
+			<option value="KCA" >KCA</option><option value="LAN" >LAN</option><option value="MIA" >MIA</option><option value="MIL" >MIL</option>
+			<option value="MIN" selected="selected">MIN</option><option value="NYA" >NYA</option><option value="NYN" >NYN</option><option value="OAK" >OAK</option>
+			<option value="PHI" >PHI</option><option value="PIT" >PIT</option><option value="SDN" >SDN</option><option value="SEA" >SEA</option>
+			<option value="SFN" >SFN</option><option value="SLN" >SLN</option><option value="TBA" >TBA</option><option value="TEX" >TEX</option>
+			<option value="TOR" >TOR</option><option value="WAS" >WAS</option>
+		</select>
+	</td>
+	<td>
+		<table><tr>
+			<td>Date:</td> 
+			<td><input type="text" id="datepicker"> </td>
+			<!--<td>&#8647; </td>
+			<td>&#8592;</td>  -->
+			<td class="datemovearrow" onclick="" >&#10092;</td>
+			<td class="datemovearrow" onclick="" >&#10096;</td>
+			<td class="datemovearrow" onclick="" >&#10074;</td>
+			<td class="datemovearrow" onclick="" >&#10097;</td>
+			<td class="datemovearrow" onclick="" >&#10093;</td>
+			<td><button onclick='goToDatePicked()'> Go! </button></td>
+		</tr></table>
+	</td>
+	<td width="20px"></td>
+	<td><h4>
+		
+	</h4></td>
+	<td>
+	</td>
+</tr></table>
+ 
+
+
+<table id="midtable"><tr style="vertical-align:top;">
+<td id="boxes_td">
+
+
+</td>
+ <td>
+
+<table>
+	<tr>
+		<td style="vertical-align:top; min-width:250px;"><table id="headlinestable">
+			
+		</table></td>
+		<td style="vertical-align:top;">
+			<video id="videoplayer" controls  > <!--onclick="this.paused ? this.play() : this.pause();">-->
+					<source src="" type="video/mp4">
+					Your browser does not support the video tag.
+					</video>	
+		</td>
+	</tr>
+</table>
+
+
+</td>
+</tr></table>
+
+
+<div align="right">
+	Suggestions, comments, questions? Email <a href="mailto:Honus1064@gmail.com" style="color:inherit;">Honus1064@gmail.com</a>
+</div>
+
+
+<script type="text/javascript"  >
+
+var year = "2019";
+var month = "04";
+var day = "03";
+var team = "NYY";
+var selected_game = -1;
+var game_pk = null;
+
+console.log("Current URL is", window.location.href);
+
+
+console.log("running my script");
+// get master scoreboard
+const proxyurl = "https://cors-anywhere.herokuapp.com/";
+const url = "http://gd2.mlb.com/components/game/mlb/year_2019/month_04/day_01/master_scoreboard.json"; // site that doesn’t send Access-Control-*
+console.log('about to fetch', proxyurl + url);
+var fetchout = fetch(proxyurl + url)
+.then(response => response.text())
+.catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
+.then(contents => {console.log(contents); return contents;})
+.then(response => {console.log("Here's the JSON", JSON.parse(response)); return JSON.parse(response);})
+.catch(() => console.log("Error parsing"))
+.then(x => {
+console.log('x is', x.data.games.game);
+for (var i=0; i < x.data.games.game.length; i++) {console.log("game" + i, x.data.games.game[i].linescore);};
+return x;
+})
+.then( x => {
+	////////////////////////
+	// Get box score table on left side
+	//////////////////////
+	
+	// Get selected_game from given team
+	for (var i=0; i < x.data.games.game.length; i++) {
+		if (team == x.data.games.game[i].away_name_abbrev) {
+			selected_game = i;
+			team_is_home = false;
+			game_pk = x.data.games.game[i].game_pk;
+		}
+		if (team == x.data.games.game[i].home_name_abbrev) {
+			selected_game = i;
+			team_is_home = true;
+			game_pk = x.data.games.game[i].game_pk;
+		}
+	}
+	// If team doesn't match any, set it first on list
+	if (selected_game < 0) {
+		console.log("team not found in list of games");
+		selected_game = 0;
+		team = x.data.games.game[0].home_name_abbrev;
+		team_is_home = true;
+	}
+	
+	console.log("team is", team, "selected_game is", selected_game);
+	
+	
+	var tx = "";
+	tx += "<table border='1' style='border-bottom:1px solid red;'>";
+
+	for (var i=0; i < x.data.games.game.length; i++) {
+		console.log("game" + i, x.data.games.game[i].linescore);
+		//tx += "<tr><td>" + i + x.data.games.game[i].away_team_name + "-" + x.data.games.game[i].home_team_name + x.data.games.game[i].linescore.r.away + "-" + x.data.games.game[i].linescore.r.home + "</td></tr>";
+		// start table for this box, will be 1x3
+		if (i == selected_game) {
+			tx += "<tr style='border:5px solid pink'>";
+		} else {
+			tx += "<tr>";
+		}
+		// first td is team names
+		tx += "<td><table><tr><td>" + x.data.games.game[i].away_team_name + "</td></tr><tr><td>"+ x.data.games.game[i].home_team_name + "</td></tr></table></td>";
+		// second td is score
+		tx += "<td><table><tr><td>" + x.data.games.game[i].linescore.r.away + "</td></tr><tr><td>"+ x.data.games.game[i].linescore.r.home + "</td></tr></table></td>";
+		// third td is win/loss pitchers
+		var losing_pitcher_text = x.data.games.game[i].losing_pitcher.last + " (" +x.data.games.game[i].losing_pitcher.wins + "-" + x.data.games.game[i].losing_pitcher.losses + ")";
+		var winning_pitcher_text = x.data.games.game[i].winning_pitcher.last + " (" +x.data.games.game[i].winning_pitcher.wins + "-" + x.data.games.game[i].winning_pitcher.losses + ")";
+		var home_team_won = (parseInt(x.data.games.game[i].linescore.r.home) > parseInt(x.data.games.game[i].linescore.r.away));
+		if (home_team_won) {
+			var away_pitcher_text = losing_pitcher_text;
+			var home_pitcher_text = winning_pitcher_text;
+		} else {
+			var away_pitcher_text = winning_pitcher_text;
+			var home_pitcher_text = losing_pitcher_text;
+		}
+		tx += "<td><table><tr><td>" + away_pitcher_text + "</td></tr><tr><td>"+ home_pitcher_text + "</td></tr></table></td>";
+		
+		tx += "</tr>";
+	};
+	tx += "</table>";
+	// set this for the table text
+	document.getElementById('boxes_td').innerHTML = tx;
+	return x;
+})
+.then( x => {
+	/////////////////////////////////////
+	// Get highlights for selected game
+	/////////////////////////////////////
+	//var pk = "565898";
+	var game_url = "https://statsapi.mlb.com/api/v1/game/" + game_pk +"/content?language=en";
+	// Get game JSON
+	console.log("about to fetch api for game, ", proxyurl + game_url);
+	fetch(proxyurl + game_url)
+	.then(response => response.text())
+	.catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
+	.then(contents => {console.log(contents); return contents;})
+	.then(response => {console.log("Here's the JSON", JSON.parse(response)); return JSON.parse(response);})
+	.catch(() => console.log("Error parsing"))
+	.then( g => {
+		console.log("Starting to make highlights div");
+		//g = JSON.parse(x);
+		gh = g.highlights.highlights.items;
+		var tx = "";
+		//console.log('gh is', gh);
+		for (var i = 0; i < gh.length; i++) {
+		//console.log(gh[i]);
+			//tx += "<tr><td>" + gh[i].headline + gh[i].playbacks[0].url + "</td></tr>";
+			// Opens video in new window
+			// tx += "<tr><td id='headline" + i + "' class='headlinestabletd'><a href='" + gh[i].playbacks[0].url + "' target='_blank' style='text-decoration: none'>" +gh[i].headline + "</a></td></tr>";
+			// Play in player
+			tx += "<tr><td id='headline" + i;
+			tx += "' class='headlinestabletd' onclick='document.getElementById(\"videoplayer\").setAttribute(\"src\", \"" + gh[i].playbacks[0].url + "\"); ";
+			tx += "document.getElementById(\"videoplayer\").autoplay=true;' >" +gh[i].headline + "</td></tr>";
+		}
+		console.log(tx);
+		
+		document.getElementById('headlinestable').innerHTML = tx;
+	})
+	
+	return x;
+})
+;
+
+console.log("fetchout is", fetchout);
+
+  
+</script>
+
+
+</body>
+</html>

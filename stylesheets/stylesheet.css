@@ -1,0 +1,69 @@
+BODY  { 
+	background:  #262626; 
+	color: white 
+}
+
+table {
+    border-collapse: collapse;
+}
+
+#headlinestable {
+	color: black;
+	/*background: pink;*/
+	font-size: small;
+    border: 1px solid black;
+}
+
+#scorestable {
+	color: black;
+	background: #b3ffff;
+	font-size: small;
+    /*border: 5px solid black;*/
+}
+.scorestablegame {
+    border: 1px solid black;
+	/*color: maroon;*/
+}
+	
+.scorestablegametd {
+    border-top: 1px solid black;
+}
+
+.headlinestabletr {
+	border: 1px solid black;
+	background-color:#b3ffff;
+}
+
+.headlinestabletd {
+	border-top: 1px solid black;
+	
+}
+
+.datemovearrow { cursor:pointer; }
+
+.scorestablegame { cursor:pointer; }  
+
+#headlinestable {cursor:pointer;}
+
+#toplinescore  {border: 0px solid aqua;}
+
+.fullboxscoretd {
+	border: 1px solid #ff99dd;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+#scoringplaystable {
+	border:3px solid #ff99dd;
+}
+
+.fullboxscoretables {
+	border:3px solid #ff99dd;
+	text-align:center;
+}
+
+.playernamelink {
+	color:inherit;
+	text-decoration:none;
+	cursor:pointer;
+}
