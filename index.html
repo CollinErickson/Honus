@@ -90,6 +90,10 @@
 	</h4></td>
 	<td>
 	</td>
+<td><div class="slidecontainer">
+Video width
+  <input type="range" min="100" max="2000" value="800" class="slider" id="videowidthslider">
+</div></td>
 </tr></table>
  
 
@@ -99,7 +103,7 @@
 
 
 </td>
- <td>
+<td>
 
 <table>
 	<tr>
@@ -150,12 +154,23 @@
 		  changeMonth: true,//this option for allowing user to select month
 		  changeYear: true //this option for allowing user to select from year range
 		});
-		var today = new Date();console.log("08"+"/"+today.getDate()+"/"+today.getFullYear());
+		var today = new Date();
 		//$( "#datepicker" ).datepicker("setDate",(today.getMonth()+1)+"/"+today.getDate()+"/"+today.getFullYear());
-		$( "#datepicker" ).datepicker("setDate", mm +"/"+ dd + "/"+yyyy);
+		<!-- $( "#datepicker" ).datepicker("setDate", mm +"/"+ dd + "/"+yyyy); -->
+		$( "#datepicker" ).datepicker("setDate", month +"/"+ day + "/"+ year);
 	  }
 
 	);
+
+</script>
+
+
+<script type="text/javascript"  >
+	var rangeslider = document.getElementById("videowidthslider");
+	rangeslider.oninput = function() {
+	  console.log(this.value);
+	  document.getElementById("videoplayer").width = this.value;
+	}
 </script>
 
 <script type="text/javascript"  >
@@ -169,6 +184,7 @@ var game_pk = null;
 //var away_code = null;
 //var home_code = null;
 //var dbh = "1";
+document.getElementById("datepicker").value = month + "/" + day + "/" + year;
 
 console.log("Current URL is", window.location.href);
 
@@ -205,6 +221,7 @@ return x;
 ;*/
 
 //console.log("fetchout is", fetchout);
+
 
   
 </script>
