@@ -18,6 +18,7 @@ $(document).ready(
 
 
 function goToDatePicked() {
+	console.log("in goToDatePicked");
 	 var day = $( "#datepicker" ).datepicker( "getDate" ).getDate()  ;
 	 day = day.toString();
 	 if (day.length == 1) { day = "0" + day ;}
@@ -32,98 +33,167 @@ function goToDatePicked() {
 	 var e = document.getElementById("selectteam");
 	 var team = e.options[e.selectedIndex].value;
 	 
-	 
-	 window.location.href = '/?date=' + year + month + day + '&team=' + team ;
+	 // Old way would change URL and reload
+	 //window.location.href = '/?date=' + year + month + day + '&team=' + team ;
+	 // Now try to do it in place
+	 runAllJS(year, month, day, team);
+}
+
+function get_JSON_as_object(url) {
+	const proxyurl = "https://cors-anywhere.herokuapp.com/";
+	//const url = "http://gd2.mlb.com/components/game/mlb/year_2019/month_04/day_01/master_scoreboard.json"; // site that doesn’t send Access-Control-*
+	console.log('about to fetch', proxyurl + url);
+	return fetch(proxyurl + url)
+}
+
+function runAllJS(year, month, day, team) {
+	
+	var selected_game = -1;
+	var game_pk = null;
+	
+	
+	console.log("running my runAllJS");
+	// get master scoreboard
+	const url = "http://gd2.mlb.com/components/game/mlb/year_" + year +"/month_" + month + "/day_" + day + "/master_scoreboard.json"; // site that doesn’t send Access-Control-*
+	console.log('about to fetch', url);
+	//var fetchout = fetch(proxyurl + url)
+	var fetchout = get_JSON_as_object(url)
+	.then(response => response.text())
+	.catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
+	.then(contents => {console.log(contents); return contents;})
+	.then(response => {console.log("Here's the JSON", JSON.parse(response)); return JSON.parse(response);})
+	.catch(() => console.log("Error parsing"))
+	.then(x => {
+	console.log('x is', x.data.games.game);
+	for (var i=0; i < x.data.games.game.length; i++) {console.log("game" + i, x.data.games.game[i].linescore);};
+	return x;
+	})
+	.then( x => {
+
+		setBoxScores(x);
+		return x;
+	})
+	.then( x => {
+
+		doAllHighlights();
+		
+		
+		return x;
+	})
+	;
+	
+	
 }
 
 
+function doAllHighlights() {
+	
+	/////////////////////////////////////
+	// Get highlights for selected game
+	/////////////////////////////////////
+	//var pk = "565898";
+	//const proxyurl = "https://cors-anywhere.herokuapp.com/";
+	var game_url = "https://statsapi.mlb.com/api/v1/game/" + game_pk +"/content?language=en";
+	// Get game JSON
+	console.log("about to fetch api for game, ", game_url);
+	//fetch(proxyurl + game_url)
+	get_JSON_as_object(game_url)
+	.then(response => response.text())
+	.catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
+	.then(contents => {console.log(contents); return contents;})
+	.then(response => {console.log("Here's the JSON", JSON.parse(response)); return JSON.parse(response);})
+	.catch(() => console.log("Error parsing"))
+	.then( g => {
+		console.log("Starting to make highlights div");
+		//g = JSON.parse(x);
+		gh = g.highlights.highlights.items;
+		var tx = "";
+		//console.log('gh is', gh);
+		for (var i = 0; i < gh.length; i++) {
+		//console.log(gh[i]);
+			//tx += "<tr><td>" + gh[i].headline + gh[i].playbacks[0].url + "</td></tr>";
+			// Opens video in new window
+			// tx += "<tr><td id='headline" + i + "' class='headlinestabletd'><a href='" + gh[i].playbacks[0].url + "' target='_blank' style='text-decoration: none'>" +gh[i].headline + "</a></td></tr>";
+			// Play in player
+			tx += "<tr><td id='headline" + i;
+			tx += "' class='headlinestabletd' onclick='document.getElementById(\"videoplayer\").setAttribute(\"src\", \"" + gh[i].playbacks[0].url + "\"); ";
+			tx += "document.getElementById(\"videoplayer\").autoplay=true;' >" +gh[i].headline + "</td></tr>";
+		}
+		console.log(tx);
+		
+		document.getElementById('headlinestable').innerHTML = tx;
+	})
+}
 
+function setBoxScores(x) {
+	console.log("in setBoxScores");
+	console.log("x is ", x);
+	
+	////////////////////////
+	// Get box score table on left side
+	//////////////////////
+	
+	// Get selected_game from given team
+	for (var i=0; i < x.data.games.game.length; i++) {
+		if (team == x.data.games.game[i].away_name_abbrev) {
+			selected_game = i;
+			team_is_home = false;
+			game_pk = x.data.games.game[i].game_pk;
+		}
+		if (team == x.data.games.game[i].home_name_abbrev) {
+			selected_game = i;
+			team_is_home = true;
+			game_pk = x.data.games.game[i].game_pk;
+		}
+	}
+	// If team doesn't match any, set it first on list
+	if (selected_game < 0) {
+		console.log("team not found in list of games");
+		selected_game = 0;
+		team = x.data.games.game[0].home_name_abbrev;
+		team_is_home = true;
+	}
+	
+	console.log("team is", team, "selected_game is", selected_game);
+	
+	
+	var tx = "";
+	tx += "<table border='1' style='border-bottom:1px solid red;'>";
 
-
-
-function parseXml(xml, arrayTags)
-{
-    var dom = null;
-    if (window.DOMParser)
-    {
-        dom = (new DOMParser()).parseFromString(xml, "text/xml");
-    }
-    else if (window.ActiveXObject)
-    {
-        dom = new ActiveXObject('Microsoft.XMLDOM');
-        dom.async = false;
-        if (!dom.loadXML(xml))
-        {
-            throw dom.parseError.reason + " " + dom.parseError.srcText;
-        }
-    }
-    else
-    {
-        throw "cannot parse xml string!";
-    }
-
-    function isArray(o)
-    {
-        return Object.prototype.toString.apply(o) === '[object Array]';
-    }
-
-    function parseNode(xmlNode, result)
-    {
-        if (xmlNode.nodeName == "#text") {
-            var v = xmlNode.nodeValue;
-            if (v.trim()) {
-               result['#text'] = v;
-            }
-            return;
-        }
-
-        var jsonNode = {};
-        var existing = result[xmlNode.nodeName];
-        if(existing)
-        {
-            if(!isArray(existing))
-            {
-                result[xmlNode.nodeName] = [existing, jsonNode];
-            }
-            else
-            {
-                result[xmlNode.nodeName].push(jsonNode);
-            }
-        }
-        else
-        {
-            if(arrayTags && arrayTags.indexOf(xmlNode.nodeName) != -1)
-            {
-                result[xmlNode.nodeName] = [jsonNode];
-            }
-            else
-            {
-                result[xmlNode.nodeName] = jsonNode;
-            }
-        }
-
-        if(xmlNode.attributes)
-        {
-            var length = xmlNode.attributes.length;
-            for(var i = 0; i < length; i++)
-            {
-                var attribute = xmlNode.attributes[i];
-                jsonNode[attribute.nodeName] = attribute.nodeValue;
-            }
-        }
-
-        var length = xmlNode.childNodes.length;
-        for(var i = 0; i < length; i++)
-        {
-            parseNode(xmlNode.childNodes[i], jsonNode);
-        }
-    }
-
-    var result = {};
-    for (let i = 0; i < dom.childNodes.length; i++)
-    {
-        parseNode(dom.childNodes[i], result);
-    }
-
-    return result;
+	for (var i=0; i < x.data.games.game.length; i++) {
+		console.log("game" + i, x.data.games.game[i].linescore);
+		//tx += "<tr><td>" + i + x.data.games.game[i].away_team_name + "-" + x.data.games.game[i].home_team_name + x.data.games.game[i].linescore.r.away + "-" + x.data.games.game[i].linescore.r.home + "</td></tr>";
+		// start table for this box, will be 1x3
+		console.log("<tr onclick='console.log(\"UPDATING VIDEO\");team=\"" + x.data.games.game[i].home_name_abbrev + "\";selected_game=\""+i+"\";team_is_home=\"true\";game_pk=\""+x.data.games.game[i].game_pk+"\";doAllHighlights())'");
+		tx += "<tr onclick='console.log(\"UPDATING VIDEO\");team=\"" + x.data.games.game[i].home_name_abbrev + "\";selected_game=\""+i+"\";team_is_home=\"true\";game_pk=\""+x.data.games.game[i].game_pk+"\";doAllHighlights()'";
+		if (i == selected_game) {
+			tx += " style='border:5px solid pink'";
+		} else {
+			tx += "<tr>";
+		}
+		tx += ">";
+		// first td is team names
+		tx += "<td><table><tr><td>" + x.data.games.game[i].away_team_name + "</td></tr><tr><td>"+ x.data.games.game[i].home_team_name + "</td></tr></table></td>";
+		// second td is score
+		tx += "<td><table><tr><td>" + x.data.games.game[i].linescore.r.away + "</td></tr><tr><td>"+ x.data.games.game[i].linescore.r.home + "</td></tr></table></td>";
+		// third td is win/loss pitchers
+		var losing_pitcher_text = x.data.games.game[i].losing_pitcher.last + " (" +x.data.games.game[i].losing_pitcher.wins + "-" + x.data.games.game[i].losing_pitcher.losses + ")";
+		var winning_pitcher_text = x.data.games.game[i].winning_pitcher.last + " (" +x.data.games.game[i].winning_pitcher.wins + "-" + x.data.games.game[i].winning_pitcher.losses + ")";
+		var home_team_won = (parseInt(x.data.games.game[i].linescore.r.home) > parseInt(x.data.games.game[i].linescore.r.away));
+		if (home_team_won) {
+			var away_pitcher_text = losing_pitcher_text;
+			var home_pitcher_text = winning_pitcher_text;
+		} else {
+			var away_pitcher_text = winning_pitcher_text;
+			var home_pitcher_text = losing_pitcher_text;
+		}
+		tx += "<td><table><tr><td>" + away_pitcher_text + "</td></tr><tr><td>"+ home_pitcher_text + "</td></tr></table></td>";
+		
+		tx += "</tr>";
+	};
+	tx += "</table>";
+	// set this for the table text
+	document.getElementById('boxes_td').innerHTML = tx;
+	console.log("MADE BOXES FROM MY FUNC");
+	return;
 }
