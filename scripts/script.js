@@ -46,7 +46,12 @@ function get_JSON_as_object(url) {
 	return fetch(proxyurl + url)
 }
 
-function runAllJS(year, month, day, team) {
+function runAllJS(year_, month_, day_, team_) {
+	// Set global variables
+	year = year_;
+	month = month_;
+	day = day_;
+	team = team_;
 	
 	var selected_game = -1;
 	var game_pk = null;
@@ -100,7 +105,7 @@ function doAllHighlights() {
 	get_JSON_as_object(game_url)
 	.then(response => response.text())
 	.catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
-	.then(contents => {console.log(contents); return contents;})
+	//.then(contents => {console.log(contents); return contents;})
 	.then(response => {console.log("Here's the JSON", JSON.parse(response)); return JSON.parse(response);})
 	.catch(() => console.log("Error parsing"))
 	.then( g => {
@@ -119,7 +124,7 @@ function doAllHighlights() {
 			tx += "' class='headlinestabletd' onclick='document.getElementById(\"videoplayer\").setAttribute(\"src\", \"" + gh[i].playbacks[0].url + "\"); ";
 			tx += "document.getElementById(\"videoplayer\").autoplay=true;' >" +gh[i].headline + "</td></tr>";
 		}
-		console.log(tx);
+		//console.log(tx);
 		
 		document.getElementById('headlinestable').innerHTML = tx;
 	})
@@ -156,12 +161,19 @@ function setBoxScores(x) {
 	
 	console.log("team is", team, "selected_game is", selected_game);
 	
+	// Set date forward/backward arrows onclick action
+	// Need to check for end of month errors!!!
+	document.getElementById("datemovearrowb2").onclick = function() {runAllJS(year, month, String(parseInt(day)-2).padStart(2, '0'), team)};
+	document.getElementById("datemovearrowb1").onclick = function() {runAllJS(year, month, String(parseInt(day)-1).padStart(2, '0'), team)};
+	document.getElementById("datemovearrowf1").onclick = function() {runAllJS(year, month, String(parseInt(day)+1).padStart(2, '0'), team)};
+	document.getElementById("datemovearrowf2").onclick = function() {runAllJS(year, month, String(parseInt(day)+2).padStart(2, '0'), team)};
+	
 	
 	var tx = "";
 	tx += "<table border='1' style='border-bottom:1px solid red;'>";
 
 	for (var i=0; i < x.data.games.game.length; i++) {
-		console.log("game" + i, x.data.games.game[i].linescore);
+		//console.log("game" + i, x.data.games.game[i].linescore);
 		//tx += "<tr><td>" + i + x.data.games.game[i].away_team_name + "-" + x.data.games.game[i].home_team_name + x.data.games.game[i].linescore.r.away + "-" + x.data.games.game[i].linescore.r.home + "</td></tr>";
 		// start table for this box, will be 1x3
 		console.log("<tr onclick='console.log(\"UPDATING VIDEO\");team=\"" + x.data.games.game[i].home_name_abbrev + "\";selected_game=\""+i+"\";team_is_home=\"true\";game_pk=\""+x.data.games.game[i].game_pk+"\";doAllHighlights())'");
@@ -174,21 +186,56 @@ function setBoxScores(x) {
 		tx += ">";
 		// first td is team names
 		tx += "<td><table><tr><td>" + x.data.games.game[i].away_team_name + "</td></tr><tr><td>"+ x.data.games.game[i].home_team_name + "</td></tr></table></td>";
-		// second td is score
-		tx += "<td><table><tr><td>" + x.data.games.game[i].linescore.r.away + "</td></tr><tr><td>"+ x.data.games.game[i].linescore.r.home + "</td></tr></table></td>";
-		// third td is win/loss pitchers
-		var losing_pitcher_text = x.data.games.game[i].losing_pitcher.last + " (" +x.data.games.game[i].losing_pitcher.wins + "-" + x.data.games.game[i].losing_pitcher.losses + ")";
-		var winning_pitcher_text = x.data.games.game[i].winning_pitcher.last + " (" +x.data.games.game[i].winning_pitcher.wins + "-" + x.data.games.game[i].winning_pitcher.losses + ")";
-		var home_team_won = (parseInt(x.data.games.game[i].linescore.r.home) > parseInt(x.data.games.game[i].linescore.r.away));
-		if (home_team_won) {
-			var away_pitcher_text = losing_pitcher_text;
-			var home_pitcher_text = winning_pitcher_text;
+		// 2nd and 3rd td depend on status, go over cases
+		if (["Final", "Game Over", "Completed Early"].includes(x.data.games.game[i].status.status)) {
+			// second td is score
+			tx += "<td><table><tr><td>" + x.data.games.game[i].linescore.r.away + "</td></tr><tr><td>"+ x.data.games.game[i].linescore.r.home + "</td></tr></table></td>";
+			// third td is win/loss pitchers
+			var losing_pitcher_text = x.data.games.game[i].losing_pitcher.last + " (" +x.data.games.game[i].losing_pitcher.wins + "-" + x.data.games.game[i].losing_pitcher.losses + ")";
+			var winning_pitcher_text = x.data.games.game[i].winning_pitcher.last + " (" +x.data.games.game[i].winning_pitcher.wins + "-" + x.data.games.game[i].winning_pitcher.losses + ")";
+			var home_team_won = (parseInt(x.data.games.game[i].linescore.r.home) > parseInt(x.data.games.game[i].linescore.r.away));
+			if (home_team_won) {
+				var away_pitcher_text = losing_pitcher_text;
+				var home_pitcher_text = winning_pitcher_text;
+			} else {
+				var away_pitcher_text = winning_pitcher_text;
+				var home_pitcher_text = losing_pitcher_text;
+			}
+			tx += "<td><table><tr><td>" + away_pitcher_text + "</td></tr><tr><td>"+ home_pitcher_text + "</td></tr></table></td>";
+		} else if (["In Progress", "Review", "Manager Challenge", "Delayed"].includes(x.data.games.game[i].status.status)) {
+			// 2nd td is score
+			tx += "<td><table><tr><td>" + x.data.games.game[i].linescore.r.away + "</td></tr><tr><td>"+ x.data.games.game[i].linescore.r.home + "</td></tr></table></td>";
+			// 3rd td is inning num, batter pitcher
+			tx += "<td>";
+			if (x.data.games.game[i].status.inning_state == "Top") {
+				tx +="&#x25B2;";
+			} else if (x.data.games.game[i].status.inning_state == "Bottom") {
+				tx += "&#x25BC;";
+			} else if (x.data.games.game[i].status.inning_state == "End") {
+				tx += "E";
+			} else {
+				tx += "InningStatus is " + x.data.games.game[i].status.inning_state;
+			}
+			tx += x.data.games.game[i].status.inning;
+			// Show batter and pitcher
+			tx += "<table><tr><td>P: " + x.data.games.game[i].pitcher.name_display_roster + "(" + x.data.games.game[i].pitcher.wins + "-" + x.data.games.game[i].pitcher.losses + ")" + "</td></tr>";
+			tx += "<tr><td>B: " + x.data.games.game[i].batter.name_display_roster + "(" + x.data.games.game[i].batter.avg + ")" + "</td></tr></table>";
+			tx += "</td>";
+			//tx += "<td><table><tr><td>" + x.data.games.game[i].status.inning_state + x.data.games.game[i].status.inning + "</td></tr><tr><td>"+ 123 + "</td></tr></table></td>";
+			
+		} else if (["Postponed"].includes(x.data.games.game[i].status.status))  {
+			tx += "<td></td><td>Postponed</td>";
+		} else if (["Preview"].includes(x.data.games.game[i].status.status))  {
+			// Second column is start time
+			tx += "<td>" + x.data.games.game[i].time + " " + x.data.games.game[i].time_zone + "</td>";
+			// Third column is probables
+			tx += "<td><table>";
+			tx += "<tr><td>" + x.data.games.game[i].away_probable_pitcher.name_display_roster + "(" + x.data.games.game[i].away_probable_pitcher.wins + "-" + x.data.games.game[i].away_probable_pitcher.losses + ")" + "</td></tr>";
+			tx += "<tr><td>" + x.data.games.game[i].home_probable_pitcher.name_display_roster + "(" + x.data.games.game[i].home_probable_pitcher.wins + "-" + x.data.games.game[i].home_probable_pitcher.losses + ")" + "</td></tr>";
+			tx += "</table></td>";
 		} else {
-			var away_pitcher_text = winning_pitcher_text;
-			var home_pitcher_text = losing_pitcher_text;
+			tx += "<td></td><td>Status is " + x.data.games.game[i].status.status + "</td>";
 		}
-		tx += "<td><table><tr><td>" + away_pitcher_text + "</td></tr><tr><td>"+ home_pitcher_text + "</td></tr></table></td>";
-		
 		tx += "</tr>";
 	};
 	tx += "</table>";
