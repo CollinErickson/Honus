@@ -53,6 +53,23 @@
 			<td class="datemovearrow" id="datemovearrowf1" onclick="" >&#10097;</td>
 			<td class="datemovearrow" id="datemovearrowf2" onclick="" >&#10093;</td>
 			<td><button onclick='goToDatePicked()'> Go! </button></td>
+			<td id="topbarteams"></td>
+			<td id="toplinescore"></td>
+			<td id="toplinelinks"><table><tr>
+				<!-- Link to MLB.com -->
+				<td style="padding-left:20px;"><a style="color:inherit;text-decoration:none;" target="_blank" href="http://mlb.mlb.com/home"><img src="http://www.mlb.com/favicon.ico" /></a></td>
+				<td>
+					<!-- Link to Standings -->
+					<table><tr><td><a style="color:inherit;text-decoration:none;" target="_blank" href="http://mlb.mlb.com/mlb/standings/index.jsp">Standings</a></td></tr>
+					<!-- Link to Gameday, need to update later -->
+					<tr><td id="toplinelinksgameday"></td></tr></table>
+				</td>
+				<!-- Link to reddit.com/r/baseball -->
+				<td><a href="https://www.reddit.com/r/baseball" target="_blank"><img src="https://www.reddit.com/favicon.ico" /></a></td>
+				<td><a href="https://www.reddit.com/r/MLBStreams" target="_blank"><img src="https://www.reddit.com/favicon.ico" /></a></td>
+				<!-- Link to streams, update later -->
+				<td id="toplinelinksstreams"></td>
+			</tr></table></td>
 		</tr></table>
 	</td>
 	<td width="20px"></td>
@@ -89,6 +106,13 @@
 
 </td>
 </tr></table>
+
+<table id ="selectedgamenowbatting">
+</table>
+
+
+<table id="scoringplaystable">
+</table>
 
 
 <div align="right">
@@ -127,6 +151,9 @@ var day = "03";
 var team = "NYY";
 var selected_game = -1;
 var game_pk = null;
+//var away_code = null;
+//var home_code = null;
+//var dbh = "1";
 
 console.log("Current URL is", window.location.href);
 
