@@ -143,6 +143,13 @@ function doAllHighlights() {
 	})
 }
 
+function if_not_zero(s) {
+	if (s == "0") {
+		return "";
+	}
+	return s;
+}
+
 function setBoxScores(x) {
 	console.log("in setBoxScores");
 	console.log("x is ", x);
@@ -310,6 +317,142 @@ function setBoxScores(x) {
 		// tmp += ;
 		document.getElementById("scoringplaystable").innerHTML = '';
 	}
+	
+	// Get full box score at bottom
+	get_JSON_as_object("http://gd2.mlb.com/components/game/mlb/year_" + year + 
+						"/month_" + month + "/day_" + day + 
+						"/gid_" + year + "_" + month + "_" + day + "_" + 
+						x.data.games.game[selected_game].away_code + "mlb_" + 
+						x.data.games.game[selected_game].home_code + "mlb_" + 
+						x.data.games.game[selected_game].game_nbr + "/boxscore.json")
+	.then(x => {console.log("FOUND boxscore.json"); return x;})
+	.catch(() => {console.log("FAILED getting boxscore.json");})
+	.then(x => {
+		console.log("boxscore is");
+		console.log(x);
+		var tx = "";
+		tx += "<table><tr>"; // table of tables
+		["away", "home"].forEach( away_or_home => {
+			var away_or_home_01;
+			if (away_or_home == "away") {
+				away_or_home_01 = 0
+			} else {
+				away_or_home_01 = 1
+			}
+			// top row
+			tx += "<td style='vertical-align:top;'><table class='fullboxscoretables'><tr>";
+			tx += '<td class="fullboxscoretd">' + x.data.boxscore[away_or_home + "_sname"] + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'POS' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'H' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'AB' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'BB' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'SO' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'HR' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'RBI' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'SB' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'AVG' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'OBP' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'OPS' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'HR' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'RBI' + '</td>';
+			tx += "</tr>";
+			// row for each player
+			x.data.boxscore.batting[away_or_home_01].batter.forEach(batteri => {
+				tx += '<tr>';
+				console.log("batteri is", batteri);
+				console.log("bo is", batteri.bo);
+				tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
+				if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
+				tx += batteri.name_display_first_last + '</div></a></td>';
+				tx += '<td class="fullboxscoretd">' + batteri.pos + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.h + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.ab + '</td>';
+				tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.bb) + '</td>';
+				tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.so) + '</td>';
+				tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.hr) + '</td>';
+				tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.rbi) + '</td>';
+				if (batteri.sb == "0" && batteri.cs == "0") {
+					tx += '<td class="fullboxscoretd">' + "" + '</td>';
+				} else {
+					tx += '<td class="fullboxscoretd">' + batteri.sb + "/" + (parseInt(batteri.cs) + parseInt(batteri.sb)) + '</td>';
+				}
+				tx += '<td class="fullboxscoretd">' + batteri.avg + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.obp + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.ops + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.s_hr + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.s_rbi + '</td>';
+				tx += '</tr>';
+			})
+			tx += "</table></td>";
+		})
+		tx += "</tr>"; // table of tables
+		console.log('tx is ');
+		console.log(tx);
+		
+		// Now do pitching table
+		// var tx = "";
+		tx += "<tr>"; // table of tables
+		["away", "home"].forEach( away_or_home => {
+			var away_or_home_01;
+			if (away_or_home == "away") {
+				away_or_home_01 = 0
+			} else {
+				away_or_home_01 = 1
+			}
+			// top row
+			tx += "<td style='vertical-align:top;'><table class='fullboxscoretables'><tr>";
+			tx += '<td class="fullboxscoretd">' + x.data.boxscore[away_or_home + "_sname"] + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'POS' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'INN' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'ER' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'R' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'H' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'BB' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'SO' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'HR' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'NP' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'W-L' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'SV' + '</td>';
+			tx += '<td class="fullboxscoretd">' + 'ERA' + '</td>';
+			tx += "</tr>";
+			// row for each player
+			x.data.boxscore.pitching[away_or_home_01].pitcher.forEach(pitcheri => {
+				tx += '<tr>';
+				console.log("pitcheri is", pitcheri);
+				// console.log("bo is", pitcheri.bo);
+				tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ pitcheri.id +'"><div style="text-align:left;" >';
+				// if (pitcheri.bo.substr(1,2) != "00") {tx += "- ";}
+				tx += pitcheri.name_display_first_last;
+				if (pitcheri.win) {tx += " (W)"}
+				if (pitcheri.loss) {tx += " (L)"}
+				if (pitcheri.save) {tx += " (S)"}
+				tx += '</div></a></td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.pos + '</td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.out + '</td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.er + '</td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.r + '</td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.h + '</td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.bb + '</td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.so + '</td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.hr + '</td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.np + '</td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.w + "-" + pitcheri.l + '</td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.sv + '</td>';
+				tx += '<td class="fullboxscoretd">' + pitcheri.era + '</td>';
+				tx += '</tr>';
+			})
+			tx += "</table></td>";
+		})
+		tx += "</tr></table>"; // table of tables
+		console.log('tx is ');
+		console.log(tx);
+		
+		
+		
+		
+		document.getElementById("fullboxscoretable").innerHTML = tx;
+	})
+
 	
 	////////////////////////////
 	// Set leftside scores
