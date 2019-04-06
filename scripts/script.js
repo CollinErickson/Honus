@@ -108,26 +108,38 @@ function runAllJS(year_, month_, day_, team_) {
 	//.then(contents => {console.log(contents); return contents;})
 	.then(response => {return JSON.parse(response);})
 	.catch(() => console.log("Error parsing"))
-	.then(x => {
-		if (x && x.data && x.data.games && x.data.games.game) {
-			console.log('x is');
-			console.log(x.data.games.game);
-			console.log('game 0 is');
-			console.log(x.data.games.game[0]);
-		}
-	//for (var i=0; i < x.data.games.game.length; i++) {console.log("game" + i, x.data.games.game[i].linescore);};
-	return x;
-	})
+	// .then(x => {
+		// if (x && x.data && x.data.games && x.data.games.game) {
+			// console.log('x is');
+			// console.log(x.data.games.game);
+			// console.log('game 0 is');
+			// console.log(x.data.games.game[0]);
+		// }
+		// //for (var i=0; i < x.data.games.game.length; i++) {console.log("game" + i, x.data.games.game[i].linescore);};
+		// return x;
+	// })
 	.then( x => {
-
-		setBoxScores(x);
-		return x;
-	})
-	.then( x => {
-
-		// doAllHighlights();
-		setForNewSelectedGame(x);
+		// If no games, don't run rest
 		
+		// If no games on day, don't do this
+		if (!(x.data.games.game)) {
+			console.log("No games!!!!!");
+			document.getElementById('headlinestable').innerHTML = "";
+			document.getElementById('scorestable_td').innerHTML = "No games for selected date"
+			document.getElementById("topbarteams").innerHTML = "";
+			document.getElementById("toplinescore").innerHTML = "";
+			document.getElementById("toplinelinksgameday").innerHTML = "";
+			document.getElementById("selectedgamenowbatting").innerHTML = "";
+			document.getElementById("scoringplaystable").innerHTML = "";
+			document.getElementById("fullboxscoretable").innerHTML = "";
+			return;
+			} else {
+
+			// Set up page if there are games
+			setBoxScores(x);
+			// doAllHighlights();
+			setForNewSelectedGame(x);
+		}
 		return x;
 	})
 	;
@@ -145,10 +157,10 @@ function doAllHighlights() {
 	//const proxyurl = "https://cors-anywhere.herokuapp.com/";
 	var game_url = "https://statsapi.mlb.com/api/v1/game/" + game_pk +"/content?language=en";
 	// Get game JSON
-	console.log("about to fetch api for game, ", game_url);
+	// console.log("about to fetch api for game, ", game_url);
 	//fetch(proxyurl + game_url)
-	console.log("game_pk is", game_pk);
-	console.log("highlights url is", game_url);
+	// console.log("game_pk is", game_pk);
+	// console.log("highlights url is", game_url);
 	get_JSON_as_object(game_url)
 	//.then(response => response.text())
 	.catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
@@ -165,12 +177,12 @@ function doAllHighlights() {
 		// })
 	.catch(() => console.log("Request was for null, should check before this"))
 	.then( g => {
-		console.log("Starting to make highlights div");
-		console.log("g is", g);
+		// console.log("Starting to make highlights div");
+		// console.log("g is", g);
 		//g = JSON.parse(x);
 		if (g && g.highlights && g.highlights.highlights) {
 			gh = g.highlights.highlights.items;
-			console.log("gh is ", gh);
+			// console.log("gh is ", gh);
 			var tx = "";
 			//console.log('gh is', gh);
 			for (var i = 0; i < gh.length; i++) {
@@ -187,7 +199,9 @@ function doAllHighlights() {
 				tx += "document.getElementById(\"videoplayer\").autoplay=true;";
 				tx += "document.getElementById(\"headlinetr"+i+"\").classList.toggle(\"headlinestabletr_selected\");";
 				tx += "' >"; // end onclick
-				tx += gh[i].headline + "</td></tr>";
+				tx += gh[i].headline + "</td>";
+				tx += "<td><a href='" + gh[i].playbacks[0].url + "'  target='_blank'  style='text-decoration: none'>&#8599;</a></td>";
+				tx += "</tr>";
 			}
 			//console.log(tx);
 			
@@ -206,8 +220,13 @@ function if_not_zero(s) {
 }
 var master_scoreboard_JSON;
 function setBoxScores(x) {
-	console.log("in setBoxScores");
+	// console.log("in setBoxScores");
 	console.log("x is ", x);
+	
+	// If no games on day, don't do this
+	if (!(x.data.games.game)) {
+		return;
+	}
 	
 	////////////////////////
 	// Get box score table on left side
@@ -236,13 +255,15 @@ function setBoxScores(x) {
 	}
 	
 	console.log("team is", team, "selected_game is", selected_game);
+	// update team in selector on top
+	document.getElementById('selectteam').value = team;
 	
 	// Set date forward/backward arrows onclick action
 	// Need to check for end of month errors!!!
-	document.getElementById("datemovearrowb2").onclick = function() {runAllJS_relativeDateChange(year, month, day, team, -2)};
-	document.getElementById("datemovearrowb1").onclick = function() {runAllJS_relativeDateChange(year, month, day, team, -1)};
-	document.getElementById("datemovearrowf1").onclick = function() {runAllJS_relativeDateChange(year, month, day, team, +1)};
-	document.getElementById("datemovearrowf2").onclick = function() {runAllJS_relativeDateChange(year, month, day, team, +2)};
+	document.getElementById("datemovearrowb2").onclick = function() {runAllJS_relativeDateChange(year, month, day, document.getElementById('selectteam').value, -2)};
+	document.getElementById("datemovearrowb1").onclick = function() {runAllJS_relativeDateChange(year, month, day, document.getElementById('selectteam').value, -1)};
+	document.getElementById("datemovearrowf1").onclick = function() {runAllJS_relativeDateChange(year, month, day, document.getElementById('selectteam').value, +1)};
+	document.getElementById("datemovearrowf2").onclick = function() {runAllJS_relativeDateChange(year, month, day, document.getElementById('selectteam').value, +2)};
 	document.getElementById("datemovearrowtoday").onclick = function() {runAllJS_changeToToday(team)};
 
 	
@@ -267,7 +288,8 @@ function setBoxScores(x) {
 			// tx += "<tr>";
 			tx += " class='scorestablegametr scorestablegametr_notselected' ";
 		}
-		tx += " onclick='console.log(\"UPDATING VIDEO\");";
+		tx += " onclick='";
+		// tx += "console.log(\"UPDATING VIDEO\");";
 		tx += "team=\"" + x.data.games.game[i].home_name_abbrev + "\";selected_game=\""+i+"\";";
 		tx += "team_is_home=\"true\";game_pk=\""+x.data.games.game[i].game_pk+"\"; ";
 		tx += "setForNewSelectedGame(master_scoreboard_JSON)'";
@@ -364,8 +386,7 @@ function setBoxScores(x) {
 	};
 	tx += "</table>";
 	// set this for the table text
-	document.getElementById('boxes_td').innerHTML = tx;
-	console.log("MADE BOXES FROM MY FUNC");
+	document.getElementById('scorestable_td').innerHTML = tx;
 	
 	// save this JSON for future use
 	master_scoreboard_JSON = x;
@@ -375,6 +396,11 @@ function setBoxScores(x) {
 function setForNewSelectedGame(x) {
 	if (x == null) {
 		// get x
+	}
+	
+	// If no games on day, don't do this
+	if (!(x.data.games.game)) {
+		return;
 	}
 	
 	doAllHighlights();
@@ -397,10 +423,9 @@ function setForNewSelectedGame(x) {
 	
 	// Set toplinescore, box score on top for selected game
 	if (x.data.games.game[selected_game].linescore) {
-		console.log("Making toplinescore");
 		var toplinescore = "";
 		toplinescore += "<table>"; // full boxscore table
-		toplinescore += "<tr style='border-bottom:solid #80ffff'>"; // first row, inning nums
+		toplinescore += "<tr style='border-bottom:solid #80ffff' align='center'>"; // first row, inning nums
 		toplinescore += "<td>&nbsp;</td>"; // first td is empty
 		for (var i = 0; i < x.data.games.game[selected_game].linescore.inning.length; i++) {
 			toplinescore += "<td>" + (i+1) + "</td>"; // Add td with inning number
@@ -409,7 +434,7 @@ function setForNewSelectedGame(x) {
 		toplinescore += "<td>H</td>";
 		toplinescore += "<td>E</td>";
 		toplinescore += "</tr>"; // end first row
-		toplinescore += "<tr>"; // 2nd row, away team
+		toplinescore += "<tr align='right'>"; // 2nd row, away team
 		toplinescore += "<td>" + x.data.games.game[selected_game].away_name_abbrev + "</td>"; // first td is empty
 		for (var i = 0; i < x.data.games.game[selected_game].linescore.inning.length; i++) {
 			toplinescore += "<td>" + x.data.games.game[selected_game].linescore.inning[i].away + "</td>"; // Add td with inning number
@@ -418,7 +443,7 @@ function setForNewSelectedGame(x) {
 		toplinescore += "<td>" + x.data.games.game[selected_game].linescore.h.away + "</td>";
 		toplinescore += "<td>" + x.data.games.game[selected_game].linescore.e.away + "</td>";
 		toplinescore += "</tr>"; // end 2nd row
-		toplinescore += "<tr>"; // 3rd row, home team
+		toplinescore += "<tr align='right'>"; // 3rd row, home team
 		toplinescore += "<td>" + x.data.games.game[selected_game].home_name_abbrev + "</td>"; // first td is empty
 		for (var i = 0; i < x.data.games.game[selected_game].linescore.inning.length; i++) {
 			toplinescore += "<td>" + x.data.games.game[selected_game].linescore.inning[i].home + "</td>"; // Add td with inning number
@@ -428,7 +453,6 @@ function setForNewSelectedGame(x) {
 		toplinescore += "<td>" + x.data.games.game[selected_game].linescore.e.home + "</td>";
 		toplinescore += "</tr>"; // end 3rd row
 		toplinescore += "</table>";
-		console.log("Making toplinescore is", toplinescore);
 		document.getElementById("toplinescore").innerHTML = toplinescore;
 	} else {
 		console.log("No toplinescore to be made");
@@ -476,6 +500,7 @@ function setForNewSelectedGame(x) {
 		console.log("Making scoring plays, if fails check for status:", x.data.games.game[selected_game].status.status);
 		// Get game_events.json file
 		
+		var game_pk_forscoringplays = x.data.games.game[selected_game].game_pk;
 		document.getElementById("scoringplaystable").innerHTML = "Loading scoring plays...";
 		get_JSON_as_object("http://gd2.mlb.com/components/game/mlb/year_" + year + 
 							"/month_" + month + "/day_" + day + 
@@ -492,6 +517,10 @@ function setForNewSelectedGame(x) {
 			var tx = '<tr><td class="fullboxscoretd">Inning</td><td class="fullboxscoretd">Away</td><td class="fullboxscoretd">Home</td><td class="fullboxscoretd">Scoring Play</td></tr>';
 			// Loop over every inning, top/bottom, at bat, check if scoring, if yes the add to table
 			if (x) {
+				// If game has been changed, don't update HTML, return now
+				if (game_pk != game_pk_forscoringplays) {
+					return;
+				}
 				for (var i=0 ; i < x.data.game.inning.length; i++) {
 					["top", "bottom"].forEach(top_or_bottom => {
 						//console.log(x.data.game.inning[i][top_or_bottom]);
@@ -539,7 +568,11 @@ function setForNewSelectedGame(x) {
 						})
 					});
 				}
-				document.getElementById("scoringplaystable").innerHTML = tx;
+				// console.log("pk was ", game_pk_forscoringplays, " is now ", game_pk);
+				// If game has been changed, don't update HTML. Should have stopped above, but putting here too
+				if (game_pk == game_pk_forscoringplays) {
+					document.getElementById("scoringplaystable").innerHTML = tx;
+				}
 			}
 		})
 		// var tmp = "";
@@ -558,7 +591,7 @@ function setForNewSelectedGame(x) {
 						x.data.games.game[selected_game].away_code + "mlb_" + 
 						x.data.games.game[selected_game].home_code + "mlb_" + 
 						x.data.games.game[selected_game].game_nbr + "/boxscore.json")
-	.then(x => {console.log("FOUND boxscore.json"); return x;})
+	// .then(x => {console.log("FOUND boxscore.json"); return x;})
 	.catch(() => {console.log("FAILED getting boxscore.json");})
 	.then(x => {
 		// console.log("boxscore is");
@@ -572,25 +605,26 @@ function setForNewSelectedGame(x) {
 			} else {
 				away_or_home_01 = 1
 			}
-			// top row
-			tx += "<td style='vertical-align:top;'><table class='fullboxscoretables'><tr>";
-			tx += '<td class="fullboxscoretd">' + x.data.boxscore[away_or_home + "_sname"] + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'POS' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'H' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'AB' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'BB' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'SO' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'HR' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'RBI' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'SB' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'AVG' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'OBP' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'OPS' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'HR' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'RBI' + '</td>';
-			tx += "</tr>";
-			// row for each player
+			
 			if (x.data.boxscore.batting[away_or_home_01] && x.data.boxscore.batting[away_or_home_01].batter) {
+				// top row
+				tx += "<td style='vertical-align:top;'><table class='fullboxscoretables'><tr>";
+				tx += '<td class="fullboxscoretd">' + x.data.boxscore[away_or_home + "_sname"] + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'POS' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'H' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'AB' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'BB' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'SO' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'HR' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'RBI' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'SB' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'AVG' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'OBP' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'OPS' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'HR' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'RBI' + '</td>';
+				tx += "</tr>";
+				// row for each player
 				x.data.boxscore.batting[away_or_home_01].batter.forEach(batteri => {
 					tx += '<tr>';
 					// console.log("batteri is", batteri);
@@ -635,24 +669,24 @@ function setForNewSelectedGame(x) {
 				away_or_home_01 = 1
 			}
 			// top row
-			tx += "<td style='vertical-align:top;'><table class='fullboxscoretables'><tr>";
-			tx += '<td class="fullboxscoretd">' + x.data.boxscore[away_or_home + "_sname"] + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'POS' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'INN' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'ER' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'R' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'H' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'BB' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'SO' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'HR' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'NP' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'W-L' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'SV' + '</td>';
-			tx += '<td class="fullboxscoretd">' + 'ERA' + '</td>';
-			tx += "</tr>";
-			// row for each player
-			// console.log(x.data);
 			if (x.data.boxscore.pitching[away_or_home_01] && x.data.boxscore.pitching[away_or_home_01].pitcher) {
+				tx += "<td style='vertical-align:top;'><table class='fullboxscoretables'><tr>";
+				tx += '<td class="fullboxscoretd">' + x.data.boxscore[away_or_home + "_sname"] + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'POS' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'INN' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'ER' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'R' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'H' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'BB' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'SO' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'HR' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'NP' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'W-L' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'SV' + '</td>';
+				tx += '<td class="fullboxscoretd">' + 'ERA' + '</td>';
+				tx += "</tr>";
+				// row for each player
+				// console.log(x.data);
 				var pitcher_array = x.data.boxscore.pitching[away_or_home_01].pitcher;
 				if (!Array.isArray(pitcher_array)) {pitcher_array = [pitcher_array];}
 				pitcher_array.forEach(pitcheri => {
