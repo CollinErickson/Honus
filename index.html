@@ -185,9 +185,14 @@ Video width
 
 <script type="text/javascript"  >
 
-var year = "2019";
-var month = "04";
-var day = "05";
+//var year = "2019";
+//var month = "04";
+//var day = "05";
+var date_today = new Date();
+var date_today_string = date_today.toISOString().split("T")[0];
+var year  = date_today_string.substr(0,4); //date_today.getFullYear();
+var month = date_today_string.substr(5,2); //date_today.getMonth()+1;
+var day   = date_today_string.substr(8,2); //date_today.getDay()+1;
 var team = "NYY";
 var selected_game = -1;
 var game_pk = null;
@@ -196,32 +201,26 @@ var game_pk = null;
 //var dbh = "1";
 document.getElementById("datepicker").value = month + "/" + day + "/" + year;
 
-console.log("Current URL is", window.location.href);
-<!-- var inURL = "https://collinerickson.github.io/HonusJS/?date=20180412&team=MIN"; -->
+//console.log("Current URL is", window.location.href);
+//var inURL = "https://collinerickson.github.io/HonusJS/?date=20180412&team=MIN";
 var inURL = window.location.href;
-console.log(1, inURL);
 var inURL2 = inURL.split("?")[1];
-console.log(2, inURL2);
 if (inURL2 && inURL2.length > 1) {
-	console.log(3);
 	inURL2.split("&").forEach(x => {
-		console.log(4, x);
 		x2 = x.split("=");
-		console.log(5, x2);
 		if (x2.length > 1) {
-			console.log(6, x2);
 			if (x2[0].toLowerCase() == "team") {
 				team = x2[1].toUpperCase();
-				console.log("team given in URL, is", team);
+				//console.log("team given in URL, is", team);
 			} else if (x2[0].toLowerCase() == "date") {
 				var date = x2[1].replace(/\//g, '').replace(/-/g, '');
 				if (date.length != 8) {
-					console.log("date is wrong length", date);
+					//console.log("date is wrong length", date);
 				} else {
 					year  = date.substr(0,4);
 					month = date.substr(4,2);
 					day   = date.substr(6,2);
-					console.log("date given in URL, is", month, day, year);
+					//console.log("date given in URL, is", month, day, year);
 				}
 			}
 		}

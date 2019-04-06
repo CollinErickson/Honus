@@ -177,33 +177,44 @@ function doAllHighlights() {
 		// })
 	.catch(() => console.log("Request was for null, should check before this"))
 	.then( g => {
-		// console.log("Starting to make highlights div");
+		console.log("Starting to make highlights div");
 		// console.log("g is", g);
 		//g = JSON.parse(x);
 		if (g && g.highlights && g.highlights.highlights) {
 			gh = g.highlights.highlights.items;
 			// console.log("gh is ", gh);
 			var tx = "";
-			//console.log('gh is', gh);
-			for (var i = 0; i < gh.length; i++) {
-			//console.log(gh[i]);
-				//tx += "<tr><td>" + gh[i].headline + gh[i].playbacks[0].url + "</td></tr>";
-				// Opens video in new window
-				// tx += "<tr><td id='headline" + i + "' class='headlinestabletd'><a href='" + gh[i].playbacks[0].url + "' target='_blank' style='text-decoration: none'>" +gh[i].headline + "</a></td></tr>";
-				// Play in player
-				tx += "<tr class='headlinestabletr' id='headlinetr" + i + "'>";
-				tx += "<td class='headlinestabletd'  id='headline" + i;
-				tx += "' class='headlinestabletd' ";
-				tx += "onclick='document.getElementById(\"videoplayer\").setAttribute(\"src\", \"";
-				tx += gh[i].playbacks[0].url + "\"); ";
-				tx += "document.getElementById(\"videoplayer\").autoplay=true;";
-				tx += "document.getElementById(\"headlinetr"+i+"\").classList.toggle(\"headlinestabletr_selected\");";
-				tx += "' >"; // end onclick
-				tx += gh[i].headline + "</td>";
-				tx += "<td><a href='" + gh[i].playbacks[0].url + "'  target='_blank'  style='text-decoration: none'>&#8599;</a></td>";
-				tx += "</tr>";
+			console.log('gh is', gh);
+			if (gh.length ==0) {
+				// If no highlights, do something else
+				// tx += "No highlights yet";
+				tx += "<table><tr>";
+				tx += "<td><img src='http://mlb.mlb.com/mlb/images/devices/600x600/" + master_scoreboard_JSON.data.games.game[selected_game].away_team_id + ".png' alt='AwayTeamLogo'/></td>";
+				tx += "<td><img src='http://mlb.mlb.com/mlb/images/devices/600x600/" + master_scoreboard_JSON.data.games.game[selected_game].home_team_id + ".png' alt='HomeTeamLogo'/></td>";
+				tx += "</tr></table>";
+				document.getElementById("videoplayer").width = 0;
+			} else {
+				// Get highlights
+				for (var i = 0; i < gh.length; i++) {
+				//console.log(gh[i]);
+					//tx += "<tr><td>" + gh[i].headline + gh[i].playbacks[0].url + "</td></tr>";
+					// Opens video in new window
+					// tx += "<tr><td id='headline" + i + "' class='headlinestabletd'><a href='" + gh[i].playbacks[0].url + "' target='_blank' style='text-decoration: none'>" +gh[i].headline + "</a></td></tr>";
+					// Play in player
+					tx += "<tr class='headlinestabletr' id='headlinetr" + i + "'>";
+					tx += "<td class='headlinestabletd'  id='headline" + i;
+					tx += "' class='headlinestabletd' ";
+					tx += "onclick='document.getElementById(\"videoplayer\").setAttribute(\"src\", \"";
+					tx += gh[i].playbacks[0].url + "\"); ";
+					tx += "document.getElementById(\"videoplayer\").autoplay=true;";
+					tx += "document.getElementById(\"headlinetr"+i+"\").classList.toggle(\"headlinestabletr_selected\");";
+					tx += "' >"; // end onclick
+					tx += gh[i].headline + "</td>";
+					tx += "<td><a href='" + gh[i].playbacks[0].url + "'  target='_blank'  style='text-decoration: none'>&#8599;</a></td>";
+					tx += "</tr>";
+				}
+				//console.log(tx);
 			}
-			//console.log(tx);
 			
 			document.getElementById('headlinestable').innerHTML = tx;
 		} else {
@@ -247,14 +258,14 @@ function setBoxScores(x) {
 	}
 	// If team doesn't match any, set it first on list
 	if (selected_game < 0) {
-		console.log("team not found in list of games");
+		// console.log("team not found in list of games");
 		selected_game = 0;
 		team = x.data.games.game[0].home_name_abbrev;
 		team_is_home = true;
 		game_pk = x.data.games.game[0].game_pk;
 	}
 	
-	console.log("team is", team, "selected_game is", selected_game);
+	// console.log("team is", team, "selected_game is", selected_game);
 	// update team in selector on top
 	document.getElementById('selectteam').value = team;
 	
@@ -496,7 +507,7 @@ function setForNewSelectedGame(x) {
 	// Get scoring plays;
 	document.getElementById("scoringplaystable").innerHTML = "";
 	if (!(["Preview", "Pre-Game", "Warmup"].includes(x.data.games.game[selected_game].status.status))) {
-		console.log("Making scoring plays, if fails check for status:", x.data.games.game[selected_game].status.status);
+		// console.log("Making scoring plays, if fails check for status:", x.data.games.game[selected_game].status.status);
 		// Get game_events.json file
 		
 		var game_pk_forscoringplays = x.data.games.game[selected_game].game_pk;

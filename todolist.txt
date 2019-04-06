@@ -2,4 +2,4 @@ no highlights
 preview images atv_preview.xml
 rename repos
 link to bbref/fangraphs
-date/team/videowidth in URL
+postponed, 4/4
