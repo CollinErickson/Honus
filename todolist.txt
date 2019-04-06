@@ -1,0 +1,9 @@
+no game days
+video player size
+no highlights
+preview images atv_preview.xml
+pop out video
+stop loading scoring plays if changed game
+rename repos
+link to bbref/fangraphs
+slash inning for extras
