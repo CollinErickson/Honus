@@ -202,7 +202,7 @@ var inURL = window.location.href;
 console.log(1, inURL);
 var inURL2 = inURL.split("?")[1];
 console.log(2, inURL2);
-if (inURL2.length > 1) {
+if (inURL2 && inURL2.length > 1) {
 	console.log(3);
 	inURL2.split("&").forEach(x => {
 		console.log(4, x);
@@ -225,9 +225,8 @@ if (inURL2.length > 1) {
 				}
 			}
 		}
-	}
+	})
 }
-})
 
 
 runAllJS(year, month, day, team);
