@@ -455,8 +455,7 @@ function setForNewSelectedGame(x) {
 		toplinescore += "</table>";
 		document.getElementById("toplinescore").innerHTML = toplinescore;
 	} else {
-		console.log("No toplinescore to be made");
-		document.getElementById("toplinescore").innerHTML = "";
+		document.getElementById("toplinescore").innerHTML =  x.data.games.game[selected_game].time + " " + x.data.games.game[selected_game].time_zone;
 	}
 	// Set gameday link
 	gamedayurl = "http://mlb.mlb.com/mlb/gameday/index.jsp?gid=" + year + "_" + month + "_" + day + 
