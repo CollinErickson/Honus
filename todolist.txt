@@ -1,5 +1,5 @@
-no highlights
 preview images atv_preview.xml
 rename repos
 link to bbref/fangraphs
-postponed, 4/4
+win prob from FG
+link to player profs

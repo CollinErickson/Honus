@@ -64,11 +64,14 @@ function runAllJS_relativeDateChange(year_, month_, day_, team_, plus_minus_days
                     .toISOString()
                     .split("T")[0];
 	//dateString.substr(5,2) + "/" + dateString.substr(8,2) + "/" + dateString.substr(0,4);
-	month_ = dateString.substr(5,2);
-	day_ = dateString.substr(8,2);
-	year_ = dateString.substr(0,4);
-	console.log("final date is ", month_, day_, year_);
-	return runAllJS(year_, month_, day_, team_);
+	// month_ = dateString.substr(5,2);
+	// day_ = dateString.substr(8,2);
+	// year_ = dateString.substr(0,4);
+	// console.log("final date is ", month_, day_, year_);
+	// game_pk = null;
+	// selected_game = -1;
+	// return runAllJS(year_, month_, day_, team_);
+	return runAllJS_fromDateString(dateString, team_);
 }
 
 function runAllJS_changeToToday(team_) {
@@ -77,6 +80,16 @@ function runAllJS_changeToToday(team_) {
                     .toISOString()
                     .split("T")[0];
 	//dateString.substr(5,2) + "/" + dateString.substr(8,2) + "/" + dateString.substr(0,4);
+	// month_ = dateString.substr(5,2);
+	// day_ = dateString.substr(8,2);
+	// year_ = dateString.substr(0,4);
+	// console.log("final date is ", month_, day_, year_);
+	// return runAllJS(year_, month_, day_, team_);
+	return runAllJS_fromDateString(dateString, team_);
+}
+
+function runAllJS_fromDateString(dateString, team_) {
+	
 	month_ = dateString.substr(5,2);
 	day_ = dateString.substr(8,2);
 	year_ = dateString.substr(0,4);
@@ -94,8 +107,8 @@ function runAllJS(year_, month_, day_, team_) {
 	var tmpdate = new Date(month + "/" + day + "/" + year)
 	document.getElementById('datepicker').value = month + "/" + day + "/" + year;
 	
-	var selected_game = -1;
-	var game_pk = null;
+	selected_game = -1;
+	game_pk = null;
 	
 	
 	// get master scoreboard
@@ -177,7 +190,7 @@ function doAllHighlights() {
 		// })
 	.catch(() => console.log("Request was for null, should check before this"))
 	.then( g => {
-		console.log("Starting to make highlights div");
+		// console.log("Starting to make highlights div");
 		// console.log("g is", g);
 		//g = JSON.parse(x);
 		if (g && g.highlights && g.highlights.highlights) {
@@ -194,6 +207,8 @@ function doAllHighlights() {
 				tx += "</tr></table>";
 				document.getElementById("videoplayer").width = 0;
 			} else {
+				// Make sure video play is full sized
+				document.getElementById("videoplayer").width = document.getElementById("videowidthslider").value;
 				// Get highlights
 				for (var i = 0; i < gh.length; i++) {
 				//console.log(gh[i]);
@@ -231,8 +246,8 @@ function if_not_zero(s) {
 }
 var master_scoreboard_JSON;
 function setBoxScores(x) {
-	// console.log("in setBoxScores");
-	console.log("x is ", x);
+	// console.log("in setBoxScores", "game_pk is", game_pk);
+	// console.log("x is ", x);
 	
 	// If no games on day, don't do this
 	if (!(x.data.games.game)) {
@@ -321,8 +336,8 @@ function setBoxScores(x) {
 			tx += "</tr><tr><td>"+ x.data.games.game[i].linescore.r.home + "</td></tr></table>";
 			tx += "</td>";
 			// third td is win/loss pitchers
-			var losing_pitcher_text = x.data.games.game[i].losing_pitcher.last + " (" +x.data.games.game[i].losing_pitcher.wins + "-" + x.data.games.game[i].losing_pitcher.losses + ")";
-			var winning_pitcher_text = x.data.games.game[i].winning_pitcher.last + " (" +x.data.games.game[i].winning_pitcher.wins + "-" + x.data.games.game[i].winning_pitcher.losses + ")";
+			var losing_pitcher_text  = "L:" + x.data.games.game[i].losing_pitcher.last + " (" +x.data.games.game[i].losing_pitcher.wins + "-" + x.data.games.game[i].losing_pitcher.losses + ")";
+			var winning_pitcher_text = "W:" + x.data.games.game[i].winning_pitcher.last + " (" +x.data.games.game[i].winning_pitcher.wins + "-" + x.data.games.game[i].winning_pitcher.losses + ")";
 			var home_team_won = (parseInt(x.data.games.game[i].linescore.r.home) > parseInt(x.data.games.game[i].linescore.r.away));
 			if (home_team_won) {
 				var away_pitcher_text = losing_pitcher_text;
@@ -366,25 +381,35 @@ function setBoxScores(x) {
 			};
 			// getting mlb.tv link
 			var mlbtvlink = "https://www.mlb.com/tv/g" + x.data.games.game[i].game_pk;//x.data.games.game[i].links.mlbtv;
-			console.log('mlbtvlink is', mlbtvlink);
+			// console.log('mlbtvlink is', mlbtvlink);
 			tx += "</td><td rowspan='2'>";
-			tx += "<br><a href='" + mlbtvlink + "' target='_blank'  style='text-decoration: none;color:inherit'>&#x1F4FA;</a>";
+			if (x.data.games.game[i].game_media.media.free == "YES") {
+				tx += "<br><a href='" + mlbtvlink + "' target='_blank'  style='text-decoration: none;color:inherit'>FGOD</a>";
+			} else {
+				tx += "<br><a href='" + mlbtvlink + "' target='_blank'  style='text-decoration: none;color:inherit'>&#x1F4FA;</a>";
+			}
 			// second row of center col is home score
 			tx += "</td></tr><tr><td>"+ x.data.games.game[i].linescore.r.home + "</td></tr></table>";
 			tx += "</td>";
 			// 3rd td is inning num, batter pitcher
 			tx += "<td>";
 			// Show batter and pitcher
-			tx += "<table><tr><td>P: " + x.data.games.game[i].pitcher.name_display_roster + "(" + x.data.games.game[i].pitcher.wins + "-" + x.data.games.game[i].pitcher.losses + ")" + "</td></tr>";
-			tx += "<tr><td>B: " + x.data.games.game[i].batter.name_display_roster + "(" + x.data.games.game[i].batter.avg + ")" + "</td></tr></table>";
+			tx += "<table><tr><td>P:" + x.data.games.game[i].pitcher.name_display_roster + "(" + x.data.games.game[i].pitcher.wins + "-" + x.data.games.game[i].pitcher.losses + ")" + "</td></tr>";
+			tx += "<tr><td>B:" + x.data.games.game[i].batter.name_display_roster + "(" + x.data.games.game[i].batter.avg + ")" + "</td></tr></table>";
 			tx += "</td>";
 			//tx += "<td><table><tr><td>" + x.data.games.game[i].status.inning_state + x.data.games.game[i].status.inning + "</td></tr><tr><td>"+ 123 + "</td></tr></table></td>";
 			
 		} else if (["Postponed"].includes(x.data.games.game[i].status.status))  {
-			tx += "<td></td><td>Postponed</td>";
+			// tx += "<td></td><td>Postponed</td>";
+			tx += "<td></td><td><table><tr><td>Postponed</td></tr><tr><td>" + x.data.games.game[i].description + "</td></tr></table></td>";
 		} else if (["Preview", "Pre-Game", "Warmup"].includes(x.data.games.game[i].status.status))  {
 			// Second column is start time
-			tx += "<td>" + x.data.games.game[i].time + " " + x.data.games.game[i].time_zone + "</td>";
+			tx += "<td><table>";
+			tx += "<tr><td>" + x.data.games.game[i].time + " " + x.data.games.game[i].time_zone + "</td></tr>";
+			if (x.data.games.game[i].game_media.media.free == "YES") {
+				tx += "<tr><td>FGOD</td></tr>";
+			}
+			tx += "</tr></table></td>";
 			// Third column is probables
 			tx += "<td><table>";
 			tx += "<tr><td>" + x.data.games.game[i].away_probable_pitcher.name_display_roster + "(" + x.data.games.game[i].away_probable_pitcher.wins + "-" + x.data.games.game[i].away_probable_pitcher.losses + ")" + "</td></tr>";
@@ -414,6 +439,9 @@ function setForNewSelectedGame(x) {
 		return;
 	}
 	
+	// Set selectteam
+	document.getElementById('selectteam').value = team;
+	
 	doAllHighlights();
 	
 	// console.log("SELECTED GAME IS");
@@ -433,7 +461,7 @@ function setForNewSelectedGame(x) {
 	document.getElementById("topbarteams").innerHTML = topbarteams_text;
 	
 	// Set toplinescore, box score on top for selected game
-	if (x.data.games.game[selected_game].linescore) {
+	if (x.data.games.game[selected_game].linescore && x.data.games.game[selected_game].linescore.inning) {
 		var toplinescore = "";
 		toplinescore += "<table>"; // full boxscore table
 		toplinescore += "<tr style='border-bottom:solid #80ffff' align='center'>"; // first row, inning nums
@@ -611,9 +639,9 @@ function setForNewSelectedGame(x) {
 		["away", "home"].forEach( away_or_home => {
 			var away_or_home_01;
 			if (away_or_home == "away") {
-				away_or_home_01 = 0
+				away_or_home_01 = 1;
 			} else {
-				away_or_home_01 = 1
+				away_or_home_01 = 0;
 			}
 			
 			if (x.data.boxscore.batting[away_or_home_01] && x.data.boxscore.batting[away_or_home_01].batter) {
@@ -674,9 +702,9 @@ function setForNewSelectedGame(x) {
 		["away", "home"].forEach( away_or_home => {
 			var away_or_home_01;
 			if (away_or_home == "away") {
-				away_or_home_01 = 0
+				away_or_home_01 = 0;
 			} else {
-				away_or_home_01 = 1
+				away_or_home_01 = 1;
 			}
 			// top row
 			if (x.data.boxscore.pitching[away_or_home_01] && x.data.boxscore.pitching[away_or_home_01].pitcher) {
@@ -711,7 +739,7 @@ function setForNewSelectedGame(x) {
 					if (pitcheri.save) {tx += " (S)"}
 					tx += '</div></a></td>';
 					tx += '<td class="fullboxscoretd">' + pitcheri.pos + '</td>';
-					tx += '<td class="fullboxscoretd">' + pitcheri.out + '</td>';
+					tx += '<td class="fullboxscoretd">' + Math.floor(pitcheri.out / 3) + "." + (pitcheri.out % 3) + '</td>';
 					tx += '<td class="fullboxscoretd">' + pitcheri.er + '</td>';
 					tx += '<td class="fullboxscoretd">' + pitcheri.r + '</td>';
 					tx += '<td class="fullboxscoretd">' + pitcheri.h + '</td>';
