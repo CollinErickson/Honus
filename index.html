@@ -209,9 +209,12 @@ document.getElementById("datepicker").value = month + "/" + day + "/" + year;
 // Load favorite batters from localStorage
 try {
 	var favBatters = readInFavoriteBatters();
+	var	favBatterIds = getFavoriteBattersIds();
 }
 catch(err) {
 	console.log("Can't run readInFavoriteBatters, clear your cache and try again");
+	var favBatters = [];
+	var	favBatterIds = [];
 }
 
 //console.log("Current URL is", window.location.href);

@@ -846,3 +846,11 @@ function saveFavoriteBatters() {
 	localStorage.setItem("favBatters", tx);
 	return;
 }
+
+function getFavoriteBattersIds() {
+	favBatterIds = [];
+	favBatters.forEach(b => {
+		favBattersId.concat(b.id);
+	})
+	return favBatterIds;
+}
