@@ -207,7 +207,12 @@ var game_pk = null;
 document.getElementById("datepicker").value = month + "/" + day + "/" + year;
 
 // Load favorite batters from localStorage
-//var favBatters = readInFavoriteBatters();
+try {
+	var favBatters = readInFavoriteBatters();
+}
+catch(err) {
+	console.log("Can't run readInFavoriteBatters, clear your cache and try again");
+}
 
 //console.log("Current URL is", window.location.href);
 //var inURL = "https://collinerickson.github.io/HonusJS/?date=20180412&team=MIN";

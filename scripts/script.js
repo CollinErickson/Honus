@@ -458,7 +458,7 @@ function setForNewSelectedGame(x) {
 			if (history.pushState) {
 				// window.history.pushState('abcd', 'Honus - updated', '/?team='+team+'&date='+year+month+day);
 				console.log("Try running: window.history.pushState('abcd', 'Honus - updated', '/Honus/?team='+team+'&date='+year+month+day)");
-				window.history.pushState('', 'Honus - updated', '/Honus/?team='+team+'&date='+year+month+day)
+				window.history.pushState('', 'Honus - updated', '/Honus/?team='+team+'&date='+year+month+day);
 			}
 			break;
 		case 'file:':
