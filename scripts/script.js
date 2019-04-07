@@ -449,6 +449,7 @@ function setForNewSelectedGame(x) {
 	console.log(x);
 	
 	// Update URL
+	console.log("About to change URL, protocol is ", window.location.protocol);
 	switch(window.location.protocol) {
 		case 'http:':
 		case 'https:':
@@ -457,13 +458,16 @@ function setForNewSelectedGame(x) {
 			if (history.pushState) {
 				// window.history.pushState('abcd', 'Honus - updated', '/?team='+team+'&date='+year+month+day);
 				console.log("Try running: window.history.pushState('abcd', 'Honus - updated', '/Honus/?team='+team+'&date='+year+month+day)");
+				window.history.pushState('', 'Honus - updated', '/Honus/?team='+team+'&date='+year+month+day)
 			}
 			break;
 		case 'file:':
 			// from local file don't change URL
+			console.log("Loaded from file, URL won't change");
 			break;
 		default: 
 			//some other protocol
+			console.log("Loaded by other protocol");
 	}
 	
 	// Set border in scorestable for selected box
@@ -666,7 +670,7 @@ function setForNewSelectedGame(x) {
 			if (x.data.boxscore.batting[away_or_home_01] && x.data.boxscore.batting[away_or_home_01].batter) {
 				// top row
 				tx += "<td style='vertical-align:top;'><table class='fullboxscoretables'><tr>";
-				tx += '<td class="fullboxscoretd">' + x.data.boxscore[away_or_home + "_sname"] + '</td>';
+				tx += '<td class="fullboxscoretd" colspan=2>' + x.data.boxscore[away_or_home + "_sname"] + '</td>';
 				tx += '<td class="fullboxscoretd">' + 'POS' + '</td>';
 				tx += '<td class="fullboxscoretd">' + 'H' + '</td>';
 				tx += '<td class="fullboxscoretd">' + 'AB' + '</td>';
@@ -689,6 +693,8 @@ function setForNewSelectedGame(x) {
 					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
 					if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
 					tx += batteri.name_display_first_last + '</div></a></td>';
+					// Option to add to favorite batters
+					tx += "<td onclick='addFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\")'>+</td>";
 					tx += '<td class="fullboxscoretd">' + batteri.pos + '</td>';
 					tx += '<td class="fullboxscoretd">' + batteri.h + '</td>';
 					tx += '<td class="fullboxscoretd">' + batteri.ab + '</td>';
@@ -790,4 +796,53 @@ function updateSelectedGame() {
 	// First 
 	//
 	setForNewSelectedGame(x)
+}
+
+function readInFavoriteBatters() {
+	var favBatters_string = localStorage.getItem("favBatters");
+	console.log("string is", favBatters_string);
+	var favBatters = [];
+	if (favBatters_string) {
+		var fBsplit = favBatters_string.split(";")
+			.forEach(x => {
+				// var fbsplit = x.split(";");
+				// var fbobj = {}
+				// fbsplit.forEach(y => {
+					// ysplit = y.split(":");
+					// console.log('y and ysplit are', y, ysplit);
+					// if (ysplit && ysplit.length==2) {
+						// fbobj[ysplit[0]] = ysplit[1];
+					// } else {
+						// throw "Error in ysplit #23098100";
+					// }
+				// })
+				// favBatters = favBatters.concat(fbobj);
+			// });
+			console.log('x is', x);
+			if (x != "") {
+				favBatters = favBatters.concat(JSON.parse(x));
+			}
+		})
+	}
+	return favBatters;
+}
+
+function addFavoriteBatter(id, name_display_first_last) {
+	console.log("Add id to fav batters", id, name_display_first_last);
+	favBatters = favBatters.concat({
+		id:id,
+		name_display_first_last:name_display_first_last
+	});
+	saveFavoriteBatters();
+	return;
+}
+
+function saveFavoriteBatters() {
+	var tx = "";
+	favBatters.forEach(b => {
+		tx += JSON.stringify(b) + ";";
+	})
+	// return tx;
+	localStorage.setItem("favBatters", tx);
+	return;
 }

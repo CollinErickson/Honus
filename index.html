@@ -206,6 +206,9 @@ var game_pk = null;
 //var dbh = "1";
 document.getElementById("datepicker").value = month + "/" + day + "/" + year;
 
+// Load favorite batters from localStorage
+var favBatters = readInFavoriteBatters();
+
 //console.log("Current URL is", window.location.href);
 //var inURL = "https://collinerickson.github.io/HonusJS/?date=20180412&team=MIN";
 var inURL = window.location.href;
