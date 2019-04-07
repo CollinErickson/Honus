@@ -1,4 +1,10 @@
 preview images atv_preview.xml
 link to bbref/fangraphs
 win prob from FG
-link to player profs
+reload box on changing game
+reload rate option (15 sec, 1 min, 5 min)
+play by play
+notify when favBatter is up
+minus for favBatter
+show favBatter somewhere
+order highlights by time

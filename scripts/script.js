@@ -132,6 +132,9 @@ function runAllJS(year_, month_, day_, team_) {
 		// return x;
 	// })
 	.then( x => {
+		// Set time boxscore last updated. Need this above setForNewSelectedGame so it knows it is recent
+		master_scoreboard_last_updated = new Date();
+		
 		// If no games, don't run rest
 		
 		// If no games on day, don't do this
@@ -153,6 +156,10 @@ function runAllJS(year_, month_, day_, team_) {
 			// doAllHighlights();
 			setForNewSelectedGame(x);
 		}
+		
+		// Set time boxscore last updated. Not needed here since it is right above
+		master_scoreboard_last_updated = new Date();
+		
 		return x;
 	})
 	;
@@ -195,6 +202,8 @@ function doAllHighlights() {
 		//g = JSON.parse(x);
 		if (g && g.highlights && g.highlights.highlights) {
 			gh = g.highlights.highlights.items;
+			// Need to sort by time so they are in correct order
+			gh.sort((a,b) => (new Date(a.date)) - (new Date(b.date)));
 			// console.log("gh is ", gh);
 			var tx = "";
 			console.log('gh is', gh);
@@ -442,6 +451,16 @@ function setForNewSelectedGame(x) {
 	
 	// Set selectteam
 	document.getElementById('selectteam').value = team;
+	
+	// Update scorestable if it's been more than a short time
+	console.log("last up is", master_scoreboard_last_updated);
+	if (!master_scoreboard_last_updated || (((new Date()) - master_scoreboard_last_updated) / 1000) > 15) {
+		console.log("updating scores");
+		runAllJS(year, month, day, team);
+		return;
+	} else {
+		console.log("not updating scores");
+	}
 	
 	doAllHighlights();
 	
@@ -834,6 +853,7 @@ function addFavoriteBatter(id, name_display_first_last) {
 		name_display_first_last:name_display_first_last
 	});
 	saveFavoriteBatters();
+	favBattersIds = getFavoriteBattersIds();
 	return;
 }
 
@@ -848,9 +868,36 @@ function saveFavoriteBatters() {
 }
 
 function getFavoriteBattersIds() {
-	favBatterIds = [];
+	var Ids = [];
 	favBatters.forEach(b => {
-		favBattersId.concat(b.id);
+		Ids.push(b.id);
 	})
-	return favBatterIds;
+	return Ids;
+}
+
+function notif() {
+	// help from https://stackoverflow.com/questions/6092885/what-ways-are-out-there-to-display-a-desktop-notification-from-a-web-app/13328397#13328397
+	// See https://www.w3.org/TR/notifications/ for info on Notification
+	// Check if notification is allowed
+	if (!Notification) {
+		alert('Desktop notifications not available in your browser. Try Chromium.'); 
+		return;
+	}
+	
+	// Request permission if not already granted
+	if (Notification.permission !== "granted") {
+		Notification.requestPermission();
+	}
+	
+	// Make notification
+	var mynot = new Notification("Your facorite is up to bat!",{
+		icon:"/scripts/",
+		body:"abod"});
+	// When you click it, open MLB.tv and then close the notification
+	mynot.onclick = function () {
+		window.open("http://stackoverflow.com/a/13328397/1269037");     
+		mynot.close();
+    };
+	
+	return;
 }

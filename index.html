@@ -201,6 +201,7 @@ var day   = $.datepicker.formatDate("dd", new Date());
 var team = "NYY";
 var selected_game = -1;
 var game_pk = null;
+var master_scoreboard_last_updated = null;
 //var away_code = null;
 //var home_code = null;
 //var dbh = "1";
@@ -209,12 +210,12 @@ document.getElementById("datepicker").value = month + "/" + day + "/" + year;
 // Load favorite batters from localStorage
 try {
 	var favBatters = readInFavoriteBatters();
-	var	favBatterIds = getFavoriteBattersIds();
+	var	favBattersIds = getFavoriteBattersIds();
 }
 catch(err) {
 	console.log("Can't run readInFavoriteBatters, clear your cache and try again");
 	var favBatters = [];
-	var	favBatterIds = [];
+	var	favBattersIds = [];
 }
 
 //console.log("Current URL is", window.location.href);
