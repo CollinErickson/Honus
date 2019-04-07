@@ -401,7 +401,8 @@ function setBoxScores(x) {
 			
 		} else if (["Postponed"].includes(x.data.games.game[i].status.status))  {
 			// tx += "<td></td><td>Postponed</td>";
-			tx += "<td></td><td><table><tr><td>Postponed</td></tr><tr><td>" + x.data.games.game[i].description + "</td></tr></table></td>";
+			// tx += "<td colspan=2><table><tr><td>Postponed</td></tr><tr><td>" + x.data.games.game[i].description + "</td></tr></table></td>";
+			tx += "<td colspan=2>Postponed: " + x.data.games.game[i].description + "</td>";
 		} else if (["Preview", "Pre-Game", "Warmup"].includes(x.data.games.game[i].status.status))  {
 			// Second column is start time
 			tx += "<td><table>";
@@ -416,7 +417,7 @@ function setBoxScores(x) {
 			tx += "<tr><td>" + x.data.games.game[i].home_probable_pitcher.name_display_roster + "(" + x.data.games.game[i].home_probable_pitcher.wins + "-" + x.data.games.game[i].home_probable_pitcher.losses + ")" + "</td></tr>";
 			tx += "</table></td>";
 		} else {
-			tx += "<td></td><td>Status is " + x.data.games.game[i].status.status + "</td>";
+			tx += "<td colspan=2>Status is " + x.data.games.game[i].status.status + "</td>";
 		}
 		tx += "</tr>";
 	};
@@ -446,6 +447,24 @@ function setForNewSelectedGame(x) {
 	
 	// console.log("SELECTED GAME IS");
 	console.log(x);
+	
+	// Update URL
+	switch(window.location.protocol) {
+		case 'http:':
+		case 'https:':
+			//remote file over http or https
+			console.log("from http or https");
+			if (history.pushState) {
+				// window.history.pushState('abcd', 'Honus - updated', '/?team='+team+'&date='+year+month+day);
+				console.log("Try running: window.history.pushState('abcd', 'Honus - updated', '/Honus/?team='+team+'&date='+year+month+day)");
+			}
+			break;
+		case 'file:':
+			// from local file don't change URL
+			break;
+		default: 
+			//some other protocol
+	}
 	
 	// Set border in scorestable for selected box
 	var scoretrs = document.getElementsByClassName('scorestablegametr');

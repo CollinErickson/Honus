@@ -190,9 +190,14 @@ Video width
 //var day = "05";
 var date_today = new Date();
 var date_today_string = date_today.toISOString().split("T")[0];
-var year  = date_today_string.substr(0,4); //date_today.getFullYear();
-var month = date_today_string.substr(5,2); //date_today.getMonth()+1;
-var day   = date_today_string.substr(8,2); //date_today.getDay()+1;
+// These use UTC and are off in US evening
+//var year  = date_today_string.substr(0,4); //date_today.getFullYear();
+//var month = date_today_string.substr(5,2); //date_today.getMonth()+1;
+//var day   = date_today_string.substr(8,2); //date_today.getDay()+1;
+//console.log($.datepicker.formatDate("mm dd yy", new Date()));
+var year  = $.datepicker.formatDate("yy", new Date());
+var month = $.datepicker.formatDate("mm", new Date());
+var day   = $.datepicker.formatDate("dd", new Date());
 var team = "NYY";
 var selected_game = -1;
 var game_pk = null;
