@@ -990,7 +990,7 @@ function update_favBattersdiv() {
 	// }
 }
 
-function make_notification(title, body, onclick) {
+function make_notification(title, body, link) {
 	// help from https://stackoverflow.com/questions/6092885/what-ways-are-out-there-to-display-a-desktop-notification-from-a-web-app/13328397#13328397
 	// See https://www.w3.org/TR/notifications/ for info on Notification
 	// Check if notification is allowed
@@ -1009,7 +1009,7 @@ function make_notification(title, body, onclick) {
 	var mynot = new Notification("Your favorite is up to bat!",{
 		icon:"./favicon.ico",
 		body:body});
-	alert("Alerted");
+	// alert("Alerted");
 	// When you click it, open MLB.tv and then close the notification
 	mynot.onclick = function () {
 		window.open(link);     
