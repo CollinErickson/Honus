@@ -32,11 +32,22 @@
 
 
 
-<body>
+<body id="body" onclick="last_user_click_time=new Date();">
 
 <table id="toptable"><tr>
 	<td>
 		<h3 align='center' style='color:magenta;cursor:pointer;padding-right:8px;' onclick='window.location.href="/Honus/"'>Honus<h1>
+	</td>
+	<td> <!--&#x21bb; <strong>&#x21bb;</strong> &#x27f3; &#x1f504; -->
+		&#x21bb;
+		<select name="" id="selectreload">
+			<option value="never">-</option>
+			<option value="3">3s</option>
+			<option value="15">15s</option>
+			<option value="30">30s</option>
+			<option value="60">1m</option>
+			<option value="300">5m</option>
+		</select>
 	</td>
 	<td>
 		Team:
@@ -143,6 +154,16 @@ Video width
 <table id="fullboxscoretable">
 </table>
 
+<div id="favBattersdiv">
+</div>
+
+<div id="fangraphsWinProbDiv">
+</div>
+
+<!-- <div> -->
+<!-- <a class="twitter-timeline" data-height="500" data-theme="dark" href="https://twitter.com/collin_e/lists/mlb?ref_src=twsrc%5Etfw">A Twitter List by collin_e</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
+<!-- </div> -->
+
 
 <div align="right">
 	Suggestions, comments, questions? Email <a href="mailto:Honus1064@gmail.com" style="color:inherit;">Honus1064@gmail.com</a>
@@ -202,20 +223,32 @@ var team = "NYY";
 var selected_game = -1;
 var game_pk = null;
 var master_scoreboard_last_updated = null;
+var highlights_last_updated = null;
+var highlights_last_updated_selected_game = -1;
+var last_user_click_time = new Date();
+//var reload_rate = document.getElementById("selectreload").value;
+var refresh_setInterval_id;
+
 //var away_code = null;
 //var home_code = null;
 //var dbh = "1";
 document.getElementById("datepicker").value = month + "/" + day + "/" + year;
 
+var use_favBatters = !true;
+var use_notifications = use_favBatters;
+
 // Load favorite batters from localStorage
 try {
 	var favBatters = readInFavoriteBatters();
 	var	favBattersIds = getFavoriteBattersIds();
+	var favBatters_last_notification = {};
+	favBattersIds.forEach( id => {favBatters_last_notification[id] = null});
 }
 catch(err) {
 	console.log("Can't run readInFavoriteBatters, clear your cache and try again");
 	var favBatters = [];
 	var	favBattersIds = [];
+	var favBatters_last_notification = {};
 }
 
 //console.log("Current URL is", window.location.href);

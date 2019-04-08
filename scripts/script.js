@@ -160,6 +160,13 @@ function runAllJS(year_, month_, day_, team_) {
 		// Set time boxscore last updated. Not needed here since it is right above
 		master_scoreboard_last_updated = new Date();
 		
+		// Set next reload time if set to automatically reload
+		if (refresh_setInterval_id) {
+			console.log("interval id is ", refresh_setInterval_id);
+			clearInterval(refresh_setInterval_id);
+		}
+		refresh_setInterval_id = run_setInterval();
+		
 		return x;
 	})
 	;
@@ -167,8 +174,38 @@ function runAllJS(year_, month_, day_, team_) {
 	
 }
 
+function run_setInterval() {
+	//
+	var reload_rate = document.getElementById("selectreload").value;
+	console.log('about to set interval', reload_rate);
+	if (reload_rate != "never") {
+		var rr = parseInt(reload_rate);
+		// console.log('rr is', rr);
+		refresh_setInterval_id = setInterval(
+			function() {
+				console.log('would refresh now', new Date());
+				runAllJS(year, month, day, team)
+			},
+			rr*1000)
+	} else {
+		refresh_setInterval_id = null;
+	}
+	return refresh_setInterval_id
+}
+
 
 function doAllHighlights() {
+	// Don't update if done in last minute for same game, it's too slow
+	if (!highlights_last_updated || (((new Date()) - highlights_last_updated) / 1000) > 60 || selected_game!=highlights_last_updated_selected_game) {
+		console.log("updating highlights as normal");
+		// coninue as normal
+	} else {
+		console.log("not updating highlights, was done recently");
+		return;
+	}
+	// Update last updated time and game
+	highlights_last_updated = new Date();
+	highlights_last_updated_selected_game = selected_game;
 	
 	/////////////////////////////////////
 	// Get highlights for selected game
@@ -257,6 +294,9 @@ var master_scoreboard_JSON;
 function setBoxScores(x) {
 	// console.log("in setBoxScores", "game_pk is", game_pk);
 	// console.log("x is ", x);
+	
+	// save this JSON for future use
+	master_scoreboard_JSON = x;
 	
 	// If no games on day, don't do this
 	if (!(x.data.games.game)) {
@@ -434,8 +474,15 @@ function setBoxScores(x) {
 	// set this for the table text
 	document.getElementById('scorestable_td').innerHTML = tx;
 	
-	// save this JSON for future use
-	master_scoreboard_JSON = x;
+	// Set favBattersdiv
+	update_favBattersdiv();
+	
+	// Check to give notification to user about favBatter
+	console.log('going to call run notif');
+	if (use_notifications) {
+		run_favBatters_notification(x);
+	}
+	
 	return;
 }
 
@@ -453,13 +500,13 @@ function setForNewSelectedGame(x) {
 	document.getElementById('selectteam').value = team;
 	
 	// Update scorestable if it's been more than a short time
-	console.log("last up is", master_scoreboard_last_updated);
+	// console.log("last update was", master_scoreboard_last_updated);
 	if (!master_scoreboard_last_updated || (((new Date()) - master_scoreboard_last_updated) / 1000) > 15) {
-		console.log("updating scores");
+		// console.log("updating scores");
 		runAllJS(year, month, day, team);
 		return;
 	} else {
-		console.log("not updating scores");
+		// console.log("not updating scores");
 	}
 	
 	doAllHighlights();
@@ -468,12 +515,12 @@ function setForNewSelectedGame(x) {
 	console.log(x);
 	
 	// Update URL
-	console.log("About to change URL, protocol is ", window.location.protocol);
+	// console.log("About to change URL, protocol is ", window.location.protocol);
 	switch(window.location.protocol) {
 		case 'http:':
 		case 'https:':
 			//remote file over http or https
-			console.log("from http or https");
+			// console.log("from http or https");
 			if (history.pushState) {
 				// window.history.pushState('abcd', 'Honus - updated', '/?team='+team+'&date='+year+month+day);
 				console.log("Try running: window.history.pushState('abcd', 'Honus - updated', '/Honus/?team='+team+'&date='+year+month+day)");
@@ -482,11 +529,11 @@ function setForNewSelectedGame(x) {
 			break;
 		case 'file:':
 			// from local file don't change URL
-			console.log("Loaded from file, URL won't change");
+			// console.log("Loaded from file, URL won't change");
 			break;
 		default: 
 			//some other protocol
-			console.log("Loaded by other protocol");
+			console.log("Loaded by other protocol", window.location.protocol);
 	}
 	
 	// Set border in scorestable for selected box
@@ -592,8 +639,8 @@ function setForNewSelectedGame(x) {
 		.catch(() => {console.log("FAILED getting game_events.json");
 			document.getElementById("scoringplaystable").innerHTML = "";})
 		.then( x => {
-			console.log("game_events.json is");
-			console.log(x);
+			// console.log("game_events.json is");
+			console.log("game_events.json is", x);
 			var tx = '<tr><td class="fullboxscoretd">Inning</td><td class="fullboxscoretd">Away</td><td class="fullboxscoretd">Home</td><td class="fullboxscoretd">Scoring Play</td></tr>';
 			// Loop over every inning, top/bottom, at bat, check if scoring, if yes the add to table
 			if (x) {
@@ -712,8 +759,16 @@ function setForNewSelectedGame(x) {
 					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
 					if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
 					tx += batteri.name_display_first_last + '</div></a></td>';
-					// Option to add to favorite batters
-					tx += "<td onclick='addFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\")'>+</td>";
+					// Option to add to favorite batters (or remove)
+					if (!favBattersIds.includes(batteri.id)) {
+						tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"' ";
+						tx += "onclick='addFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
+						tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>+</td>";
+					} else {
+						tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"' ";
+						tx += "onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
+						tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>-</td>";
+					}
 					tx += '<td class="fullboxscoretd">' + batteri.pos + '</td>';
 					tx += '<td class="fullboxscoretd">' + batteri.h + '</td>';
 					tx += '<td class="fullboxscoretd">' + batteri.ab + '</td>';
@@ -808,6 +863,16 @@ function setForNewSelectedGame(x) {
 		
 		document.getElementById("fullboxscoretable").innerHTML = tx;
 	})
+	
+	// Get FanGraphs win prob
+	// var tx = "";
+	// if (["I", "F"].includes(master_scoreboard_JSON.data.games.game[selected_game].status.ind)) {
+		// tx += '<iframe src="http://www.fangraphs.com/graphframe.aspx?config=0&';
+		// tx += 'static=0&type=livewins&num=0&h=300&w=450&date=2019-04-08&team=';
+		// tx += master_scoreboard_JSON.data.games.game[selected_game].away_team_name;
+		// tx += '&dh=0" frameborder="0" scrolling="no" height="300" width = "450" style="border:1px solid black;"></iframe><br /><span style="font-size:9pt;">Source: <a href="http://www.fangraphs.com/livewins.aspx?date=2019-04-08&team=White Sox&dh=0&season=2019">FanGraphs</a></span>';
+	// }
+	// document.getElementById("fangraphsWinProbDiv").innerHTML = tx;
 
 }
 
@@ -819,7 +884,7 @@ function updateSelectedGame() {
 
 function readInFavoriteBatters() {
 	var favBatters_string = localStorage.getItem("favBatters");
-	console.log("string is", favBatters_string);
+	// console.log("string is", favBatters_string);
 	var favBatters = [];
 	if (favBatters_string) {
 		var fBsplit = favBatters_string.split(";")
@@ -837,7 +902,7 @@ function readInFavoriteBatters() {
 				// })
 				// favBatters = favBatters.concat(fbobj);
 			// });
-			console.log('x is', x);
+			// console.log('x is', x);
 			if (x != "") {
 				favBatters = favBatters.concat(JSON.parse(x));
 			}
@@ -848,10 +913,21 @@ function readInFavoriteBatters() {
 
 function addFavoriteBatter(id, name_display_first_last) {
 	console.log("Add id to fav batters", id, name_display_first_last);
-	favBatters = favBatters.concat({
-		id:id,
-		name_display_first_last:name_display_first_last
-	});
+	// Don't add if already there
+	if (!favBattersIds.includes(id)) {
+		favBatters = favBatters.concat({
+			id:id,
+			name_display_first_last:name_display_first_last
+		});
+		saveFavoriteBatters();
+		favBattersIds = getFavoriteBattersIds();
+	}
+	return;
+}
+
+function removeFavoriteBatter(id, name_display_first_last) {
+	console.log("Remove id to fav batters", id, name_display_first_last);
+	favBatters = favBatters.filter( b => b.id != id);
 	saveFavoriteBatters();
 	favBattersIds = getFavoriteBattersIds();
 	return;
@@ -875,7 +951,46 @@ function getFavoriteBattersIds() {
 	return Ids;
 }
 
-function notif() {
+function flip_boxscoreaddfavBatterbutton(id, name_display_first_last) {
+	// When you click on +/-, this should flip it to -/+ and change the onclick
+	var td = document.getElementById("boxscoreaddfavBatterbutton" + id);
+	if (td.innerHTML == "+") {
+		td.innerHTML = "-";
+		td.onclick = function() {removeFavoriteBatter(id, name_display_first_last); flip_boxscoreaddfavBatterbutton(id, name_display_first_last); update_favBattersdiv();};
+	} else if (td.innerHTML == "-") {
+		td.innerHTML = "+";
+		td.onclick = function() {addFavoriteBatter(id, name_display_first_last); flip_boxscoreaddfavBatterbutton(id, name_display_first_last); update_favBattersdiv();};
+	} else {
+		console.log("Error with flip button", id);
+	}
+	return;
+}
+
+function update_favBattersdiv() {
+	if (use_favBatters && favBatters) {
+		var tx = "";
+		// tx += "Your favorite batters are:";
+		tx += "You will get notifications when these players are ondeck/batting:";
+		tx += "<button type='button' id='favBattersOn' onclick='use_favBatters=false;update_favBattersdiv()'>Turn off</button>";
+		tx += "<table id='favBatterstable'>";
+		favBatters.forEach(b => {
+			tx += "<td>";
+			tx += "<td>" + b.name_display_first_last + "</td>";
+			tx += "<td onclick='removeFavoriteBatter(\"" + b.id + "\");update_favBattersdiv()'>-</td>";
+			tx += "</td></tr>";
+		})
+		tx += "</table>";
+		
+		document.getElementById('favBattersdiv').innerHTML = tx;
+	} 
+	// else {
+		// var tx = "";
+		// tx += "<button type='button' id='favBattersOn' onclick='use_favBatters=true;update_favBattersdiv()'>Turn on notifications when my favorite batters are at bat or on deck</button>";
+		// document.getElementById('favBattersdiv').innerHTML = tx;
+	// }
+}
+
+function make_notification(title, body, onclick) {
 	// help from https://stackoverflow.com/questions/6092885/what-ways-are-out-there-to-display-a-desktop-notification-from-a-web-app/13328397#13328397
 	// See https://www.w3.org/TR/notifications/ for info on Notification
 	// Check if notification is allowed
@@ -890,14 +1005,64 @@ function notif() {
 	}
 	
 	// Make notification
-	var mynot = new Notification("Your facorite is up to bat!",{
-		icon:"/scripts/",
-		body:"abod"});
+	console.log("making notification right now");
+	var mynot = new Notification("Your favorite is up to bat!",{
+		icon:"./favicon.ico",
+		body:body});
+	alert("Alerted");
 	// When you click it, open MLB.tv and then close the notification
 	mynot.onclick = function () {
-		window.open("http://stackoverflow.com/a/13328397/1269037");     
+		window.open(link);     
 		mynot.close();
     };
 	
 	return;
 }
+
+function run_favBatters_notification(x) {
+	console.log('starting notif', x);
+	// x should be same as master_scoreboard_JSON
+	var y = x.data.games.game;
+	// Will loop over and save info for favBatters that are at bat, on deck
+	var fb_id = [];
+	var fb_first = [];
+	var fb_last = [];
+	var fb_status = [];
+	var fb = [];
+	
+	y.forEach(g => {
+		// Make sure it is in progress
+		if (g.status.ind =="I") {
+			if (favBattersIds.includes(g.batter.id)) {
+				// fb_id.push(g.batter.id);
+				// fb_id.push(g.batter.first)0;
+				console.log("batter", g.batter.last);
+				fb.push({id:g.batter.id, first:g.batter.first, last:g.batter.last, status:"batter", game_pk:g.game_pk});
+			} else if (favBattersIds.includes(g.batter.ondeck)) {
+				console.log("ondeck", g.batter.last);
+				fb.push({id:g.batter.id, first:g.batter.first, last:g.batter.last, status:"ondeck", game_pk:g.game_pk});
+			}
+		}
+	})
+	console.log("fb is ", fb);
+	
+	if (fb && fb.length > 0) {
+		fb.forEach(fbi => {
+			console.log("About to give popup");
+			// Check if recently notified
+			if (!favBatters_last_notification[fbi.id] || (new Date()) - favBatters_last_notification[fbi.id] > 1000*60*.75) {
+				console.log("enough time since last notif", fbi);
+				make_notification(fbi.first + " " + fbi.last + " is " + fbi.status,
+								  "Click here to open game on MLB.tv",
+								  "https://www.mlb.com/tv/g" + fbi.game_pk
+								);
+				favBatters_last_notification[fbi.id] = new Date();
+			} else {
+				console.log("Was already notified about", fbi);
+			}
+		})
+	}
+	
+	return;
+}
+
