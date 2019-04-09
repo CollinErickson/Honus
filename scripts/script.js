@@ -523,7 +523,7 @@ function setForNewSelectedGame(x) {
 			// console.log("from http or https");
 			if (history.pushState) {
 				// window.history.pushState('abcd', 'Honus - updated', '/?team='+team+'&date='+year+month+day);
-				console.log("Try running: window.history.pushState('abcd', 'Honus - updated', '/Honus/?team='+team+'&date='+year+month+day)");
+				// console.log("Try running: window.history.pushState('abcd', 'Honus - updated', '/Honus/?team='+team+'&date='+year+month+day)");
 				window.history.pushState('', 'Honus - updated', '/Honus/?team='+team+'&date='+year+month+day);
 			}
 			break;
@@ -1006,7 +1006,7 @@ function make_notification(title, body, link) {
 	
 	// Make notification
 	console.log("making notification right now");
-	var mynot = new Notification("Your favorite is up to bat!",{
+	var mynot = new Notification(title,{
 		icon:"./favicon.ico",
 		body:body});
 	// alert("Alerted");
@@ -1052,7 +1052,14 @@ function run_favBatters_notification(x) {
 			// Check if recently notified
 			if (!favBatters_last_notification[fbi.id] || (new Date()) - favBatters_last_notification[fbi.id] > 1000*60*.75) {
 				console.log("enough time since last notif", fbi);
-				make_notification(fbi.first + " " + fbi.last + " is " + fbi.status,
+				if (fbi.status == "batter") {
+					var notif_body = fbi.first + " " + fbi.last + " is " + "batting!";
+				} else if (fbi.status == "ondeck") {
+					var notif_body = fbi.first + " " + fbi.last + " is " + "on deck!";
+				} else {
+					console.log("error with notif", fbi.status);
+				}
+				make_notification(var notif_body,
 								  "Click here to open game on MLB.tv",
 								  "https://www.mlb.com/tv/g" + fbi.game_pk
 								);
