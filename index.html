@@ -40,7 +40,7 @@
 	</td>
 	<td> <!--&#x21bb; <strong>&#x21bb;</strong> &#x27f3; &#x1f504; -->
 		&#x21bb;
-		<select name="" id="selectreload">
+		<select name="" id="selectreload" onchange='update_refresh_rate()'>
 			<option value="never">-</option>
 			<option value="3">3s</option>
 			<option value="15">15s</option>
@@ -199,8 +199,8 @@ Video width
 <script type="text/javascript"  >
 	var rangeslider = document.getElementById("videowidthslider");
 	rangeslider.oninput = function() {
-	  console.log(this.value);
-	  document.getElementById("videoplayer").width = this.value;
+		//console.log(this.value);
+		document.getElementById("videoplayer").width = this.value;
 	}
 </script>
 
@@ -227,6 +227,9 @@ var highlights_last_updated = null;
 var highlights_last_updated_selected_game = -1;
 var last_user_click_time = new Date();
 //var reload_rate = document.getElementById("selectreload").value;
+if (localStorage.getItem("reload_rate")) {
+	document.getElementById("selectreload").value = localStorage.getItem("reload_rate");
+}
 var refresh_setInterval_id;
 
 //var away_code = null;
@@ -234,7 +237,7 @@ var refresh_setInterval_id;
 //var dbh = "1";
 document.getElementById("datepicker").value = month + "/" + day + "/" + year;
 
-var use_favBatters = !true;
+var use_favBatters = true;
 var use_notifications = use_favBatters;
 
 // Load favorite batters from localStorage

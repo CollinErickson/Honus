@@ -760,14 +760,18 @@ function setForNewSelectedGame(x) {
 					if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
 					tx += batteri.name_display_first_last + '</div></a></td>';
 					// Option to add to favorite batters (or remove)
-					if (!favBattersIds.includes(batteri.id)) {
-						tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"' ";
-						tx += "onclick='addFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
-						tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>+</td>";
+					if (use_favBatters) {
+						if (!favBattersIds.includes(batteri.id)) {
+							tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"' ";
+							tx += "onclick='addFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
+							tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>+</td>";
+						} else {
+							tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"' ";
+							tx += "onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
+							tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>-</td>";
+						}
 					} else {
-						tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"' ";
-						tx += "onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
-						tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>-</td>";
+						tx += "<td></td>";
 					}
 					tx += '<td class="fullboxscoretd">' + batteri.pos + '</td>';
 					tx += '<td class="fullboxscoretd">' + batteri.h + '</td>';
@@ -970,6 +974,9 @@ function update_favBattersdiv() {
 	if (use_favBatters && favBatters) {
 		var tx = "";
 		// tx += "Your favorite batters are:";
+		if (document.getElementById("selectreload").value == "never") {
+			tx += "<div>Turn on refresh rate for this to be useful!</div>";
+		}
 		tx += "You will get notifications when these players are ondeck/batting:";
 		tx += "<button type='button' id='favBattersOn' onclick='use_favBatters=false;update_favBattersdiv()'>Turn off</button>";
 		tx += "<table id='favBatterstable'>";
@@ -1038,9 +1045,9 @@ function run_favBatters_notification(x) {
 				// fb_id.push(g.batter.first)0;
 				console.log("batter", g.batter.last);
 				fb.push({id:g.batter.id, first:g.batter.first, last:g.batter.last, status:"batter", game_pk:g.game_pk});
-			} else if (favBattersIds.includes(g.batter.ondeck)) {
-				console.log("ondeck", g.batter.last);
-				fb.push({id:g.batter.id, first:g.batter.first, last:g.batter.last, status:"ondeck", game_pk:g.game_pk});
+			} else if (favBattersIds.includes(g.ondeck.id)) {
+				console.log("ondeck", g.ondeck.last);
+				fb.push({id:g.ondeck.id, first:g.ondeck.first, last:g.ondeck.last, status:"ondeck", game_pk:g.game_pk});
 			}
 		}
 	})
@@ -1050,7 +1057,8 @@ function run_favBatters_notification(x) {
 		fb.forEach(fbi => {
 			console.log("About to give popup");
 			// Check if recently notified
-			if (!favBatters_last_notification[fbi.id] || (new Date()) - favBatters_last_notification[fbi.id] > 1000*60*.75) {
+			var min_between_notif = 5;
+			if (!favBatters_last_notification[fbi.id] || (new Date()) - favBatters_last_notification[fbi.id] > 1000*60*min_between_notif) {
 				console.log("enough time since last notif", fbi);
 				if (fbi.status == "batter") {
 					var notif_body = fbi.first + " " + fbi.last + " is " + "batting!";
@@ -1073,3 +1081,21 @@ function run_favBatters_notification(x) {
 	return;
 }
 
+function update_refresh_rate() {
+	var refresh_rate = document.getElementById("selectreload").value;
+	localStorage.setItem("reload_rate", refresh_rate);
+	if (refresh_rate == "never") {
+		clearInterval(refresh_setInterval_id);
+		refresh_setInterval_id = null;
+		return;
+	}
+	var rr = parseInt(refresh_rate);
+	
+	refresh_setInterval_id = setInterval(
+		function() {
+			console.log('would refresh now', new Date());
+			runAllJS(year, month, day, team)
+		},
+		rr*1000)
+	return;
+}

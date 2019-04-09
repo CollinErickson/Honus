@@ -4,4 +4,5 @@ win prob from FG
 reload rate option (15 sec, 1 min, 5 min)
 reload rate no boxscore update
 play by play
-check time on last notifications
+tabs for highlights/win prob/twitter
+localStorage use_favB, use_notif
