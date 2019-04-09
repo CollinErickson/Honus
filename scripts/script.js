@@ -974,11 +974,11 @@ function update_favBattersdiv() {
 	if (use_favBatters && favBatters) {
 		var tx = "";
 		// tx += "Your favorite batters are:";
-		if (document.getElementById("selectreload").value == "never") {
-			tx += "<div>Turn on refresh rate for this to be useful!</div>";
-		}
 		tx += "You will get notifications when these players are ondeck/batting:";
-		tx += "<button type='button' id='favBattersOn' onclick='use_favBatters=false;update_favBattersdiv()'>Turn off</button>";
+		tx += "<button type='button' id='favBattersOn' onclick='use_favBatters=false;use_notifications=false;update_favBattersdiv()'>Turn off</button>";
+		if (document.getElementById("selectreload").value == "never") {
+			tx += "<div><strong>Turn on refresh rate at top of page for this to be useful!</strong></div>";
+		}
 		tx += "<table id='favBatterstable'>";
 		favBatters.forEach(b => {
 			tx += "<td>";
@@ -989,12 +989,11 @@ function update_favBattersdiv() {
 		tx += "</table>";
 		
 		document.getElementById('favBattersdiv').innerHTML = tx;
-	} 
-	// else {
-		// var tx = "";
-		// tx += "<button type='button' id='favBattersOn' onclick='use_favBatters=true;update_favBattersdiv()'>Turn on notifications when my favorite batters are at bat or on deck</button>";
-		// document.getElementById('favBattersdiv').innerHTML = tx;
-	// }
+	} else {
+		var tx = "";
+		tx += "<button type='button' id='favBattersOn' onclick='use_favBatters=true;update_favBattersdiv()'>Turn on notifications when my favorite batters are at bat or on deck</button>";
+		document.getElementById('favBattersdiv').innerHTML = tx;
+	}
 }
 
 function make_notification(title, body, link) {
