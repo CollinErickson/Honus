@@ -1059,7 +1059,7 @@ function run_favBatters_notification(x) {
 				} else {
 					console.log("error with notif", fbi.status);
 				}
-				make_notification(var notif_body,
+				make_notification(notif_body,
 								  "Click here to open game on MLB.tv",
 								  "https://www.mlb.com/tv/g" + fbi.game_pk
 								);
