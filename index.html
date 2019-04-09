@@ -237,7 +237,18 @@ var refresh_setInterval_id;
 //var dbh = "1";
 document.getElementById("datepicker").value = month + "/" + day + "/" + year;
 
-var use_favBatters = true;
+//var use_favBatters = true;
+//var use_notifications = use_favBatters;
+var use_favBatters = localStorage.getItem("use_favBatters");
+if (use_favBatters == null) {
+	use_favBatters = true;
+} else if (use_favBatters == "true") {
+	use_favBatters = true;
+} else if (use_favBatters == "false") {
+	use_favBatters = false;
+} else {
+	console.log("BIG ERROR restoring use_favBatters");
+}
 var use_notifications = use_favBatters;
 
 // Load favorite batters from localStorage

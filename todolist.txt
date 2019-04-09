@@ -1,8 +1,7 @@
 preview images atv_preview.xml
 link to bbref/fangraphs
 win prob from FG
-reload rate option (15 sec, 1 min, 5 min)
 reload rate no boxscore update
 play by play
 tabs for highlights/win prob/twitter
-localStorage use_favB, use_notif
+Show linestats for favBatters, easy to get all lines?

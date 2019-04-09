@@ -177,13 +177,13 @@ function runAllJS(year_, month_, day_, team_) {
 function run_setInterval() {
 	//
 	var reload_rate = document.getElementById("selectreload").value;
-	console.log('about to set interval', reload_rate);
+	// console.log('about to set interval', reload_rate);
 	if (reload_rate != "never") {
 		var rr = parseInt(reload_rate);
 		// console.log('rr is', rr);
 		refresh_setInterval_id = setInterval(
 			function() {
-				console.log('would refresh now', new Date());
+				// console.log('would refresh now', new Date());
 				runAllJS(year, month, day, team)
 			},
 			rr*1000)
@@ -243,7 +243,7 @@ function doAllHighlights() {
 			gh.sort((a,b) => (new Date(a.date)) - (new Date(b.date)));
 			// console.log("gh is ", gh);
 			var tx = "";
-			console.log('gh is', gh);
+			// console.log('gh is', gh);
 			if (gh.length ==0) {
 				// If no highlights, do something else
 				// tx += "No highlights yet";
@@ -478,7 +478,7 @@ function setBoxScores(x) {
 	update_favBattersdiv();
 	
 	// Check to give notification to user about favBatter
-	console.log('going to call run notif');
+	// console.log('going to call run notif');
 	if (use_notifications) {
 		run_favBatters_notification(x);
 	}
@@ -971,6 +971,9 @@ function flip_boxscoreaddfavBatterbutton(id, name_display_first_last) {
 }
 
 function update_favBattersdiv() {
+	if (localStorage.getItem("use_favBatters") != use_favBatters) {
+		localStorage.setItem("use_favBatters", use_favBatters)
+	}
 	if (use_favBatters && favBatters) {
 		var tx = "";
 		// tx += "Your favorite batters are:";
@@ -980,12 +983,19 @@ function update_favBattersdiv() {
 			tx += "<div><strong>Turn on refresh rate at top of page for this to be useful!</strong></div>";
 		}
 		tx += "<table id='favBatterstable'>";
-		favBatters.forEach(b => {
-			tx += "<td>";
-			tx += "<td>" + b.name_display_first_last + "</td>";
-			tx += "<td onclick='removeFavoriteBatter(\"" + b.id + "\");update_favBattersdiv()'>-</td>";
-			tx += "</td></tr>";
-		})
+		if (favBatters.length == 0) {
+			// no batters, tell them how to add them
+			tx += "To add players to be notified about, find their name in a boxscore and click the '+' to the right of their name."
+		} else if (favBatters.length > 0) {
+			favBatters.forEach(b => {
+				tx += "<td>";
+				tx += "<td>" + b.name_display_first_last + "</td>";
+				tx += "<td onclick='removeFavoriteBatter(\"" + b.id + "\");update_favBattersdiv()'>-</td>";
+				tx += "</td></tr>";
+			})
+		} else {
+			console.log("Big error in update_favBattersdiv");
+		}
 		tx += "</table>";
 		
 		document.getElementById('favBattersdiv').innerHTML = tx;
@@ -1026,7 +1036,7 @@ function make_notification(title, body, link) {
 }
 
 function run_favBatters_notification(x) {
-	console.log('starting notif', x);
+	// console.log('starting notif', x);
 	// x should be same as master_scoreboard_JSON
 	var y = x.data.games.game;
 	// Will loop over and save info for favBatters that are at bat, on deck
@@ -1042,10 +1052,10 @@ function run_favBatters_notification(x) {
 			if (favBattersIds.includes(g.batter.id)) {
 				// fb_id.push(g.batter.id);
 				// fb_id.push(g.batter.first)0;
-				console.log("batter", g.batter.last);
+				// console.log("batter", g.batter.last);
 				fb.push({id:g.batter.id, first:g.batter.first, last:g.batter.last, status:"batter", game_pk:g.game_pk});
 			} else if (favBattersIds.includes(g.ondeck.id)) {
-				console.log("ondeck", g.ondeck.last);
+				// console.log("ondeck", g.ondeck.last);
 				fb.push({id:g.ondeck.id, first:g.ondeck.first, last:g.ondeck.last, status:"ondeck", game_pk:g.game_pk});
 			}
 		}
