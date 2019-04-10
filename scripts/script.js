@@ -149,7 +149,7 @@ function runAllJS(year_, month_, day_, team_) {
 	
 	
 	// get master scoreboard
-	const url = "http://gd2.mlb.com/components/game/mlb/year_" + year +"/month_" + month + "/day_" + day + "/master_scoreboard.json"; // site that doesn’t send Access-Control-*
+	const url = "https://gd2.mlb.com/components/game/mlb/year_" + year +"/month_" + month + "/day_" + day + "/master_scoreboard.json"; // site that doesn’t send Access-Control-*
 	console.log('about to fetch', url);
 	//var fetchout = fetch(proxyurl + url)
 	// Changing this here after switching to ajax. No longer need to do .text() or JSON.parse
@@ -281,8 +281,8 @@ function doAllHighlights() {
 				// If no highlights, do something else
 				// tx += "No highlights yet";
 				tx += "<table><tr>";
-				tx += "<td><img src='http://mlb.mlb.com/mlb/images/devices/600x600/" + master_scoreboard_JSON.data.games.game[selected_game].away_team_id + ".png' alt='AwayTeamLogo'/></td>";
-				tx += "<td><img src='http://mlb.mlb.com/mlb/images/devices/600x600/" + master_scoreboard_JSON.data.games.game[selected_game].home_team_id + ".png' alt='HomeTeamLogo'/></td>";
+				tx += "<td><img src='https://mlb.mlb.com/mlb/images/devices/600x600/" + master_scoreboard_JSON.data.games.game[selected_game].away_team_id + ".png' alt='AwayTeamLogo'/></td>";
+				tx += "<td><img src='https://mlb.mlb.com/mlb/images/devices/600x600/" + master_scoreboard_JSON.data.games.game[selected_game].home_team_id + ".png' alt='HomeTeamLogo'/></td>";
 				tx += "</tr></table>";
 				document.getElementById("videoplayer").width = 0;
 			} else {
@@ -619,7 +619,7 @@ function setForNewSelectedGame(x) {
 		document.getElementById("toplinescore").innerHTML =  x.data.games.game[selected_game].time + " " + x.data.games.game[selected_game].time_zone;
 	}
 	// Set gameday link
-	gamedayurl = "http://mlb.mlb.com/mlb/gameday/index.jsp?gid=" + year + "_" + month + "_" + day + 
+	gamedayurl = "https://mlb.mlb.com/mlb/gameday/index.jsp?gid=" + year + "_" + month + "_" + day + 
 	             "_" + x.data.games.game[selected_game].away_code + "mlb_" + 
 				 x.data.games.game[selected_game].home_code + "mlb_" + 
 				 x.data.games.game[selected_game].game_nbr;;
@@ -662,7 +662,7 @@ function setForNewSelectedGame(x) {
 		
 		var game_pk_forscoringplays = x.data.games.game[selected_game].game_pk;
 		document.getElementById("scoringplaystable").innerHTML = "Loading scoring plays...";
-		get_JSON_as_object("http://gd2.mlb.com/components/game/mlb/year_" + year + 
+		get_JSON_as_object("https://gd2.mlb.com/components/game/mlb/year_" + year + 
 							"/month_" + month + "/day_" + day + 
 							"/gid_" + year + "_" + month + "_" + day + "_" + 
 							x.data.games.game[selected_game].away_code + "mlb_" + 
