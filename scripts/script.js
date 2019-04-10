@@ -47,7 +47,7 @@ function get_JSON_as_response_with_proxy(url) {
 	// Heroku said too many requests.
 	// Can use this https://cors.io/ instead
 	const proxyurl = "https://cors-anywhere.herokuapp.com/";
-	//const url = "http://gd2.mlb.com/components/game/mlb/year_2019/month_04/day_01/master_scoreboard.json"; // site that doesn’t send Access-Control-*
+	//const url = "https://gd2.mlb.com/components/game/mlb/year_2019/month_04/day_01/master_scoreboard.json"; // site that doesn’t send Access-Control-*
 	console.log('about to fetch', proxyurl + url);
 	var ret = fetch(proxyurl + url)
 	.catch(x => {
@@ -745,7 +745,7 @@ function setForNewSelectedGame(x) {
 	
 	// Get full box score at bottom
 	document.getElementById("fullboxscoretable").innerHTML = "";
-	get_JSON_as_object("http://gd2.mlb.com/components/game/mlb/year_" + year + 
+	get_JSON_as_object("https://gd2.mlb.com/components/game/mlb/year_" + year + 
 						"/month_" + month + "/day_" + day + 
 						"/gid_" + year + "_" + month + "_" + day + "_" + 
 						x.data.games.game[selected_game].away_code + "mlb_" + 
@@ -789,7 +789,7 @@ function setForNewSelectedGame(x) {
 					tx += '<tr>';
 					// console.log("batteri is", batteri);
 					// console.log("bo is", batteri.bo);
-					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
+					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="https://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
 					if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
 					tx += batteri.name_display_first_last + '</div></a></td>';
 					// Option to add to favorite batters (or remove)
@@ -867,7 +867,7 @@ function setForNewSelectedGame(x) {
 					tx += '<tr>';
 					// console.log("pitcheri is", pitcheri);
 					// console.log("bo is", pitcheri.bo);
-					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ pitcheri.id +'"><div style="text-align:left;" >';
+					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="https://m.mlb.com/gameday/player/'+ pitcheri.id +'"><div style="text-align:left;" >';
 					// if (pitcheri.bo.substr(1,2) != "00") {tx += "- ";}
 					tx += pitcheri.name_display_first_last;
 					if (pitcheri.win) {tx += " (W)"}
