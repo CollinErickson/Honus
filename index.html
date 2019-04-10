@@ -53,7 +53,7 @@
 		Team:
 	</td>
 	<td>
-		<select name="team" id="selectteam">
+		<select name="team" id="selectteam" onchange='console.log("Changed team!!!!");localStorage.setItem("team",document.getElementById("selectteam").value);'>
 			<!-- <option value="ANA" >ANA</option><option value="ARI" >ARI</option><option value="ATL" >ATL</option><option value="BAL" >BAL</option> -->
 			<!-- <option value="BOS" >BOS</option><option value="CHA" >CHA</option><option value="CHN" >CHN</option><option value="CIN" >CIN</option> -->
 			<!-- <option value="CLE" >CLE</option><option value="COL" >COL</option><option value="DET" >DET</option><option value="HOU" >HOU</option> -->
@@ -220,6 +220,9 @@ var year  = $.datepicker.formatDate("yy", new Date());
 var month = $.datepicker.formatDate("mm", new Date());
 var day   = $.datepicker.formatDate("dd", new Date());
 var team = "NYY";
+if (localStorage.getItem("team")) {
+	team = localStorage.getItem("team");
+}
 var selected_game = -1;
 var game_pk = null;
 var master_scoreboard_last_updated = null;
