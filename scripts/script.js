@@ -39,19 +39,56 @@ function goToDatePicked() {
 	 runAllJS(year, month, day, team);
 }
 
-function get_JSON_as_response(url) {
+function get_JSON_as_response_with_proxy(url) {
+	// Used to use this to get past CORS restriction, but I found a way to get it without this.
+	// And I think this limited requests since all users went through same domain.
+	// Now use get_JSON_as_response using ajax.
+	console.log("Don't use this proxy anymore!!!");
+	// Heroku said too many requests.
+	// Can use this https://cors.io/ instead
 	const proxyurl = "https://cors-anywhere.herokuapp.com/";
 	//const url = "http://gd2.mlb.com/components/game/mlb/year_2019/month_04/day_01/master_scoreboard.json"; // site that doesn’t send Access-Control-*
 	console.log('about to fetch', proxyurl + url);
-	return fetch(proxyurl + url)
+	var ret = fetch(proxyurl + url)
+	.catch(x => {
+		console.log("Error with Heroku, trying cors.io");
+		$.getJSON('https://cors.io/?' + url, function(data){})}
+	).catch(x => {console.log('cors.io also failed')});
+	return ret;
+}
+
+function get_JSON_as_response(url) {
+	console.log("In get_JSON_as_response", url)
+	var ajaxout = new Promise((resolve, reject) => $.ajax({
+		url: url,
+		type: "GET",
+		dataType: "json",
+		success: (response) =>
+		{
+			responseglobal = response;
+			console.log("Success!", response);
+			// resolve({data:response});
+			resolve(response);
+		},
+		error: (error) =>
+		{
+			console.log("Error!");
+			if (error.statusText === "abort") {
+				return;
+			}
+			reject(error);
+		}
+	}));
+	return ajaxout;
 }
 
 function get_JSON_as_object(url) {
-	return get_JSON_as_response(url)
-	.catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
-	.then(response => response.text())
-	.then(response => JSON.parse(response))
-	.catch(() => console.log("Error parsing" + url))
+	return get_JSON_as_response(url);
+	// return get_JSON_as_response(url)
+	// .catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
+	// .then(response => response.text())
+	// .then(response => JSON.parse(response))
+	// .catch(() => console.log("Error parsing" + url))
 
 }
 
@@ -115,23 +152,19 @@ function runAllJS(year_, month_, day_, team_) {
 	const url = "http://gd2.mlb.com/components/game/mlb/year_" + year +"/month_" + month + "/day_" + day + "/master_scoreboard.json"; // site that doesn’t send Access-Control-*
 	console.log('about to fetch', url);
 	//var fetchout = fetch(proxyurl + url)
+	// Changing this here after switching to ajax. No longer need to do .text() or JSON.parse
+	// var fetchout = get_JSON_as_response(url)
+	// .then(response => response.text())
+	// .catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
+	// //.then(contents => {console.log(contents); return contents;})
+	// .then(response => {return JSON.parse(response);})
+	// .catch(() => console.log("Error parsing"))
 	var fetchout = get_JSON_as_response(url)
-	.then(response => response.text())
-	.catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
-	//.then(contents => {console.log(contents); return contents;})
-	.then(response => {return JSON.parse(response);})
-	.catch(() => console.log("Error parsing"))
-	// .then(x => {
-		// if (x && x.data && x.data.games && x.data.games.game) {
-			// console.log('x is');
-			// console.log(x.data.games.game);
-			// console.log('game 0 is');
-			// console.log(x.data.games.game[0]);
-		// }
-		// //for (var i=0; i < x.data.games.game.length; i++) {console.log("game" + i, x.data.games.game[i].linescore);};
-		// return x;
-	// })
+	.catch(() => console.log("Error parsing", url, "in get_JSON_as_response"))
 	.then( x => {
+		console.log("response is", x);
+		console.log("data is", x.data);
+		console.log("games is", x.data.games);
 		// Set time boxscore last updated. Need this above setForNewSelectedGame so it knows it is recent
 		master_scoreboard_last_updated = new Date();
 		
