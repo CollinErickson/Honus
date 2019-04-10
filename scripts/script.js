@@ -281,8 +281,9 @@ function doAllHighlights() {
 				// If no highlights, do something else
 				// tx += "No highlights yet";
 				tx += "<table><tr>";
-				tx += "<td><img src='https://mlb.mlb.com/mlb/images/devices/600x600/" + master_scoreboard_JSON.data.games.game[selected_game].away_team_id + ".png' alt='AwayTeamLogo'/></td>";
-				tx += "<td><img src='https://mlb.mlb.com/mlb/images/devices/600x600/" + master_scoreboard_JSON.data.games.game[selected_game].home_team_id + ".png' alt='HomeTeamLogo'/></td>";
+				// Can't use https for these MLB links!
+				tx += "<td><img src='http://mlb.mlb.com/mlb/images/devices/600x600/" + master_scoreboard_JSON.data.games.game[selected_game].away_team_id + ".png' alt='AwayTeamLogo'/></td>";
+				tx += "<td><img src='http://mlb.mlb.com/mlb/images/devices/600x600/" + master_scoreboard_JSON.data.games.game[selected_game].home_team_id + ".png' alt='HomeTeamLogo'/></td>";
 				tx += "</tr></table>";
 				document.getElementById("videoplayer").width = 0;
 			} else {
@@ -789,7 +790,8 @@ function setForNewSelectedGame(x) {
 					tx += '<tr>';
 					// console.log("batteri is", batteri);
 					// console.log("bo is", batteri.bo);
-					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="https://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
+					// Can't use https for these MLB links!
+					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
 					if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
 					tx += batteri.name_display_first_last + '</div></a></td>';
 					// Option to add to favorite batters (or remove)
@@ -867,7 +869,8 @@ function setForNewSelectedGame(x) {
 					tx += '<tr>';
 					// console.log("pitcheri is", pitcheri);
 					// console.log("bo is", pitcheri.bo);
-					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="https://m.mlb.com/gameday/player/'+ pitcheri.id +'"><div style="text-align:left;" >';
+					// Can't use https for these MLB links!
+					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ pitcheri.id +'"><div style="text-align:left;" >';
 					// if (pitcheri.bo.substr(1,2) != "00") {tx += "- ";}
 					tx += pitcheri.name_display_first_last;
 					if (pitcheri.win) {tx += " (W)"}
