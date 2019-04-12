@@ -1,6 +1,7 @@
 BODY  { 
 	background:  #262626; 
-	color: white 
+	color: white;
+	font-family:Arial;
 }
 
 table {
@@ -33,6 +34,12 @@ table {
 .scorestablegametr {
     border-top: 1px solid black;
 }
+
+/* Change background color of buttons on hover */
+.scorestablegametr:hover {
+  background-color: #ffd072;
+  cursor:pointer;
+}
 	
 .scorestablegametr_selected {
     /* border: 5px solid pink;*/
@@ -50,8 +57,12 @@ table {
 }
 
 .headlinestabletd {
-	border-top: 1px solid black;
-	
+	border-top: 1px solid black;	
+}
+
+/* Change background color of buttons on hover */
+.headlinestabletr:hover {
+  background-color: #ffd072;
 }
 
 .datemovearrow { cursor:pointer; }
@@ -68,14 +79,19 @@ table {
 	padding-right: 3px;
 }
 
-#scoringplaystable {
-	border:3px solid #ff99dd;
-}
-
 .fullboxscoretables {
 	border:3px solid #ff99dd;
 	text-align:center;
 }
+
+.fullboxscoretables tr:nth-child(even) {
+	background-color:#32373f;
+}
+
+/* This doesn't work, don't know why. It only gets the first row */
+/* #scoringplaystable tr:nth-child(odd) { */
+	/* background-color:#32373f; */
+/* } */
 
 .playernamelink {
 	color:inherit;
@@ -123,4 +139,89 @@ table {
   height: 25px; /* Slider handle height */
   background: black; /* Green background #4CAF50 */
   cursor: pointer; /* Cursor on hover */
+}
+
+
+
+
+/* For tabs */
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  /* border: 1px solid #ccc; */
+  /* background-color: #f1f1f1; */
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  /* background-color: inherit; */
+  background-color: #f1f1f1;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  /* padding: 14px 16px; */
+  padding: 2px 6px;
+  transition: 0.3s;
+  
+  /* border-left: 1px solid black; */
+  border-right: 1px solid black;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  /* border: 1px solid #ccc; */
+  border-top: none;
+}
+
+
+
+
+/* For standings */
+#standingstable {
+  border-collapse: separate;
+  border-spacing: 15px 1px;
+  /* padding: 10px; */
+  /* background-color:orange; */
+    text-align: center; 
+    vertical-align: middle;
+	font-family:verdana;
+}
+
+.standingsleaguetd {
+	padding: 30px;
+    margin-right:50px;
+	font-family:"Arial Black";
+	font-style: italic;
+}
+.standingsdivisionnametd {
+	padding: 0px 30px;
+	margin: 90px 30px;
+	background-color:blue;
+    text-align: center; 
+    vertical-align: middle;
+	font-style: italic;
+	font-variant: small-caps;
+}
+.standingsteamnametd {
+    text-align: left; 
+    vertical-align: middle;
+}
+
+
+
+#newstab {
+	font-family: verdana;
 }

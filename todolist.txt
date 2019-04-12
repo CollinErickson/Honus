@@ -1,7 +1,21 @@
-preview images atv_preview.xml
-link to bbref/fangraphs
-win prob from FG
+Soon
+----------------
 reload rate no boxscore update
+remove 3s reload
+
+Later
+----------------
+link to bbref/fangraphs
+notification onshow
+localStorage tab
+
+
+Maybe never
+-----------------
+preview images atv_preview.xml
 play by play
-tabs for highlights/win prob/twitter
 Show linestats for favBatters, easy to get all lines?
+X2JS
+FGWP width slider
+Clean new
+Notify for high leverage

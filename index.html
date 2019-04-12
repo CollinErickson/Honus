@@ -26,13 +26,16 @@
     
     <!-- Load SCRIPT.JS which will create datepicker for input field  -->
     <script type="text/javascript"  src="./scripts/script.js"></script>
+	
+	<!-- X2JS to convert XML and JSON either way -->
+	<!-- <script type='text/javascript' src="./scripts/xml2json.js"></script> -->
     
     <link rel="stylesheet" type="text/css"  href="./stylesheets/stylesheet.css" />
 </head>
 
 
 
-<body id="body" onclick="last_user_click_time=new Date();">
+<body id="body" onclick="last_user_click_time=new Date(); setUserInactivityTimer();">
 
 <table id="toptable"><tr>
 	<td>
@@ -42,10 +45,11 @@
 		&#x21bb;
 		<select name="" id="selectreload" onchange='update_refresh_rate()'>
 			<option value="never">-</option>
-			<option value="3">3s</option>
+			<!-- <option value="3">3s</option> -->
 			<option value="15">15s</option>
 			<option value="30">30s</option>
 			<option value="60">1m</option>
+			<option value="120">2m</option>
 			<option value="300">5m</option>
 		</select>
 	</td>
@@ -77,7 +81,7 @@
 	<td>
 		<table><tr>
 			<td>Date:</td> 
-			<td><input type="text" id="datepicker"> </td>
+			<td id="datepickertd"><input type="text" id="datepicker"> </td>
 			<!--<td>&#8647; </td>
 			<td>&#8592;</td>  -->
 			<td class="datemovearrow" id="datemovearrowb2" onclick="" >&#10092;</td>
@@ -118,28 +122,93 @@ Video width
 </tr></table>
  
 
-
+<!-- midtable has gamescores on left and highlights on right -->
 <table id="midtable"><tr style="vertical-align:top;">
+
+<!-- td for scorestable, will be filled in later -->
 <td id="scorestable_td">
-
-
 </td>
+
+<!-- td for highlights/win prob/news -->
 <td>
 
-<table>
-	<tr>
-		<td style="vertical-align:top; min-width:250px;"><table id="headlinestable">
-			
-		</table></td>
-		<td style="vertical-align:top;">
-			<video id="videoplayer" controls  > <!--onclick="this.paused ? this.play() : this.pause();">-->
-					<source src="" type="video/mp4" width=0>
-					Your browser does not support the video tag.
-					</video>	
-		</td>
-	</tr>
-</table>
+<!-- Tab links -->
+<div class="tab" align="center" style="height:18px">
+  <button class="tablinks" id="highlightsbutton" onclick="openCity(event, 'highlightstab')">Highlights</button>
+  <button class="tablinks" id="winprobbutton"    onclick="openCity(event, 'winprobtab')"   >Win probability</button>
+  <button class="tablinks" id="newsbutton"       onclick="openCity(event, 'newstab')"      >News</button>
+  <button class="tablinks" id="newsbutton"       onclick="openCity(event, 'standingstab')" >Standings</button>
+</div>
 
+<!-- highlights tab -->
+<div id="highlightstab" class="tabcontent">
+	<table>
+		<tr>
+			<td style="vertical-align:top; min-width:250px;"><table id="headlinestable">
+				
+			</table></td>
+			<td style="vertical-align:top;">
+				<video id="videoplayer" controls  > <!--onclick="this.paused ? this.play() : this.pause();">-->
+						<source src="" type="video/mp4" width=0>
+						Your browser does not support the video tag.
+						</video>	
+			</td>
+		</tr>
+	</table>
+</div>
+
+
+<div id="winprobtab" class="tabcontent">
+	<div id="fangraphsWinProbDiv">
+	</div>
+</div>
+
+
+<div id="newstab" class="tabcontent" width="800px">
+	<table><tr>
+	<td id="newstabtwitterfeed">
+	<!-- Tab 1 -->
+	<!-- <a id="newstabtwitterfeed" class="twitter-timeline" width="520" data-width="520" data-height="600" data-theme="dark" href="https://twitter.com/collin_e/lists/mlb?ref_src=twsrc%5Etfw">An MLB Twitter List</a> -->
+	<!-- <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
+	</td>
+
+	<td>
+	<div id="widgetmain" style="text-align:left;overflow-y:auto;overflow-x:hidden;width:400px;background-color:#transparent; border:1px solid #333333;"><div id="rsswidget" style="height:500px;"><iframe src="http://us1.rssfeedwidget.com/getrss.php?time=1555030751077&amp;x=https%3A%2F%2Fblogs.fangraphs.com%2Ffeed%2F&amp;w=400&amp;h=500&amp;bc=333333&amp;bw=1&amp;bgc=transparent&amp;m=20&amp;it=true&amp;t=(default)&amp;tc=63FFF5&amp;ts=24&amp;tb=transparent&amp;il=true&amp;lc=D9EFE9&amp;ls=17&amp;lb=false&amp;id=true&amp;dc=DEFCE2&amp;ds=14&amp;idt=false&amp;dtc=284F2D&amp;dts=12" border="0" hspace="0" vspace="0" frameborder="no" marginwidth="0" marginheight="0" style="border:0; padding:0; margin:0; width:400px; height:500px;" id="rssOutput">Reading RSS Feed ...</iframe></div><div style="text-align:right;margin-bottom:0;border-top:1px solid #333333;" id="widgetbottom"><span style="font-size:70%"><a href="http://www.rssfeedwidget.com">rss feed widget</a>&nbsp;</span><br></div></div>
+	<!-- <div id="widgetmain" style="text-align:left;overflow-y:auto;overflow-x:hidden;width:400px;background-color:#transparent; border:1px solid #333333;"> -->
+	<!-- <div id="rsswidget" style="height:500px;"> -->
+	<!-- <iframe src="http://us1.rssfeedwidget.com/getrss.php?time=1554929231771&amp;x=http%3A%2F%2Fblogs.fangraphs.com%2Ffeed%2F&amp;w=400&amp;h=500&amp;bc=333333&amp;bw=1&amp;bgc=transparent&amp;m=20&amp;it=true&amp;t=(default)&amp;tc=FFFFFF&amp;ts=17&amp;tb=transparent&amp;il=true&amp;lc=91DAFF&amp;ls=14&amp;lb=false&amp;id=true&amp;dc=EDCD4E&amp;ds=14&amp;idt=true&amp;dtc=A9FCA7&amp;dts=12" border="0" hspace="0" vspace="0" frameborder="no" marginwidth="0" marginheight="0" style="border:0; padding:0; margin:0; width:400px; height:500px;" id="rssOutput">Reading RSS Feed ...</iframe> -->
+	<!-- </div> -->
+	<!-- <div style="text-align:right;margin-bottom:0;border-top:1px solid #333333;" id="widgetbottom"> -->
+	<!-- <span style="font-size:70%"> -->
+	<!-- <a href="http://www.rssfeedwidget.com">rss feed widget</a>&nbsp;</span><br></div></div> -->
+	</td>
+
+	<td>
+	<!-- <div id="widgetmain" style="text-align:left;overflow-y:auto;overflow-x:hidden;width:400px;background-color:#transparent; border:1px solid #333333;"><div id="rsswidget" style="height:500px;"><iframe src="http://us1.rssfeedwidget.com/getrss.php?time=1554929845891&amp;x=https%3A%2F%2Fwww.mlb.com%2Ffeeds%2Fnews%2Frss.xml&amp;w=400&amp;h=500&amp;bc=333333&amp;bw=1&amp;bgc=transparent&amp;m=20&amp;it=true&amp;t=(default)&amp;tc=FFFFFF&amp;ts=17&amp;tb=transparent&amp;il=true&amp;lc=91DAFF&amp;ls=14&amp;lb=false&amp;id=true&amp;dc=EDCD4E&amp;ds=14&amp;idt=true&amp;dtc=A9FCA7&amp;dts=12" border="0" hspace="0" vspace="0" frameborder="no" marginwidth="0" marginheight="0" style="border:0; padding:0; margin:0; width:400px; height:500px;" id="rssOutput">Reading RSS Feed ...</iframe></div><div style="text-align:right;margin-bottom:0;border-top:1px solid #333333;" id="widgetbottom"><span style="font-size:70%"><a href="http://www.rssfeedwidget.com">rss feed widget</a>&nbsp;</span><br></div></div> -->
+	<div id="widgetmain" style="text-align:left;overflow-y:auto;overflow-x:hidden;width:400px;background-color:#transparent; border:1px solid #333333;"><div id="rsswidget" style="height:500px;"><iframe src="http://us1.rssfeedwidget.com/getrss.php?time=1555030578845&amp;x=https%3A%2F%2Fwww.mlb.com%2Ffeeds%2Fnews%2Frss.xml&amp;w=400&amp;h=500&amp;bc=333333&amp;bw=1&amp;bgc=transparent&amp;m=20&amp;it=true&amp;t=(default)&amp;tc=63FFF5&amp;ts=24&amp;tb=transparent&amp;il=true&amp;lc=D9EFE9&amp;ls=17&amp;lb=false&amp;id=false&amp;dc=333333&amp;ds=14&amp;idt=false&amp;dtc=284F2D&amp;dts=12" border="0" hspace="0" vspace="0" frameborder="no" marginwidth="0" marginheight="0" style="border:0; padding:0; margin:0; width:400px; height:500px;" id="rssOutput">Reading RSS Feed ...</iframe></div><div style="text-align:right;margin-bottom:0;border-top:1px solid #333333;" id="widgetbottom"><span style="font-size:70%"><a href="http://www.rssfeedwidget.com">rss feed widget</a>&nbsp;</span><br></div></div>
+	</td>
+
+	<!-- <td> -->
+	<!-- <script type="text/javascript" language="javascript" src="https://www.rssdog.com/index.php?url=https%3A%2F%2Fwww.mlb.com%2Ffeeds%2Fnews%2Frss.xml&amp;mode=javascript&amp;showonly=&amp;maxitems=100&amp;showdescs=1&amp;desctrim=140&amp;descmax=180&amp;tabwidth=100%25&amp;linktarget=_blank&amp;textsize=inherit&amp;bordercol=%23d4d0c8&amp;headbgcol=&amp;headtxtcol=%23000000&amp;titlebgcol=%23&amp;titletxtcol=%2391DAFF&amp;itembgcol=%23&amp;itemtxtcol=%23EDCD4E&amp;ctl=0"> -->
+	<!-- </td> -->
+
+	<!-- <td> -->
+	<!-- <script type="text/javascript" language="javascript" src="https://www.rssdog.com/index.php?url=http%3A%2F%2Fblogs.fangraphs.com%2Ffeed%2F&amp;mode=javascript&amp;showonly=&amp;maxitems=100&amp;showdescs=1&amp;desctrim=0&amp;descmax=0&amp;tabwidth=100%25&amp;linktarget=_blank&amp;textsize=inherit&amp;bordercol=%23d4d0c8&amp;headbgcol=%22transparent%22&amp;headtxtcol=%2391DAFF&amp;titlebgcol=%23%22transparent%22&amp;titletxtcol=%23EDCD4E&amp;itembgcol=%23%22transparent%22&amp;itemtxtcol=%23A9FCA7&amp;ctl=0"> -->
+	<!-- </td> -->
+
+	<!-- <a class="twitter-timeline" data-width="1000" data-height="600" href="https://twitter.com/collin_e/lists/mlb?ref_src=twsrc%5Etfw">A Twitter List by collin_e</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
+
+	<!-- <a width="750" class="twitter-timeline" data-theme="dark" href="https://twitter.com/collin_e/lists/mlb?ref_src=twsrc%5Etfw">A Twitter List by collin_e</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
+
+	</tr></table>
+</div>
+
+
+<div id="standingstab" class="tabcontent">
+	<div id="standingsdiv">
+	Standings
+	</div>
+</div>
 
 </td>
 </tr></table>
@@ -157,8 +226,10 @@ Video width
 <div id="favBattersdiv">
 </div>
 
-<div id="fangraphsWinProbDiv">
-</div>
+<!-- <div width="520px" id="twitterlistdiv"> -->
+<!-- <a id="twitterlist" class="twitter-timeline" width="520px" data-width="520px" data-height="800" data-theme="dark" href="https://twitter.com/collin_e/lists/mlb?ref_src=twsrc%5Etfw">An MLB Twitter List</a> -->
+<!-- <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
+<!-- </div> -->
 
 <!-- <div> -->
 <!-- <a class="twitter-timeline" data-height="500" data-theme="dark" href="https://twitter.com/collin_e/lists/mlb?ref_src=twsrc%5Etfw">A Twitter List by collin_e</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> -->
@@ -189,6 +260,9 @@ Video width
 		//$( "#datepicker" ).datepicker("setDate",(today.getMonth()+1)+"/"+today.getDate()+"/"+today.getFullYear());
 		<!-- $( "#datepicker" ).datepicker("setDate", mm +"/"+ dd + "/"+yyyy); -->
 		$( "#datepicker" ).datepicker("setDate", month +"/"+ day + "/"+ year);
+		
+		// datepicker was too wide, changing width here, not sure if it's good idea
+		$("#datepicker").width("5.5em")
 	  }
 
 	);
@@ -201,6 +275,7 @@ Video width
 	rangeslider.oninput = function() {
 		//console.log(this.value);
 		document.getElementById("videoplayer").width = this.value;
+		localStorage.setItem("videowidth", this.value);
 	}
 </script>
 
@@ -225,15 +300,29 @@ if (localStorage.getItem("team")) {
 }
 var selected_game = -1;
 var game_pk = null;
+var last_selected_game_pk = null;
 var master_scoreboard_last_updated = null;
 var highlights_last_updated = null;
-var highlights_last_updated_selected_game = -1;
+var highlights_last_updated_selected_game_pk = -1;
 var last_user_click_time = new Date();
+var user_inactivity_timer_id = null;
+var stream_service = "MLB.tv";
+if (localStorage.getItem("stream_service")) {
+	stream_service = localStorage.getItem("stream_service");
+}
 //var reload_rate = document.getElementById("selectreload").value;
 if (localStorage.getItem("reload_rate")) {
 	document.getElementById("selectreload").value = localStorage.getItem("reload_rate");
 }
 var refresh_setInterval_id;
+
+// Get videowidth from local Storage
+if (localStorage.getItem("videowidth")) {
+	document.getElementById("videowidthslider").value = localStorage.getItem("videowidth");
+}
+
+// Start on highlights tab
+document.getElementById('highlightsbutton').click()
 
 //var away_code = null;
 //var home_code = null;
