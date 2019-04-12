@@ -944,14 +944,14 @@ function setForNewSelectedGame(x) {
 		if (["I", "F"].includes(master_scoreboard_JSON.data.games.game[selected_game].status.ind)) {
 			let width_int =  250 + parseInt(document.getElementById("videowidthslider").value);
 			let height_int = Math.ceil(9/16* width_int);
-			tx += '<iframe src="http://www.fangraphs.com/graphframe.aspx?config=0&';
+			tx += '<iframe src="https://www.fangraphs.com/graphframe.aspx?config=0&';
 			tx += 'static=0&type=livewins&num=0&h=' + height_int;
 			tx += '&w='+ width_int +'&date='+year+'-'+month+'-'+day+'&team=';
 			tx += master_scoreboard_JSON.data.games.game[selected_game].away_team_name;
 			tx += '&dh=0" frameborder="0" scrolling="no" height="' + height_int;
 			tx += '" width = "'+ width_int + '" ';
 			tx += ' style="border:1px solid black;"></iframe><br /><span style="font-size:9pt;">';
-			tx += 'Source: <a href="http://www.fangraphs.com/livewins.aspx?date='+year+'-'+month+'-'+day;
+			tx += 'Source: <a href="https://www.fangraphs.com/livewins.aspx?date='+year+'-'+month+'-'+day;
 			tx += '&team='+master_scoreboard_JSON.data.games.game[selected_game].away_team_name+'&dh=0&season=2019">FanGraphs</a></span>';
 			// console.log('fg is', tx);
 		} else {
