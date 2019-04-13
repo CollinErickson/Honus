@@ -46,6 +46,11 @@ table {
     background-color: pink;
 }
 
+.scorestablegametr_nohitter {
+	background-color: maroon;
+	color: white;
+}
+
 .headlinestabletr {
 	border: 1px solid black;
 	background-color:#b3ffff;
@@ -77,6 +82,10 @@ table {
 	border: 1px solid #ff99dd;
 	padding-left: 3px;
 	padding-right: 3px;
+}
+.fullboxscoretdscoringteam {
+	/* background-color:#830187; */
+	background-color:#32373f;
 }
 
 .fullboxscoretables {

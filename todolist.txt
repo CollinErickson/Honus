@@ -1,20 +1,25 @@
 Soon
 ----------------
 reload rate no boxscore update
-remove 3s reload
+Save viewed videos, esp on reload
+No notifications for game/day/dayplayer
+Boxscore header row
+Improve news tab
+Don't refresh if not on current day
 
 Later
 ----------------
 link to bbref/fangraphs
 notification onshow
 localStorage tab
+Show linestats for favBatters, easy to get all lines?
+Add boxscore etc to tabs, but keep below
 
 
 Maybe never
 -----------------
 preview images atv_preview.xml
 play by play
-Show linestats for favBatters, easy to get all lines?
 X2JS
 FGWP width slider
 Clean new

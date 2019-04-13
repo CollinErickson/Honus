@@ -29,7 +29,7 @@ function goToDatePicked() {
 	 year = year.toString();
 	 console.log(day,month,year);
 	 
-	 selectteam
+	 selectteam;
 	 var e = document.getElementById("selectteam");
 	 var team = e.options[e.selectedIndex].value;
 	 
@@ -46,7 +46,7 @@ function get_XML_as_response_with_proxy(url) {
 	.then(contents => {console.log("contents is", contents); return contents;})
 	.then(contents => {contents.body.text()}) //.then(y => console.log('text is', y));  contents;})
 	.catch(() => console.log("Can’t access " + url + " response. Blocked by browser?"))
-	.then(x => {xm2 = x; return x;})
+	.then(x => {xm2 = x; return x;});
 	return ret;
 	//var tmpx = await fetch("https://cors-anywhere.herokuapp.com/" + "https://www.fangraphs.com/").then(x => {console.log('response is', x); return x.text();}).then(x => {console.log('body is', x); return x;})
 }
@@ -72,7 +72,7 @@ function get_JSON_as_response_with_proxy(url) {
 function get_JSON_as_object_with_proxy(url) {
 	return get_JSON_as_response_with_proxy(url)
 	.then(x => {console.log("Got JSON as", x); return x.text();})
-	.then(x => JSON.parse(x))
+	.then(x => JSON.parse(x));
 }
 
 function get_JSON_as_response(url) {
@@ -111,7 +111,7 @@ function get_JSON_as_object(url) {
 }
 
 function runAllJS_relativeDateChange(year_, month_, day_, team_, plus_minus_days) {
-	var date = new Date(month_ + "/" + day_ + "/" + year_)
+	var date = new Date(month_ + "/" + day_ + "/" + year_);
 	
 	console.log("relDate start date is", date);
 	date.setDate(date.getDate() + plus_minus_days);
@@ -159,7 +159,7 @@ function runAllJS(year_, month_, day_, team_) {
 	day = day_;
 	team = team_;
 	// Check if day < 01 or  > num days in month
-	var tmpdate = new Date(month + "/" + day + "/" + year)
+	var tmpdate = new Date(month + "/" + day + "/" + year);
 	document.getElementById('datepicker').value = month + "/" + day + "/" + year;
 	
 	selected_game = -1;
@@ -192,7 +192,7 @@ function runAllJS(year_, month_, day_, team_) {
 		if (!(x.data.games.game)) {
 			console.log("No games!!!!!");
 			document.getElementById('headlinestable').innerHTML = "";
-			document.getElementById('scorestable_td').innerHTML = "No games for selected date"
+			document.getElementById('scorestable_td').innerHTML = "No games for selected date";
 			document.getElementById("topbarteams").innerHTML = "";
 			document.getElementById("toplinescore").innerHTML = "";
 			document.getElementById("toplinelinksgameday").innerHTML = "";
@@ -212,7 +212,7 @@ function runAllJS(year_, month_, day_, team_) {
 		master_scoreboard_last_updated = new Date();
 		
 		// Set next reload time if set to automatically reload
-		if (refresh_setInterval_id && refresh_setInterval_id!=null) {
+		if (refresh_setInterval_id && refresh_setInterval_id!==null) {
 			// console.log("interval id is ", refresh_setInterval_id);
 			clearInterval(refresh_setInterval_id);
 		}
@@ -235,9 +235,9 @@ function run_setInterval() {
 		refresh_setInterval_id = setInterval(
 			function() {
 				// console.log('would refresh now', new Date());
-				runAllJS(year, month, day, team)
+				runAllJS(year, month, day, team);
 			},
-			rr*1000)
+			rr*1000);
 	} else {
 		// console.log("no reloading");
 		refresh_setInterval_id = null;
@@ -296,7 +296,7 @@ function doAllHighlights() {
 			// console.log("gh is ", gh);
 			var tx = "";
 			// console.log('gh is', gh);
-			if (gh.length ==0) {
+			if (gh.length === 0) {
 				// If no highlights, do something else
 				// tx += "No highlights yet";
 				tx += "<table><tr>";
@@ -309,7 +309,7 @@ function doAllHighlights() {
 				// Make sure video play is full sized
 				document.getElementById("videoplayer").width = document.getElementById("videowidthslider").value;
 				// Get highlights
-				for (var i = 0; i < gh.length; i++) {
+				for (let i = 0; i < gh.length; i++) {
 				//console.log(gh[i]);
 					//tx += "<tr><td>" + gh[i].headline + gh[i].playbacks[0].url + "</td></tr>";
 					// Opens video in new window
@@ -341,7 +341,7 @@ function doAllHighlights() {
 		} else {
 			console.log("FAILED in doAllHighlights", g);
 		}
-	})
+	});
 }
 
 function if_not_zero(s) {
@@ -368,7 +368,7 @@ function setBoxScores(x) {
 	//////////////////////
 	
 	// Get selected_game from given team
-	for (var i=0; i < x.data.games.game.length; i++) {
+	for (let i=0; i < x.data.games.game.length; i++) {
 		if (team == x.data.games.game[i].away_name_abbrev) {
 			selected_game = i;
 			team_is_home = false;
@@ -409,8 +409,9 @@ function setBoxScores(x) {
 	///////////////////////////
 	var tx = "";
 	tx += "<table id='scorestable' >";
+	var nohitterrows = [];
 
-	for (var i=0; i < x.data.games.game.length; i++) {
+	for (let i=0; i < x.data.games.game.length; i++) {
 		//console.log("game" + i, x.data.games.game[i].linescore);
 		//tx += "<tr><td>" + i + x.data.games.game[i].away_team_name + "-" + x.data.games.game[i].home_team_name + x.data.games.game[i].linescore.r.away + "-" + x.data.games.game[i].linescore.r.home + "</td></tr>";
 		// start table for this box, will be 1x3
@@ -432,7 +433,7 @@ function setBoxScores(x) {
 		// first td is team names
 		tx += "<td class='scorestablegametd'><table><tr><td>" + x.data.games.game[i].away_team_name + "</td></tr><tr><td>"+ x.data.games.game[i].home_team_name + "</td></tr></table></td>";
 		// 2nd and 3rd td depend on status, go over cases
-		if (["Final", "Game Over", "Completed Early"].includes(x.data.games.game[i].status.status)) {
+		if (["Final", "Game Over", "Completed Early", "Completed Early: Rain"].includes(x.data.games.game[i].status.status)) {
 			// second td is score
 			tx += "<td><table><tr><td>" + x.data.games.game[i].linescore.r.away;
 			tx += "</td>";
@@ -441,22 +442,31 @@ function setBoxScores(x) {
 			if (x.data.games.game[i].status.inning != "9") {
 				tx += "/" + x.data.games.game[i].status.inning;
 			}
-			tx += "</td>"
+			tx += "</td>";
 			tx += "</tr><tr><td>"+ x.data.games.game[i].linescore.r.home + "</td></tr></table>";
 			tx += "</td>";
 			// third td is win/loss pitchers
 			var losing_pitcher_text  = "L:" + x.data.games.game[i].losing_pitcher.last + " (" +x.data.games.game[i].losing_pitcher.wins + "-" + x.data.games.game[i].losing_pitcher.losses + ")";
 			var winning_pitcher_text = "W:" + x.data.games.game[i].winning_pitcher.last + " (" +x.data.games.game[i].winning_pitcher.wins + "-" + x.data.games.game[i].winning_pitcher.losses + ")";
 			var home_team_won = (parseInt(x.data.games.game[i].linescore.r.home) > parseInt(x.data.games.game[i].linescore.r.away));
+			var away_pitcher_text;
+			var home_pitcher_text;
 			if (home_team_won) {
-				var away_pitcher_text = losing_pitcher_text;
-				var home_pitcher_text = winning_pitcher_text;
+				away_pitcher_text = losing_pitcher_text;
+				home_pitcher_text = winning_pitcher_text;
 			} else {
-				var away_pitcher_text = winning_pitcher_text;
-				var home_pitcher_text = losing_pitcher_text;
+				away_pitcher_text = winning_pitcher_text;
+				home_pitcher_text = losing_pitcher_text;
 			}
 			tx += "<td><table><tr><td>" + away_pitcher_text + "</td></tr><tr><td>"+ home_pitcher_text + "</td></tr></table></td>";
 		} else if (["In Progress", "Review", "Manager Challenge", "Delayed"].includes(x.data.games.game[i].status.status)) {
+			// Check if no hitter, add class if it is
+			if (parseInt(master_scoreboard_JSON.data.games.game[i].status.inning) >= 5 && (master_scoreboard_JSON.data.games.game[i].linescore.h.away == "0" || master_scoreboard_JSON.data.games.game[i].linescore.h.home == "0")) {
+				console.log("No hitter!", i);
+				nohitterrows.push(i);
+				// Can't do this yet because it hasn't been created yet
+				// document.getElementById("scorestablegame" + i + "tr").classList.toggle("scorestablegametr_nohitter");
+			}
 			// 2nd td is score
 			tx += "<td><table><tr><td>" + x.data.games.game[i].linescore.r.away;
 			tx += "</td><td rowspan='2'>";
@@ -487,7 +497,7 @@ function setBoxScores(x) {
 				tx +=  '&#10073;';
 			} else {
 				tx += outs;
-			};
+			}
 			// getting mlb.tv link
 			// var mlbtvlink = "https://www.mlb.com/tv/g" + x.data.games.game[i].game_pk;//x.data.games.game[i].links.mlbtv;
 			var mlbtvlink = getStreamLink(x.data.games.game[i].game_pk);
@@ -530,10 +540,14 @@ function setBoxScores(x) {
 			tx += "<td colspan=2>Status is " + x.data.games.game[i].status.status + "</td>";
 		}
 		tx += "</tr>";
-	};
+	}
 	tx += "</table>";
 	// set this for the table text
 	document.getElementById('scorestable_td').innerHTML = tx;
+	
+	nohitterrows.forEach(i => {
+				document.getElementById("scorestablegame" + i + "tr").classList.toggle("scorestablegametr_nohitter");
+	})
 	
 	// Set favBattersdiv
 	update_favBattersdiv();
@@ -548,7 +562,7 @@ function setBoxScores(x) {
 }
 
 function setForNewSelectedGame(x) {
-	if (x == null) {
+	if (x === null) {
 		// get x
 	}
 	
@@ -599,8 +613,8 @@ function setForNewSelectedGame(x) {
 	
 	// Set border in scorestable for selected box
 	var scoretrs = document.getElementsByClassName('scorestablegametr');
-	for (var i=0; i< scoretrs.length; i++) {scoretrs[i].classList.remove("scorestablegametr_selected")}
-	scoretrs[selected_game].classList.toggle("scorestablegametr_selected")
+	for (let i=0; i< scoretrs.length; i++) {scoretrs[i].classList.remove("scorestablegametr_selected")}
+	scoretrs[selected_game].classList.toggle("scorestablegametr_selected");
 	
 	// Set topbarteams
 	var topbarteams_text = " <h4 style='padding-left:1em;padding-right:1em;'>";
@@ -616,7 +630,7 @@ function setForNewSelectedGame(x) {
 		toplinescore += "<table>"; // full boxscore table
 		toplinescore += "<tr style='border-bottom:solid #80ffff' align='center'>"; // first row, inning nums
 		toplinescore += "<td>&nbsp;</td>"; // first td is empty
-		for (var i = 0; i < x.data.games.game[selected_game].linescore.inning.length; i++) {
+		for (let i = 0; i < x.data.games.game[selected_game].linescore.inning.length; i++) {
 			toplinescore += "<td>" + (i+1) + "</td>"; // Add td with inning number
 		}
 		toplinescore += "<td style='border-left:thick double #80ffff;'>R</td>";
@@ -625,7 +639,7 @@ function setForNewSelectedGame(x) {
 		toplinescore += "</tr>"; // end first row
 		toplinescore += "<tr align='right'>"; // 2nd row, away team
 		toplinescore += "<td>" + x.data.games.game[selected_game].away_name_abbrev + "</td>"; // first td is empty
-		for (var i = 0; i < x.data.games.game[selected_game].linescore.inning.length; i++) {
+		for (let i = 0; i < x.data.games.game[selected_game].linescore.inning.length; i++) {
 			toplinescore += "<td>" + x.data.games.game[selected_game].linescore.inning[i].away + "</td>"; // Add td with inning number
 		}
 		toplinescore += "<td style='border-left:thick double #80ffff'>" + x.data.games.game[selected_game].linescore.r.away + "</td>";
@@ -634,7 +648,7 @@ function setForNewSelectedGame(x) {
 		toplinescore += "</tr>"; // end 2nd row
 		toplinescore += "<tr align='right'>"; // 3rd row, home team
 		toplinescore += "<td>" + x.data.games.game[selected_game].home_name_abbrev + "</td>"; // first td is empty
-		for (var i = 0; i < x.data.games.game[selected_game].linescore.inning.length; i++) {
+		for (let i = 0; i < x.data.games.game[selected_game].linescore.inning.length; i++) {
 			toplinescore += "<td>" + x.data.games.game[selected_game].linescore.inning[i].home + "</td>"; // Add td with inning number
 		}
 		toplinescore += "<td style='border-left:thick double #80ffff'>" + x.data.games.game[selected_game].linescore.r.home + "</td>";
@@ -650,7 +664,7 @@ function setForNewSelectedGame(x) {
 	gamedayurl = "https://mlb.mlb.com/mlb/gameday/index.jsp?gid=" + year + "_" + month + "_" + day + 
 	             "_" + x.data.games.game[selected_game].away_code + "mlb_" + 
 				 x.data.games.game[selected_game].home_code + "mlb_" + 
-				 x.data.games.game[selected_game].game_nbr;;
+				 x.data.games.game[selected_game].game_nbr;
 	var gamedaytd = '<td><a style="color:inherit;text-decoration:none;" target="_blank" href="' + gamedayurl + '">Gameday</a></td>';
 	document.getElementById("toplinelinksgameday").innerHTML = gamedaytd;
 	
@@ -702,27 +716,32 @@ function setForNewSelectedGame(x) {
 		// .then(x => {console.log("FOUND game_events.json"); return x;})
 		.catch(() => {console.log("FAILED getting game_events.json");
 			document.getElementById("scoringplaystable").innerHTML = "";})
-		.then( x => {
+		.then( ge => {
 			// console.log("game_events.json is", x);
-			var tx = '<tr><td class="fullboxscoretd">Inning</td><td class="fullboxscoretd">Away</td><td class="fullboxscoretd">Home</td><td class="fullboxscoretd">Scoring Play</td></tr>';
+			// var tx = '<tr><td class="fullboxscoretd">Inning</td><td class="fullboxscoretd">Away</td><td class="fullboxscoretd">Home</td><td class="fullboxscoretd">Scoring Play</td></tr>';
+			var tx="";
 			// Loop over every inning, top/bottom, at bat, check if scoring, if yes the add to table
-			if (x) {
+			if (ge) {
+				// console.log("x is", x, "ge is", ge);
+				tx += '<tr><th class="fullboxscoretd">Inning</th><th class="fullboxscoretd">';
+				tx += x.data.games.game[selected_game].away_team_name+'</th><th class="fullboxscoretd">';
+				tx += x.data.games.game[selected_game].home_team_name+'</th><th class="fullboxscoretd">Scoring Play</th></tr>';
 				// If game has been changed, don't update HTML, return now
 				if (game_pk != game_pk_forscoringplays) {
 					return;
 				}
-				for (var i=0 ; i < x.data.game.inning.length; i++) {
+				for (let i=0 ; i < ge.data.game.inning.length; i++) {
 					["top", "bottom"].forEach(top_or_bottom => {
-						//console.log(x.data.game.inning[i][top_or_bottom]);
+						//console.log(ge.data.game.inning[i][top_or_bottom]);
 						["atbat", "action"].forEach(atbat_or_action => {
 							// console.log("atbat_or_action is", atbat_or_action, "i is", i, "t/b is ", top_or_bottom);
-							// console.log(x.data.game);
-							if (x.data.game.inning[i][top_or_bottom] && x.data.game.inning[i][top_or_bottom][atbat_or_action]) {
+							// console.log(ge.data.game);
+							if (ge.data.game.inning[i][top_or_bottom] && ge.data.game.inning[i][top_or_bottom][atbat_or_action]) {
 								var this_atbataction;
-								if (Array.isArray(x.data.game.inning[i][top_or_bottom][atbat_or_action])) {
-									this_atbataction = x.data.game.inning[i][top_or_bottom][atbat_or_action];
+								if (Array.isArray(ge.data.game.inning[i][top_or_bottom][atbat_or_action])) {
+									this_atbataction = ge.data.game.inning[i][top_or_bottom][atbat_or_action];
 								} else {
-									this_atbataction = [x.data.game.inning[i][top_or_bottom][atbat_or_action]];
+									this_atbataction = [ge.data.game.inning[i][top_or_bottom][atbat_or_action]];
 								}
 								this_atbataction.forEach(eventi => {
 									var runscored = false;
@@ -733,7 +752,7 @@ function setForNewSelectedGame(x) {
 										eventi_runner = [eventi.runner];
 									}
 									if (eventi.runner) {
-										for (var j=0; j < eventi_runner.length; j++) {
+										for (let j=0; j < eventi_runner.length; j++) {
 											// console.log("runner is");
 											// console.log(eventi_runner);
 											if (eventi_runner[j].end == "score") {
@@ -745,17 +764,25 @@ function setForNewSelectedGame(x) {
 											//console.log(eventi.des);
 											tx += "<tr>";
 											tx += '<td class="fullboxscoretd" style="text-align:center;">' + (i+1) + '</td>';
-											tx += '<td class="fullboxscoretd" style="text-align:center;">' + eventi.away_team_runs + '</td>';
-											tx += '<td class="fullboxscoretd" style="text-align:center;">' + eventi.home_team_runs + '</td>';
+											if (top_or_bottom == "top") {
+												tx += '<td class="fullboxscoretd fullboxscoretdscoringteam" style="text-align:center;">' + eventi.away_team_runs + '</td>';
+											} else {
+												tx += '<td class="fullboxscoretd" style="text-align:center;">' + eventi.away_team_runs + '</td>';
+											}
+											if (top_or_bottom == "bottom") {
+												tx += '<td class="fullboxscoretd fullboxscoretdscoringteam" style="text-align:center;">' + eventi.home_team_runs + '</td>';
+											} else {
+												tx += '<td class="fullboxscoretd" style="text-align:center;">' + eventi.home_team_runs + '</td>';
+											}
 											tx += '<td class="fullboxscoretd" style="text-align:left;">' + eventi.des            + '</td>';
 											tx += "<tr>";
 											tx += "</tr>";
 										}
 									}
-								})
+								});
 							}
 							
-						})
+						});
 					});
 				}
 				// console.log("pk was ", game_pk_forscoringplays, " is now ", game_pk);
@@ -766,7 +793,7 @@ function setForNewSelectedGame(x) {
 					// Doesn't match current game, just do nothing since that update should be coming soon
 				}
 			}
-		})
+		});
 	} else {
 		// Game hasn't started yet, no scoring plays
 		document.getElementById("scoringplaystable").innerHTML = "";
@@ -820,50 +847,11 @@ function setForNewSelectedGame(x) {
 				tx += "</tr>";
 				// row for each player
 				x.data.boxscore.batting[away_or_home_01].batter.forEach(batteri => {
-					tx += '<tr>';
-					// console.log("batteri is", batteri);
-					// console.log("bo is", batteri.bo);
-					// Can't use https for these MLB links!
-					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
-					if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
-					tx += batteri.name_display_first_last + '</div></a></td>';
-					// Option to add to favorite batters (or remove)
-					if (use_favBatters) {
-						if (!favBattersIds.includes(batteri.id)) {
-							tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"' ";
-							tx += "onclick='addFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
-							tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>+</td>";
-						} else {
-							tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"' ";
-							tx += "onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
-							tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>-</td>";
-						}
-					} else {
-						tx += "<td></td>";
-					}
-					tx += '<td class="fullboxscoretd">' + batteri.pos + '</td>';
-					tx += '<td class="fullboxscoretd">' + batteri.h + '</td>';
-					tx += '<td class="fullboxscoretd">' + batteri.ab + '</td>';
-					tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.bb) + '</td>';
-					tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.so) + '</td>';
-					tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.hr) + '</td>';
-					tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.rbi) + '</td>';
-					tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.r) + '</td>';
-					if (batteri.sb == "0" && batteri.cs == "0") {
-						tx += '<td class="fullboxscoretd">' + "" + '</td>';
-					} else {
-						tx += '<td class="fullboxscoretd">' + batteri.sb + "/" + (parseInt(batteri.cs) + parseInt(batteri.sb)) + '</td>';
-					}
-					tx += '<td class="fullboxscoretd">' + batteri.avg + '</td>';
-					tx += '<td class="fullboxscoretd">' + batteri.obp + '</td>';
-					tx += '<td class="fullboxscoretd">' + batteri.ops + '</td>';
-					tx += '<td class="fullboxscoretd">' + batteri.s_hr + '</td>';
-					tx += '<td class="fullboxscoretd">' + batteri.s_rbi + '</td>';
-					tx += '</tr>';
-				})
+					tx += get_boxscore_row_for_batter(batteri);
+				});
 			}
 			tx += "</table></td>";
-		})
+		});
 		tx += "</tr>"; // table of tables
 		// console.log('tx is ');
 		// console.log(tx);
@@ -924,10 +912,10 @@ function setForNewSelectedGame(x) {
 					tx += '<td class="fullboxscoretd">' + pitcheri.sv + '</td>';
 					tx += '<td class="fullboxscoretd">' + pitcheri.era + '</td>';
 					tx += '</tr>';
-				})
+				});
 			}
 			tx += "</table></td>";
-		})
+		});
 		tx += "</tr></table>"; // table of tables
 		// console.log('tx is ');
 		// console.log(tx);
@@ -936,7 +924,7 @@ function setForNewSelectedGame(x) {
 		
 		
 		document.getElementById("fullboxscoretable").innerHTML = tx;
-	})
+	});
 	
 	// Get FanGraphs win prob if game has changed
 	if (game_pk != last_selected_game_pk) {
@@ -961,6 +949,51 @@ function setForNewSelectedGame(x) {
 	}
 
 	last_selected_game_pk = game_pk;
+}
+
+function get_boxscore_row_for_batter(batteri) {
+	var tx = "";
+	tx += '<tr>';
+	// console.log("batteri is", batteri);
+	// console.log("bo is", batteri.bo);
+	// Can't use https for these MLB links!
+	tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
+	if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
+	tx += batteri.name_display_first_last + '</div></a></td>';
+	// Option to add to favorite batters (or remove)
+	if (use_favBatters) {
+		if (!favBattersIds.includes(batteri.id)) {
+			tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"' ";
+			tx += "onclick='addFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
+			tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>+</td>";
+		} else {
+			tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"' ";
+			tx += "onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
+			tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>-</td>";
+		}
+	} else {
+		tx += "<td></td>";
+	}
+	tx += '<td class="fullboxscoretd">' + batteri.pos + '</td>';
+	tx += '<td class="fullboxscoretd">' + batteri.h + '</td>';
+	tx += '<td class="fullboxscoretd">' + batteri.ab + '</td>';
+	tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.bb) + '</td>';
+	tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.so) + '</td>';
+	tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.hr) + '</td>';
+	tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.rbi) + '</td>';
+	tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.r) + '</td>';
+	if (batteri.sb == "0" && batteri.cs == "0") {
+		tx += '<td class="fullboxscoretd">' + "" + '</td>';
+	} else {
+		tx += '<td class="fullboxscoretd">' + batteri.sb + "/" + (parseInt(batteri.cs) + parseInt(batteri.sb)) + '</td>';
+	}
+	tx += '<td class="fullboxscoretd">' + batteri.avg + '</td>';
+	tx += '<td class="fullboxscoretd">' + batteri.obp + '</td>';
+	tx += '<td class="fullboxscoretd">' + batteri.ops + '</td>';
+	tx += '<td class="fullboxscoretd">' + batteri.s_hr + '</td>';
+	tx += '<td class="fullboxscoretd">' + batteri.s_rbi + '</td>';
+	tx += '</tr>';
+	return tx;
 }
 
 function updateSelectedGame() {
@@ -990,10 +1023,10 @@ function readInFavoriteBatters() {
 				// favBatters = favBatters.concat(fbobj);
 			// });
 			// console.log('x is', x);
-			if (x != "") {
+			if (x !== "") {
 				favBatters = favBatters.concat(JSON.parse(x));
 			}
-		})
+		});
 	}
 	return favBatters;
 }
@@ -1024,7 +1057,7 @@ function saveFavoriteBatters() {
 	var tx = "";
 	favBatters.forEach(b => {
 		tx += JSON.stringify(b) + ";";
-	})
+	});
 	// return tx;
 	localStorage.setItem("favBatters", tx);
 	return;
@@ -1034,7 +1067,7 @@ function getFavoriteBattersIds() {
 	var Ids = [];
 	favBatters.forEach(b => {
 		Ids.push(b.id);
-	})
+	});
 	return Ids;
 }
 
@@ -1055,10 +1088,10 @@ function flip_boxscoreaddfavBatterbutton(id, name_display_first_last) {
 
 function update_favBattersdiv() {
 	if (localStorage.getItem("use_favBatters") != use_favBatters) {
-		localStorage.setItem("use_favBatters", use_favBatters)
+		localStorage.setItem("use_favBatters", use_favBatters);
 	}
 	if (use_favBatters && favBatters) {
-		var tx = "";
+		let tx = "";
 		// tx += "Your favorite batters are:";
 		tx += "<div style='margin-top:20px;'>You will get notifications when these players are ondeck/batting:";
 		tx += "<button type='button' id='favBattersOn' onclick='use_favBatters=false;use_notifications=false;update_favBattersdiv()'>Turn off</button></div>";
@@ -1066,9 +1099,9 @@ function update_favBattersdiv() {
 			tx += "<div><strong>Turn on refresh rate at top of page for this to be useful!</strong></div>";
 		}
 		tx += "<table id='favBatterstable'>";
-		if (favBatters.length == 0) {
+		if (favBatters.length === 0) {
 			// no batters, tell them how to add them
-			tx += "To add players to be notified about, find their name in a boxscore and click the '+' to the right of their name."
+			tx += "To add players to be notified about, find their name in a boxscore and click the '+' to the right of their name.";
 		} else if (favBatters.length > 0) {
 			tx += "<tr align='center'><th>Remove</th><th>Name</th></th>";
 			favBatters.forEach(b => {
@@ -1077,7 +1110,7 @@ function update_favBattersdiv() {
 				tx += "<td>" + b.name_display_first_last + "</td>";
 				// tx += "</td>";
 				tx += "</tr>";
-			})
+			});
 		} else {
 			console.log("Big error in update_favBattersdiv");
 		}
@@ -1085,7 +1118,7 @@ function update_favBattersdiv() {
 		
 		document.getElementById('favBattersdiv').innerHTML = tx;
 	} else {
-		var tx = "";
+		let tx = "";
 		tx += "<button type='button' id='favBattersOn' onclick='use_favBatters=true;update_favBattersdiv()'>Turn on notifications when my favorite batters are at bat or on deck</button>";
 		document.getElementById('favBattersdiv').innerHTML = tx;
 	}
@@ -1144,7 +1177,7 @@ function run_favBatters_notification(x) {
 				fb.push({id:g.ondeck.id, first:g.ondeck.first, last:g.ondeck.last, status:"ondeck", game_pk:g.game_pk});
 			}
 		}
-	})
+	});
 	// console.log("fb is ", fb);
 	
 	if (fb && fb.length > 0) {
@@ -1154,10 +1187,11 @@ function run_favBatters_notification(x) {
 			var min_between_notif = 5;
 			if (!favBatters_last_notification[fbi.id] || (new Date()) - favBatters_last_notification[fbi.id] > 1000*60*min_between_notif) {
 				console.log("enough time since last notif", fbi);
+				var notif_body = "";
 				if (fbi.status == "batter") {
-					var notif_body = fbi.first + " " + fbi.last + " is " + "batting!";
+					notif_body = fbi.first + " " + fbi.last + " is " + "batting!";
 				} else if (fbi.status == "ondeck") {
-					var notif_body = fbi.first + " " + fbi.last + " is " + "on deck!";
+					notif_body = fbi.first + " " + fbi.last + " is " + "on deck!";
 				} else {
 					console.log("error with notif", fbi.status);
 				}
@@ -1170,7 +1204,7 @@ function run_favBatters_notification(x) {
 			} else {
 				console.log("Was already notified about", fbi);
 			}
-		})
+		});
 	}
 	
 	return;
@@ -1190,46 +1224,50 @@ function update_refresh_rate() {
 	refresh_setInterval_id = setInterval(
 		function() {
 			console.log('would refresh now', new Date());
-			runAllJS(year, month, day, team)
+			runAllJS(year, month, day, team);
 		},
-		rr*1000)
+		rr*1000);
 	return;
 }
 
 
 function openCity(evt, cityName) {
-  // Declare all variables
-  var i, tabcontent, tablinks;
+	// Declare all variables
+	var i, tabcontent, tablinks;
 
-  // Get all elements with class="tabcontent" and hide them
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
+	// Get all elements with class="tabcontent" and hide them
+	tabcontent = document.getElementsByClassName("tabcontent");
+	for (i = 0; i < tabcontent.length; i++) {
+		tabcontent[i].style.display = "none";
+	}
 
-  // Get all elements with class="tablinks" and remove the class "active"
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
+	// Get all elements with class="tablinks" and remove the class "active"
+	tablinks = document.getElementsByClassName("tablinks");
+	for (i = 0; i < tablinks.length; i++) {
+		tablinks[i].className = tablinks[i].className.replace(" active", "");
+	}
 
-  // Show the current tab, and add an "active" class to the button that opened the tab
-  document.getElementById(cityName).style.display = "block";
-  evt.currentTarget.className += " active";
+	// Show the current tab, and add an "active" class to the button that opened the tab
+	document.getElementById(cityName).style.display = "block";
+	evt.currentTarget.className += " active";
   
-  if (cityName=="newstab") {
-	  // document.getElementById("newstab").style.width = 800;
-	   // document.getElementById("newstab").style.width = document.getElementById("videowidthslider").value;
-	   $('#newstab').width(250 + parseInt(document.getElementById("videowidthslider").value));
-	   $('#newstabtwitterfeed').width(530);
-	   // document.getElementById("newstab").innerHTML = '<a id="newstabtwitterfeed" class="twitter-timeline" width="520" data-width="520px" data-height="200" data-theme="dark" href="https://twitter.com/collin_e/lists/mlb?ref_src=twsrc%5Etfw">An MLB Twitter List</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
-	   document.getElementById("newstabtwitterfeed").innerHTML = '<a id="newstabtwitterfeed" class="twitter-timeline" width="520" data-width="520px" data-height="600" data-theme="dark" href="https://twitter.com/collin_e/lists/mlb?ref_src=twsrc%5Etfw">An MLB Twitter List</a>';
-	   // <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
-	   jQuery.getScript("https://platform.twitter.com/widgets.js")
-  }
+	if (cityName=="newstab") {
+		// document.getElementById("newstab").style.width = 800;
+		// document.getElementById("newstab").style.width = document.getElementById("videowidthslider").value;
+		$('#newstab').width(250 + parseInt(document.getElementById("videowidthslider").value));
+		$('#newstabtwitterfeed').width(530);
+		// document.getElementById("newstab").innerHTML = '<a id="newstabtwitterfeed" class="twitter-timeline" width="520" data-width="520px" data-height="200" data-theme="dark" href="https://twitter.com/collin_e/lists/mlb?ref_src=twsrc%5Etfw">An MLB Twitter List</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+		document.getElementById("newstabtwitterfeed").innerHTML = '<a id="newstabtwitterfeed" class="twitter-timeline" width="520" data-width="520px" data-height="600" data-theme="dark" href="https://twitter.com/collin_e/lists/mlb?ref_src=twsrc%5Etfw">An MLB Twitter List</a>';
+		// <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>'
+		jQuery.getScript("https://platform.twitter.com/widgets.js");
+	}
   
 	if (cityName=="standingstab") {
 		makeStandings();
+	}
+	
+	if (cityName == "favhitterstab") {
+		make_fav_hitters_table()
 	}
 }
 
@@ -1264,7 +1302,7 @@ function makeStandings() {
 		for (let ileague=0; ileague<2; ileague++) {
 			tx += "<tr>"; // AL title row
 			tx += "<td rowspan=7 class='standingsleaguetd'>";
-			if (ileague==0) {tx += "AL"} else {tx += "NL"}
+			if (ileague===0) {tx += "AL"} else {tx += "NL"}
 			tx += "</td>";
 			tx += "<td colSpan=5 class='standingsdivisionnametd'>West</td>";
 			tx += "<td colSpan=5 class='standingsdivisionnametd'>Central</td>";
@@ -1281,11 +1319,10 @@ function makeStandings() {
 			tx += "</tr>"; // end AL header row 
 				// console.log('st is', st);
 				var ti=-1;
-				for (var teami = 0; teami < 5; teami++) {
+				for (let teami = 0; teami < 5; teami++) {
 					tx += "<tr>";
-					// for (var divi = 0; divi < 3; divi++) {
 					for (let divi of [2,0,1]) {
-						ti = divi*5+teami + 15*ileague
+						ti = divi*5+teami + 15*ileague;
 						tx += "<td class='standingsteamnametd'>" + st.standing[ti].first_name + "</td>";
 						tx += "<td>" + st.standing[ti].won + "</td>";
 						tx += "<td>" + st.standing[ti].lost + "</td>";
@@ -1299,7 +1336,7 @@ function makeStandings() {
 		tx += "</table>";
 		document.getElementById("standingsdiv").innerHTML = tx;
 		return tx;
-	})
+	});
 }
 
 function getStreamLink(gpk) {
@@ -1311,4 +1348,87 @@ function getStreamLink(gpk) {
 	}
 	// console.log("Returning stream link", link);
 	return link;
+}
+
+// This doesn't work on day of game. Could use for whole season though.
+function get_player_stats_for_season(id, year_, month_, day_) {
+	const mmddyyyy = month_ + "/" + day_ + "/" + year_;
+	const url = "https://statsapi.mlb.com/api/v1/people/" + id + "/stats?stats=byDateRange&season="+year_+"&group=hitting&startDate=" + mmddyyyy+ "&endDate="+mmddyyyy+"&leagueListId=mlb";
+	console.log('url is', url);
+	return get_JSON_as_object(url)
+	.then(tx => {
+		console.log('tx is', tx);
+		if (tx.stats.length ===0 ) {
+			return null;
+		}
+		const stat = tx.stats[0].splits[0].stat;
+		// stat.atBats, baseOnBalls, caughtStealing, hits, leftOnBase, plateAppearances, rbi, runs, stolenBases, strikeOuts, doubles, triples, homeRuns
+		// return stat;
+		return 123;
+	});
+}
+
+function get_player_stats_for_day() {
+	var tx = ""; //"<table>";
+	var counter = 0;
+	var promises = []
+	master_scoreboard_JSON.data.games.game.forEach(game => {
+		// game_data_directory: "/components/game/mlb/year_2019/month_04/day_12/gid_2019_04_12_anamlb_chnmlb_1"
+		const url = "https://gd2.mlb.com" + game.game_data_directory + "/boxscore.json";
+		promises.push(
+			get_JSON_as_object(url)
+			.then(bs => {
+				([0,1]).forEach(home_or_away_01 => {
+					if (bs.data.boxscore && bs.data.boxscore.batting[home_or_away_01] && bs.data.boxscore.batting[home_or_away_01].batter) {
+						bs.data.boxscore.batting[home_or_away_01].batter.forEach(bat => {
+							if (favBattersIds.includes(bat.id)) {
+								console.log("Found favbat", bat);
+								tx += get_boxscore_row_for_batter(bat);
+							}
+						})
+					}
+				})
+				return true;
+			})//.then( y => {
+				// counter++;
+				// if (counter == master_scoreboard_JSON.data.games.game.length) {
+					// console.log("Done now!!!!");
+					// tx += "</table>";
+					// console.log('gp table is', tx);
+				// }
+			// })
+		)
+	});
+	return Promise.all(promises).then(x => {console.log("finished all promises");return tx;});
+}
+
+
+function make_fav_hitters_table() {
+	return get_player_stats_for_day()
+	.then(x => {
+		var tx = "";
+		tx +=  "Stats for " + month + "/" + day + "/" + year;
+
+		tx += "<table class='fullboxscoretables'><tr>";
+		tx += '<th class="fullboxscoretd" colspan=2>Name</td>';
+		tx += '<th class="fullboxscoretd">' + 'POS' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'H' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'AB' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'BB' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'SO' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'RBI' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'R' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'SB' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'AVG' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'OBP' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'OPS' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'RBI' + '</th>';
+		tx += "</tr>";
+		tx += x + "</table>";
+		console.log('x is', x);
+		return tx;
+	})
+	.then(x => {document.getElementById("favhittersdiv").innerHTML = x; return x;})
 }

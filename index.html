@@ -39,7 +39,7 @@
 
 <table id="toptable"><tr>
 	<td>
-		<h3 align='center' style='color:magenta;cursor:pointer;padding-right:8px;' onclick='window.location.href="/Honus/"'>Honus<h1>
+		<h3 align='center' style='color:magenta;cursor:pointer;padding-right:8px;' onclick='window.location.href="/Honus/"'>Honus</h3>
 	</td>
 	<td> <!--&#x21bb; <strong>&#x21bb;</strong> &#x27f3; &#x1f504; -->
 		&#x21bb;
@@ -138,6 +138,7 @@ Video width
   <button class="tablinks" id="winprobbutton"    onclick="openCity(event, 'winprobtab')"   >Win probability</button>
   <button class="tablinks" id="newsbutton"       onclick="openCity(event, 'newstab')"      >News</button>
   <button class="tablinks" id="newsbutton"       onclick="openCity(event, 'standingstab')" >Standings</button>
+  <button class="tablinks" id="newsbutton"       onclick="openCity(event, 'favhitterstab')" >Favorite Hitters</button>
 </div>
 
 <!-- highlights tab -->
@@ -212,6 +213,13 @@ Video width
 	</div>
 </div>
 
+
+<div id="favhitterstab" class="tabcontent">
+	<div id="favhittersdiv">
+	Not loaded yet
+	</div>
+</div>
+
 </td>
 </tr></table>
 
@@ -219,10 +227,10 @@ Video width
 </table>
 
 
-<table id="scoringplaystable">
+<table id="scoringplaystable" style="margin-top:10px">
 </table>
 
-<table id="fullboxscoretable">
+<table id="fullboxscoretable" style="margin-top:10px">
 </table>
 
 <div id="favBattersdiv">
