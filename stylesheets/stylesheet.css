@@ -234,3 +234,24 @@ table {
 #newstab {
 	font-family: verdana;
 }
+
+#newstab table td {
+	vertical-align:top;
+}
+
+
+/* For bloople RSS feed */
+/* feed-title, feed-desc, feed-title-image, feed-item-title, feed-item-desc */
+.blooplediv {
+	border: 1px solid white;
+	/* background-color: green; */
+}
+.feed-title {
+	color:#6eff5b;
+	text-align:center;
+}
+
+.blooplediv a {
+	color: inherit; 
+    text-decoration: none;
+}
