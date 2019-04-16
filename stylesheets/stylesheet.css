@@ -57,7 +57,10 @@ table {
 }
 
 .headlinestabletr_selected {
-	border: 1px solid black;
+	background-color:pink;
+}
+/* Above and below are redundant */
+.headlinestabletr_alreadyseen {
 	background-color:pink;
 }
 
@@ -254,4 +257,10 @@ table {
 .blooplediv a {
 	color: inherit; 
     text-decoration: none;
+}
+
+
+.allplaysinningtitle {
+	text-align:center;
+	font-size:2em;
 }

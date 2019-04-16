@@ -1,19 +1,23 @@
 Soon
 ----------------
+Show fav batters even if they didn't play
+Clean up favorite batters and notifications
 reload rate no boxscore update
-Save viewed videos, esp on reload
 No notifications for game/day/dayplayer
-Improve news tab
 Don't refresh if not on current day
+Full play by play
+Favorite pitchers
+Update jQuery
+a links with better text
+images with alt text
+rename openCity
+game_events actions vs at bats
 
 Later
 ----------------
-Favorite pitchers
 link to bbref/fangraphs
 notification onshow
 localStorage tab
-Show linestats for favBatters, easy to get all lines?
-Add boxscore etc to tabs, but keep below
 
 
 Maybe never

@@ -198,6 +198,7 @@ function runAllJS(year_, month_, day_, team_) {
 			document.getElementById("toplinelinksgameday").innerHTML = "";
 			document.getElementById("selectedgamenowbatting").innerHTML = "";
 			document.getElementById("scoringplaystable").innerHTML = "";
+			// document.getElementById("scoringplaystabdiv").innerHTML = "";
 			document.getElementById("fullboxscoretable").innerHTML = "";
 			return;
 			} else {
@@ -257,7 +258,7 @@ function doAllHighlights() {
 	}
 	// Update last updated time and game
 	highlights_last_updated = new Date();
-	highlights_last_updated_selected_game = game_pk; //selected_game;
+	highlights_last_updated_selected_game_pk = game_pk; //selected_game;
 	
 	/////////////////////////////////////
 	// Get highlights for selected game
@@ -315,16 +316,24 @@ function doAllHighlights() {
 					// Opens video in new window
 					// tx += "<tr><td id='headline" + i + "' class='headlinestabletd'><a href='" + gh[i].playbacks[0].url + "' target='_blank' style='text-decoration: none'>" +gh[i].headline + "</a></td></tr>";
 					// Play in player
-					tx += "<tr class='headlinestabletr' id='headlinetr" + i + "'>";
+					tx += "<tr ";
+					if (gh[i].playbacks && highlight_videos_already_seen_includes(gh[i].playbacks[0].url)) {
+						tx += "class='headlinestabletr headlinestabletr_alreadyseen' " ;
+					} else {
+						tx += "class='headlinestabletr' " ;
+					}
+					tx += " id='headlinetr" + i + "'>";
 					tx += "<td class='headlinestabletd'  id='headline" + i;
 					tx += "' class='headlinestabletd' ";
 					// One headline was missing playbacks, so check for it here
 					if (gh[i].playbacks) {
 						tx += "onclick='document.getElementById(\"videoplayer\").setAttribute(\"src\", \"";
 						tx += gh[i].playbacks[0].url + "\"); ";
+						tx += "add_highlight_to_already_seen(\"" + gh[i].playbacks[0].url + "\");";
 					}
 					tx += "document.getElementById(\"videoplayer\").autoplay=true;";
 					tx += "document.getElementById(\"headlinetr"+i+"\").classList.toggle(\"headlinestabletr_selected\");";
+					tx += "document.getElementById(\"headlinetr"+i+"\").classList.toggle(\"headlinestabletr_alreadyseen\");";
 					tx += "' >"; // end onclick
 					tx += gh[i].headline + "</td>";
 					if (gh[i].playbacks) { // missing url
@@ -704,6 +713,7 @@ function setForNewSelectedGame(x) {
 		var game_pk_forscoringplays = x.data.games.game[selected_game].game_pk;
 		if (game_pk != last_selected_game_pk) {
 			document.getElementById("scoringplaystable").innerHTML = "Loading scoring plays...";
+			// document.getElementById("scoringplaystabdiv").innerHTML = "Loading scoring plays...";
 		} else {
 			// document.getElementById("scoringplaystable").innerHTML = "Loading scoring plays... SAME GAME DONT DO THIS!";
 		}
@@ -715,11 +725,15 @@ function setForNewSelectedGame(x) {
 							x.data.games.game[selected_game].game_nbr + "/game_events.json")
 		// .then(x => {console.log("FOUND game_events.json"); return x;})
 		.catch(() => {console.log("FAILED getting game_events.json");
-			document.getElementById("scoringplaystable").innerHTML = "";})
+			document.getElementById("scoringplaystable").innerHTML = "";
+			// document.getElementById("scoringplaystabdiv").innerHTML = "";
+		})
 		.then( ge => {
-			// console.log("game_events.json is", x);
+			console.log("game_events.json is", ge);
+			game_events = ge;
 			// var tx = '<tr><td class="fullboxscoretd">Inning</td><td class="fullboxscoretd">Away</td><td class="fullboxscoretd">Home</td><td class="fullboxscoretd">Scoring Play</td></tr>';
-			var tx="";
+			var tx=""; // Text for scoring plays only
+			var tplays={}; // Text for all plays
 			// Loop over every inning, top/bottom, at bat, check if scoring, if yes the add to table
 			if (ge) {
 				// console.log("x is", x, "ge is", ge);
@@ -731,6 +745,8 @@ function setForNewSelectedGame(x) {
 					return;
 				}
 				for (let i=0 ; i < ge.data.game.inning.length; i++) {
+					let inn = i + 1;
+					tplays[inn] = "";
 					["top", "bottom"].forEach(top_or_bottom => {
 						//console.log(ge.data.game.inning[i][top_or_bottom]);
 						["atbat", "action"].forEach(atbat_or_action => {
@@ -744,6 +760,7 @@ function setForNewSelectedGame(x) {
 									this_atbataction = [ge.data.game.inning[i][top_or_bottom][atbat_or_action]];
 								}
 								this_atbataction.forEach(eventi => {
+									// Check for scoring play
 									var runscored = false;
 									var eventi_runner;
 									if (Array.isArray(eventi.runner)) {
@@ -779,6 +796,18 @@ function setForNewSelectedGame(x) {
 											tx += "</tr>";
 										}
 									}
+									
+									// Add play to all plays
+									tplays[inn] += "<tr>";
+									tplays[inn] += "<td>" + eventi.away_team_runs + "</td>";
+									tplays[inn] += "<td>" + eventi.home_team_runs + "</td>";
+									tplays[inn] += "<td>" + eventi.o + "</td>";
+									// tplays += "<td>" + eventi["event"] + "</td>"; e.g. "Walk", "Pop out", etc
+									tplays[inn] += "<td>" + eventi.des + "</td>"; // sentence description of play
+									// tplays += "<td>" +  + "</td>";
+									// tplays += "<td>" +  + "</td>";
+									// tplays += eventi.des;
+									tplays[inn] += "</tr>\n";
 								});
 							}
 							
@@ -788,15 +817,38 @@ function setForNewSelectedGame(x) {
 				// console.log("pk was ", game_pk_forscoringplays, " is now ", game_pk);
 				// If game has been changed, don't update HTML. Should have stopped above, but putting here too
 				if (game_pk == game_pk_forscoringplays) {
+					// Scoring plays
 					document.getElementById("scoringplaystable").innerHTML = tx;
+					// document.getElementById("scoringplaystabdiv").innerHTML = "<table>" + tx + "</table>";
+					document.getElementById("playstabdivscoringdiv").innerHTML = "<table>" + tx + "</table>";
+					
+					// All plays
+					console.log('tplays is', tplays);
+					var tinnings = "";
+					var tinningbuttons = '';
+					for (let inn in tplays) {
+						// Add button for this inning
+						tinningbuttons += '<button class="playstablinks" id="playstabbutton'+inn+'"  onclick="openPlays(event, \'playstabsinning'+inn+'\')">'+inn+'</button>';
+						console.log("inn is", inn);
+						tinnings += '<div id="playstabsinning'+inn+'" class="playstabcontent" style="display:block;"><div class="allplaysinningtitle">Inning '+ inn +'</div><table>';
+						tinnings += '<tr><th>'+x.data.games.game[selected_game].away_team_name+'</th><th>'+x.data.games.game[selected_game].home_team_name+'</th><th>Outs</th><th>Play</th> </tr>';
+						tinnings += tplays[inn];
+						tinnings += '</table></div>';
+					}
+					document.getElementById("playstabsinnings").innerHTML = tinnings;
+					document.getElementById('playstabinningbuttons').innerHTML = tinningbuttons;
 				} else {
 					// Doesn't match current game, just do nothing since that update should be coming soon
 				}
-			}
+				
+				// Now do all plays
+				console.log('tplays is', tplays);
+			} // End if (ge)
 		});
 	} else {
 		// Game hasn't started yet, no scoring plays
 		document.getElementById("scoringplaystable").innerHTML = "";
+		// document.getElementById("scoringplaystabdiv").innerHTML = "";
 
 	}
 	
@@ -924,6 +976,9 @@ function setForNewSelectedGame(x) {
 		
 		
 		document.getElementById("fullboxscoretable").innerHTML = tx;
+		// Also set in boxscore tab
+		
+		document.getElementById("fullboxscoretabdiv").innerHTML = tx;
 	});
 	
 	// Get FanGraphs win prob if game has changed
@@ -1271,6 +1326,25 @@ function openCity(evt, cityName) {
 	}
 }
 
+function openPlays(evt, selected_inning) {
+	console.log("sel inning is", selected_inning);
+	var tabcontent = document.getElementsByClassName("playstabcontent");
+	
+	// Get all elements with class="tabcontent" and hide them
+	for (let i = 0; i < tabcontent.length; i++) {
+		tabcontent[i].style.display = "none";
+	}
+	// Get all elements with class="tablinks" and remove the class "active"
+	var tablinks = document.getElementsByClassName("playstablinks");
+	for (let i = 0; i < tablinks.length; i++) {
+		tablinks[i].className = tablinks[i].className.replace(" active", "");
+	}
+	
+	// Show the current tab, and add an "active" class to the button that opened the tab
+	document.getElementById(selected_inning).style.display = "block";
+	evt.currentTarget.className += " active";
+}
+
 function setUserInactivityTimer() {
 	// last_user_click_time= new Date();
 	// console.log("Setting up inactivity timer", last_user_click_time);
@@ -1431,4 +1505,18 @@ function make_fav_hitters_table() {
 		return tx;
 	})
 	.then(x => {document.getElementById("favhittersdiv").innerHTML = x; return x;})
+}
+
+// From here: https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
+function hashCode(s) {
+  return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
+}
+function add_highlight_to_already_seen(url) {
+	console.log("Adding highlight", url);
+	// Not sure hash is necessary, but I don't want to save a lot of text
+	highlight_videos_already_seen.push(hashCode(url));
+}
+function highlight_videos_already_seen_includes(url) {
+	// Put this in a function because of hashCode
+	return highlight_videos_already_seen.includes(hashCode(url));
 }

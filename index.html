@@ -135,10 +135,13 @@ Video width
 <!-- Tab links -->
 <div class="tab" align="center" style="height:18px">
   <button class="tablinks" id="highlightsbutton" onclick="openCity(event, 'highlightstab')">Highlights</button>
+  <button class="tablinks" id="fullboxscorebutton" onclick="openCity(event, 'fullboxscoretab')">Box score</button>
+  <!-- <button class="tablinks" id="scoringplaysbutton" onclick="openCity(event, 'scoringplaystab')">Scoring plays</button> -->
+  <button class="tablinks" id="playsbutton" onclick="openCity(event, 'playstab')">Plays</button>
   <button class="tablinks" id="winprobbutton"    onclick="openCity(event, 'winprobtab')"   >Win probability</button>
   <button class="tablinks" id="newsbutton"       onclick="openCity(event, 'newstab')"      >News</button>
-  <button class="tablinks" id="newsbutton"       onclick="openCity(event, 'standingstab')" >Standings</button>
-  <button class="tablinks" id="newsbutton"       onclick="openCity(event, 'favhitterstab')" >Favorite Hitters</button>
+  <button class="tablinks" id="standingsbutton"       onclick="openCity(event, 'standingstab')" >Standings</button>
+  <button class="tablinks" id="favhittersbutton"       onclick="openCity(event, 'favhitterstab')" >Favorite Hitters</button>
 </div>
 
 <!-- highlights tab -->
@@ -158,6 +161,47 @@ Video width
 	</table>
 </div>
 
+
+
+<div id="fullboxscoretab" class="tabcontent">
+	<div id="fullboxscoretabdiv">
+	</div>
+</div>
+
+<!-- <div id="scoringplaystab" class="tabcontent"> -->
+	<!-- <div id="scoringplaystabdiv"> -->
+	<!-- </div> -->
+<!-- </div> -->
+
+<div id="playstab" class="tabcontent">
+	<div id="playstabdiv">
+	<!-- <table><tr> -->
+	<!-- <td>plays selector -->
+		
+		<div class="tab" align="center" style="height:18px">
+		  <button class="playstablinks" id="playstabbuttonscoring" onclick="openPlays(event, 'playstabscoring')">Scoring</button>
+		  <div id="playstabinningbuttons">
+			  <!-- <button class="playstablinks" id="playstabbutton1" onclick="openPlays(event, 'playstabsinning1')">1</button> -->
+			  <!-- <button class="playstablinks" id="playstabbutton1" onclick="openPlays(event, 'playstabsinning1')">2</button> -->
+		  </div>
+		  
+		</div>
+		
+		
+		<div id="playstabscoring" class="playstabcontent">
+			<div id="playstabdivscoringdiv"> Loading...
+			</div>
+		</div>
+		
+		<div id="playstabsinnings" class="playstabcontentallinnings">
+			<!-- <div id="playstabdivinning1div"> Inning 1 -->
+			<!-- </div> -->
+		</div>
+	<!-- </td> -->
+	<!-- <td>plays in here</td> -->
+	<!-- </tr></table> -->
+	</div>
+</div>
 
 <div id="winprobtab" class="tabcontent">
 	<div id="fangraphsWinProbDiv">
@@ -347,6 +391,7 @@ var refresh_setInterval_id;
 if (localStorage.getItem("videowidth")) {
 	document.getElementById("videowidthslider").value = localStorage.getItem("videowidth");
 }
+var highlight_videos_already_seen = [];
 
 // Start on highlights tab
 document.getElementById('highlightsbutton').click()
