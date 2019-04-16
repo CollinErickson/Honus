@@ -5,13 +5,12 @@ Clean up favorite batters and notifications
 reload rate no boxscore update
 No notifications for game/day/dayplayer
 Don't refresh if not on current day
-Full play by play
+Better CSS for play by play
 Favorite pitchers
-Update jQuery
-a links with better text
-images with alt text
-rename openCity
 game_events actions vs at bats
+fail to get game_events, clear play by play
+favBatters not played, add checkbox
+favBatters add button and description and loading
 
 Later
 ----------------

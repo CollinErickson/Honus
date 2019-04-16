@@ -20,7 +20,8 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
     
     <!-- Load jQuery JS -->
-    <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-1.9.1.js"></script> -->
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
     <!-- Load jQuery UI Main JS  -->
     <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     
@@ -134,14 +135,14 @@ Video width
 
 <!-- Tab links -->
 <div class="tab" align="center" style="height:18px">
-  <button class="tablinks" id="highlightsbutton" onclick="openCity(event, 'highlightstab')">Highlights</button>
-  <button class="tablinks" id="fullboxscorebutton" onclick="openCity(event, 'fullboxscoretab')">Box score</button>
-  <!-- <button class="tablinks" id="scoringplaysbutton" onclick="openCity(event, 'scoringplaystab')">Scoring plays</button> -->
-  <button class="tablinks" id="playsbutton" onclick="openCity(event, 'playstab')">Plays</button>
-  <button class="tablinks" id="winprobbutton"    onclick="openCity(event, 'winprobtab')"   >Win probability</button>
-  <button class="tablinks" id="newsbutton"       onclick="openCity(event, 'newstab')"      >News</button>
-  <button class="tablinks" id="standingsbutton"       onclick="openCity(event, 'standingstab')" >Standings</button>
-  <button class="tablinks" id="favhittersbutton"       onclick="openCity(event, 'favhitterstab')" >Favorite Hitters</button>
+  <button class="tablinks" id="highlightsbutton" onclick="openTab(event, 'highlightstab')">Highlights</button>
+  <button class="tablinks" id="fullboxscorebutton" onclick="openTab(event, 'fullboxscoretab')">Box score</button>
+  <!-- <button class="tablinks" id="scoringplaysbutton" onclick="openTab(event, 'scoringplaystab')">Scoring plays</button> -->
+  <button class="tablinks" id="playsbutton" onclick="openTab(event, 'playstab')">Plays</button>
+  <button class="tablinks" id="winprobbutton"    onclick="openTab(event, 'winprobtab')"   >Win probability</button>
+  <button class="tablinks" id="newsbutton"       onclick="openTab(event, 'newstab')"      >News</button>
+  <button class="tablinks" id="standingsbutton"       onclick="openTab(event, 'standingstab')" >Standings</button>
+  <button class="tablinks" id="favhittersbutton"       onclick="openTab(event, 'favhitterstab')" >Favorite Hitters</button>
 </div>
 
 <!-- highlights tab -->
@@ -419,6 +420,7 @@ var use_notifications = use_favBatters;
 try {
 	var favBatters = readInFavoriteBatters();
 	var	favBattersIds = getFavoriteBattersIds();
+	var favBattersUseNotifications = readInFavoriteBattersUseNotification(); // Should notifications be used for each individual fav batter?
 	var favBatters_last_notification = {};
 	favBattersIds.forEach( id => {favBatters_last_notification[id] = null});
 }
@@ -426,6 +428,7 @@ catch(err) {
 	console.log("Can't run readInFavoriteBatters, clear your cache and try again");
 	var favBatters = [];
 	var	favBattersIds = [];
+	var favBattersUseNotifications = {};
 	var favBatters_last_notification = {};
 }
 

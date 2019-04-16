@@ -748,18 +748,53 @@ function setForNewSelectedGame(x) {
 					let inn = i + 1;
 					tplays[inn] = "";
 					["top", "bottom"].forEach(top_or_bottom => {
-						//console.log(ge.data.game.inning[i][top_or_bottom]);
-						["atbat", "action"].forEach(atbat_or_action => {
-							// console.log("atbat_or_action is", atbat_or_action, "i is", i, "t/b is ", top_or_bottom);
-							// console.log(ge.data.game);
-							if (ge.data.game.inning[i][top_or_bottom] && ge.data.game.inning[i][top_or_bottom][atbat_or_action]) {
-								var this_atbataction;
-								if (Array.isArray(ge.data.game.inning[i][top_or_bottom][atbat_or_action])) {
-									this_atbataction = ge.data.game.inning[i][top_or_bottom][atbat_or_action];
-								} else {
-									this_atbataction = [ge.data.game.inning[i][top_or_bottom][atbat_or_action]];
-								}
-								this_atbataction.forEach(eventi => {
+						
+						tplays[inn] += "<tr><th>" + top_or_bottom + "</th></tr>";
+						var atbat_array, action_array;
+						if (ge.data.game.inning[i][top_or_bottom] && ge.data.game.inning[i][top_or_bottom]["atbat"]) {
+							if (Array.isArray(ge.data.game.inning[i][top_or_bottom]["atbat"])) {
+								atbat_array = ge.data.game.inning[i][top_or_bottom]["atbat"];
+							} else {
+								atbat_array = [ge.data.game.inning[i][top_or_bottom]["atbat"]];
+							}
+						} else {
+							atbat_array = [];
+						}
+						
+						if (ge.data.game.inning[i][top_or_bottom] && ge.data.game.inning[i][top_or_bottom]["action"]) {
+							if (Array.isArray(ge.data.game.inning[i][top_or_bottom]["action"])) {
+								action_array = ge.data.game.inning[i][top_or_bottom]["action"];
+							} else {
+								action_array = [ge.data.game.inning[i][top_or_bottom]["action"]];
+							}
+						} else {
+							action_array = [];
+						}
+						
+						var atbat_and_action_array = atbat_array.concat(action_array);
+						atbat_and_action_array.sort((a,b) => {
+							let t1, t2;
+							if (a.end_tfs_zulu) {t1 = new Date(a.end_tfs_zulu)} else {t1 = new Date(a.tfs_zulu)};
+							if (b.end_tfs_zulu) {t2 = new Date(b.end_tfs_zulu)} else {t2 = new Date(b.tfs_zulu)};
+							return t1 - t2;
+						});
+						console.log('at bat and action arrays are', atbat_array, action_array);
+						console.log("Sorted atbat_and_action_array is", atbat_and_action_array);
+						
+						atbat_and_action_array.forEach(eventi => {
+						
+						// //console.log(ge.data.game.inning[i][top_or_bottom]);
+						// ["atbat", "action"].forEach(atbat_or_action => {
+							// // console.log("atbat_or_action is", atbat_or_action, "i is", i, "t/b is ", top_or_bottom);
+							// // console.log(ge.data.game);
+							// if (ge.data.game.inning[i][top_or_bottom] && ge.data.game.inning[i][top_or_bottom][atbat_or_action]) {
+								// var this_atbataction;
+								// if (Array.isArray(ge.data.game.inning[i][top_or_bottom][atbat_or_action])) {
+									// this_atbataction = ge.data.game.inning[i][top_or_bottom][atbat_or_action];
+								// } else {
+									// this_atbataction = [ge.data.game.inning[i][top_or_bottom][atbat_or_action]];
+								// }
+								// this_atbataction.forEach(eventi => {
 									// Check for scoring play
 									var runscored = false;
 									var eventi_runner;
@@ -797,19 +832,21 @@ function setForNewSelectedGame(x) {
 										}
 									}
 									
+									// Need to put atbat and actions in same array, sort by new Date(game_events.data.game.inning[3].bottom.atbat[2].end_tfs_zulu).
+									
 									// Add play to all plays
 									tplays[inn] += "<tr>";
-									tplays[inn] += "<td>" + eventi.away_team_runs + "</td>";
-									tplays[inn] += "<td>" + eventi.home_team_runs + "</td>";
-									tplays[inn] += "<td>" + eventi.o + "</td>";
+									tplays[inn] += "<td style='text-align:center;'>" + eventi.away_team_runs + "</td>";
+									tplays[inn] += "<td style='text-align:center;'>" + eventi.home_team_runs + "</td>";
+									tplays[inn] += "<td style='text-align:center;'>" + eventi.o + "</td>";
 									// tplays += "<td>" + eventi["event"] + "</td>"; e.g. "Walk", "Pop out", etc
 									tplays[inn] += "<td>" + eventi.des + "</td>"; // sentence description of play
 									// tplays += "<td>" +  + "</td>";
 									// tplays += "<td>" +  + "</td>";
 									// tplays += eventi.des;
 									tplays[inn] += "</tr>\n";
-								});
-							}
+								// });
+							// }
 							
 						});
 					});
@@ -830,7 +867,7 @@ function setForNewSelectedGame(x) {
 						// Add button for this inning
 						tinningbuttons += '<button class="playstablinks" id="playstabbutton'+inn+'"  onclick="openPlays(event, \'playstabsinning'+inn+'\')">'+inn+'</button>';
 						console.log("inn is", inn);
-						tinnings += '<div id="playstabsinning'+inn+'" class="playstabcontent" style="display:block;"><div class="allplaysinningtitle">Inning '+ inn +'</div><table>';
+						tinnings += '<div id="playstabsinning'+inn+'" class="playstabcontent" style="display:none;"><div class="allplaysinningtitle">Inning '+ inn +'</div><table>';
 						tinnings += '<tr><th>'+x.data.games.game[selected_game].away_team_name+'</th><th>'+x.data.games.game[selected_game].home_team_name+'</th><th>Outs</th><th>Play</th> </tr>';
 						tinnings += tplays[inn];
 						tinnings += '</table></div>';
@@ -1051,33 +1088,18 @@ function get_boxscore_row_for_batter(batteri) {
 	return tx;
 }
 
-function updateSelectedGame() {
-	// First 
-	//
-	setForNewSelectedGame(x)
-}
+// function updateSelectedGame() {
+	// // First 
+	// //
+	// setForNewSelectedGame(x)
+// }
 
 function readInFavoriteBatters() {
 	var favBatters_string = localStorage.getItem("favBatters");
-	// console.log("string is", favBatters_string);
 	var favBatters = [];
 	if (favBatters_string) {
 		var fBsplit = favBatters_string.split(";")
 			.forEach(x => {
-				// var fbsplit = x.split(";");
-				// var fbobj = {}
-				// fbsplit.forEach(y => {
-					// ysplit = y.split(":");
-					// console.log('y and ysplit are', y, ysplit);
-					// if (ysplit && ysplit.length==2) {
-						// fbobj[ysplit[0]] = ysplit[1];
-					// } else {
-						// throw "Error in ysplit #23098100";
-					// }
-				// })
-				// favBatters = favBatters.concat(fbobj);
-			// });
-			// console.log('x is', x);
 			if (x !== "") {
 				favBatters = favBatters.concat(JSON.parse(x));
 			}
@@ -1086,7 +1108,15 @@ function readInFavoriteBatters() {
 	return favBatters;
 }
 
-function addFavoriteBatter(id, name_display_first_last) {
+function readInFavoriteBattersUseNotification() {
+	var favBattersNotif_string = localStorage.getItem("favBattersUseNotifications");
+	if (favBattersNotif_string) {
+		return JSON.parse(favBattersNotif_string);
+	}
+	return {};
+}
+
+function addFavoriteBatter(id, name_display_first_last, this_) {
 	console.log("Add id to fav batters", id, name_display_first_last);
 	// Don't add if already there
 	if (!favBattersIds.includes(id)) {
@@ -1097,14 +1127,58 @@ function addFavoriteBatter(id, name_display_first_last) {
 		saveFavoriteBatters();
 		favBattersIds = getFavoriteBattersIds();
 	}
+	
+	// If this_ was given, it means the onclick needs to be flipped to add player back
+	if (typeof this_ !== "undefined") {
+		console.log('this_ was not undefined');
+		this_.onclick = function() {addFavoriteBatter(id, name_display_first_last, this_)};
+	} else {
+		console.log('this_ was undefined');
+	}
+	// Add to Notifications
+	favBattersUseNotifications[id] = true;;
+	saveFavoriteBattersUseNotifications();
+	
 	return;
 }
 
-function removeFavoriteBatter(id, name_display_first_last) {
+function removeFavoriteBatter(id, name_display_first_last, this_) {
 	console.log("Remove id to fav batters", id, name_display_first_last);
 	favBatters = favBatters.filter( b => b.id != id);
 	saveFavoriteBatters();
 	favBattersIds = getFavoriteBattersIds();
+	
+	// If this_ was given, it means the onclick needs to be flipped to add player back
+	if (typeof this_ !== "undefined") {
+		console.log('this_ was not undefined');
+		this_.onclick = function() {addFavoriteBatter(id, name_display_first_last, this_)};
+	} else {
+		console.log('this_ was undefined');
+	}
+	// Delete from Notifications
+	delete favBattersUseNotifications[id];
+	saveFavoriteBattersUseNotifications();
+	
+	return;
+}
+
+function addFavoriteBatterNotification(id, name_display_first_last, this_) {
+	favBattersUseNotifications[id] = true;
+	saveFavoriteBattersUseNotifications();
+	// If this_ was given, it means the onclick needs to be flipped to add player back
+	if (typeof this_ !== "undefined") {
+		this_.onclick = function() {addFavoriteBatterNotification(id, name_display_first_last, this_)};
+	}
+	return;
+}
+
+function removeFavoriteBatterNotification(id, name_display_first_last, this_) {
+	favBattersUseNotifications[id] = false;
+	saveFavoriteBattersUseNotifications();
+	// If this_ was given, it means the onclick needs to be flipped to add player back
+	if (typeof this_ !== "undefined") {
+		this_.onclick = function() {addFavoriteBatterNotification(id, name_display_first_last, this_)};
+	}
 	return;
 }
 
@@ -1115,6 +1189,11 @@ function saveFavoriteBatters() {
 	});
 	// return tx;
 	localStorage.setItem("favBatters", tx);
+	return;
+}
+
+function saveFavoriteBattersUseNotifications() {
+	localStorage.setItem("favBattersUseNotifications", JSON.stringify(favBattersUseNotifications));
 	return;
 }
 
@@ -1286,27 +1365,24 @@ function update_refresh_rate() {
 }
 
 
-function openCity(evt, cityName) {
-	// Declare all variables
-	var i, tabcontent, tablinks;
-
+function openTab(evt, tabName) {
 	// Get all elements with class="tabcontent" and hide them
-	tabcontent = document.getElementsByClassName("tabcontent");
-	for (i = 0; i < tabcontent.length; i++) {
+	var tabcontent = document.getElementsByClassName("tabcontent");
+	for (let i = 0; i < tabcontent.length; i++) {
 		tabcontent[i].style.display = "none";
 	}
 
 	// Get all elements with class="tablinks" and remove the class "active"
-	tablinks = document.getElementsByClassName("tablinks");
-	for (i = 0; i < tablinks.length; i++) {
+	var tablinks = document.getElementsByClassName("tablinks");
+	for (let i = 0; i < tablinks.length; i++) {
 		tablinks[i].className = tablinks[i].className.replace(" active", "");
 	}
 
 	// Show the current tab, and add an "active" class to the button that opened the tab
-	document.getElementById(cityName).style.display = "block";
+	document.getElementById(tabName).style.display = "block";
 	evt.currentTarget.className += " active";
   
-	if (cityName=="newstab") {
+	if (tabName=="newstab") {
 		// document.getElementById("newstab").style.width = 800;
 		// document.getElementById("newstab").style.width = document.getElementById("videowidthslider").value;
 		$('#newstab').width(250 + parseInt(document.getElementById("videowidthslider").value));
@@ -1317,11 +1393,11 @@ function openCity(evt, cityName) {
 		jQuery.getScript("https://platform.twitter.com/widgets.js");
 	}
   
-	if (cityName=="standingstab") {
+	if (tabName=="standingstab") {
 		makeStandings();
 	}
 	
-	if (cityName == "favhitterstab") {
+	if (tabName == "favhitterstab") {
 		make_fav_hitters_table()
 	}
 }
@@ -1443,9 +1519,10 @@ function get_player_stats_for_season(id, year_, month_, day_) {
 }
 
 function get_player_stats_for_day() {
-	var tx = ""; //"<table>";
-	var counter = 0;
-	var promises = []
+	// var tx = ""; //"<table>";
+	// var counter = 0;
+	var promises = [];
+	var tobj = {};
 	master_scoreboard_JSON.data.games.game.forEach(game => {
 		// game_data_directory: "/components/game/mlb/year_2019/month_04/day_12/gid_2019_04_12_anamlb_chnmlb_1"
 		const url = "https://gd2.mlb.com" + game.game_data_directory + "/boxscore.json";
@@ -1457,7 +1534,8 @@ function get_player_stats_for_day() {
 						bs.data.boxscore.batting[home_or_away_01].batter.forEach(bat => {
 							if (favBattersIds.includes(bat.id)) {
 								console.log("Found favbat", bat);
-								tx += get_boxscore_row_for_batter(bat);
+								// tx += get_boxscore_row_for_batter(bat);
+								tobj[bat.id] = bat;
 							}
 						})
 					}
@@ -1473,18 +1551,58 @@ function get_player_stats_for_day() {
 			// })
 		)
 	});
-	return Promise.all(promises).then(x => {console.log("finished all promises");return tx;});
+	return Promise.all(promises).then(x => {console.log("finished all promises");return tobj;});
 }
 
 
+// function make_fav_hitters_table_old() {
+	// return get_player_stats_for_day()
+	// .then(x => {
+		// var tx = "";
+		// tx += "<p>You will receive notifications when the following players are up to bat</p>";
+		// tx +=  "Stats for " + month + "/" + day + "/" + year;
+
+		// tx += "<table class='fullboxscoretables'><tr>";
+		// tx += '<th class="fullboxscoretd" colspan=2>Name</td>';
+		// tx += '<th class="fullboxscoretd">' + 'POS' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'H' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'AB' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'BB' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'SO' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'RBI' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'R' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'SB' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'AVG' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'OBP' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'OPS' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'RBI' + '</th>';
+		// tx += "</tr>";
+		// tx += x + "</table>";
+		
+		// // Players not found
+		// tx += "<p>Have not played today</p>";
+		// console.log('x is', x);
+		// return tx;
+	// })
+	// .then(x => {document.getElementById("favhittersdiv").innerHTML = x; return x;})
+// }
+
 function make_fav_hitters_table() {
 	return get_player_stats_for_day()
-	.then(x => {
+	.then(batters => {
+		console.log('tobj is ', batters);
 		var tx = "";
+		tx += "<div style='margin-top:20px;'>You will get notifications when these players are ondeck/batting:";
+		tx += "<button type='button' id='favBattersTabOn' onclick='use_favBatters=false;use_notifications=false;update_favBattersdiv()'>Turn off</button></div>";
+		if (document.getElementById("selectreload").value == "never") {
+			tx += "<div><strong>Turn on refresh rate at top of page for this to be useful!</strong></div>";
+		}
 		tx +=  "Stats for " + month + "/" + day + "/" + year;
 
 		tx += "<table class='fullboxscoretables'><tr>";
-		tx += '<th class="fullboxscoretd" colspan=2>Name</td>';
+		tx += '<th class="fullboxscoretd" colspan=1>Name</td>';
 		tx += '<th class="fullboxscoretd">' + 'POS' + '</th>';
 		tx += '<th class="fullboxscoretd">' + 'H' + '</th>';
 		tx += '<th class="fullboxscoretd">' + 'AB' + '</th>';
@@ -1499,9 +1617,77 @@ function make_fav_hitters_table() {
 		tx += '<th class="fullboxscoretd">' + 'OPS' + '</th>';
 		tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
 		tx += '<th class="fullboxscoretd">' + 'RBI' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'Favorites' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'Notifications' + '</th>';
 		tx += "</tr>";
-		tx += x + "</table>";
-		console.log('x is', x);
+		
+		// Loop over each batter
+		for (let batid in batters) {
+			let batteri = batters[batid];
+			tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
+			if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
+			tx += batteri.name_display_first_last + '</div></a></td>';
+			tx += '<td class="fullboxscoretd">' + batteri.pos + '</td>';
+			tx += '<td class="fullboxscoretd">' + batteri.h + '</td>';
+			tx += '<td class="fullboxscoretd">' + batteri.ab + '</td>';
+			tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.bb) + '</td>';
+			tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.so) + '</td>';
+			tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.hr) + '</td>';
+			tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.rbi) + '</td>';
+			tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.r) + '</td>';
+			if (batteri.sb == "0" && batteri.cs == "0") {
+				tx += '<td class="fullboxscoretd">' + "" + '</td>';
+			} else {
+				tx += '<td class="fullboxscoretd">' + batteri.sb + "/" + (parseInt(batteri.cs) + parseInt(batteri.sb)) + '</td>';
+			}
+			tx += '<td class="fullboxscoretd">' + batteri.avg + '</td>';
+			tx += '<td class="fullboxscoretd">' + batteri.obp + '</td>';
+			tx += '<td class="fullboxscoretd">' + batteri.ops + '</td>';
+			tx += '<td class="fullboxscoretd">' + batteri.s_hr + '</td>';
+			tx += '<td class="fullboxscoretd">' + batteri.s_rbi + '</td>';
+			// Option to add to favorite batters (or remove)
+			// if (use_favBatters) {
+			// Favorites checkbox
+			tx += "<td ";
+			tx += "><input type='checkbox' checked onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+			tx += "'></td>";
+	
+			// Notifications checkbox
+			if (!(batteri.id in favBattersUseNotifications) || !favBattersUseNotifications[batteri.id]) {
+				tx += "<td ";
+				tx += "><input type='checkbox' checked onclick='removeFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+				tx += "'></td>";
+			} else {
+				console.log("id no notif", batteri.id);
+				
+				tx += "<td ";
+				tx += "><input type='checkbox'  onclick='addFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+				tx += "'></td>";
+			}
+			// } else {
+				// tx += "<td></td>";
+			// }
+			tx += '</tr>';
+		}
+		
+		
+		tx += "</table>";
+		
+		// Players not found
+		// var battersplayed = [];
+		// batters.forEach(bat => battersplayed.push(bat.id));
+		// favBatters.forEach(bat => {tx += bat.id + bat.name_display_first_last;})
+		tx += "<p>Have not played today</p>";
+		var notplayedtoday = favBattersIds.filter(x => !Object.keys(batters).includes(x));
+		// tx += JSON.stringify(notplayedtoday);
+		tx += "<table>";
+		for (let fb of favBatters) {
+			if (notplayedtoday.includes(fb.id)) {
+				tx += "<tr><td>"+fb.name_display_first_last+"</td></tr>";
+			}
+		}
+		tx += "</table>";
+		// console.log('x is', x);
 		return tx;
 	})
 	.then(x => {document.getElementById("favhittersdiv").innerHTML = x; return x;})
