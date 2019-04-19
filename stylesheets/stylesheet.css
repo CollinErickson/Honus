@@ -264,3 +264,11 @@ table {
 	text-align:center;
 	font-size:2em;
 }
+
+.favBattersButtonSelected {
+	background-color:#ccc;
+}
+
+.favBattersButton:hover {
+	background-color:orange;
+}

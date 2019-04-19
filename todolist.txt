@@ -1,16 +1,19 @@
 Soon
 ----------------
-Clean up favorite batters and notifications
-reload rate no boxscore update
-No notifications for game/day/dayplayer
+Clean up favorite batters
 Better CSS for play by play
-Favorite pitchers
-fail to get game_events, clear play by play
-favBatters not played, add checkbox
 favBatters add button and description
+favBatters tab button add on/off to name
+favBatters add version that doesn't load stats
+use checkboxes in favbatters div
+Different stream games for select teams (in market)
 
 Later
 ----------------
+No notifications for game/day/dayplayer
+reload rate no boxscore update
+Favorite pitchers
+fail to get game_events, clear play by play
 link to bbref/fangraphs
 notification onshow
 localStorage tab

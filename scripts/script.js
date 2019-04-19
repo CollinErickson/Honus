@@ -733,13 +733,13 @@ function setForNewSelectedGame(x) {
 			// document.getElementById("scoringplaystabdiv").innerHTML = "";
 		})
 		.then( ge => {
-			console.log("game_events.json is", ge);
-			game_events = ge;
+			// console.log("game_events.json is", ge);
+			// game_events = ge;
 			// var tx = '<tr><td class="fullboxscoretd">Inning</td><td class="fullboxscoretd">Away</td><td class="fullboxscoretd">Home</td><td class="fullboxscoretd">Scoring Play</td></tr>';
 			var tx=""; // Text for scoring plays only
 			var tplays={}; // Text for all plays
 			// Loop over every inning, top/bottom, at bat, check if scoring, if yes the add to table
-			if (ge) {
+			if (ge && ge.data && ge.data.game && ge.data.game.inning) {
 				// console.log("x is", x, "ge is", ge);
 				tx += '<tr><th class="fullboxscoretd">Inning</th><th class="fullboxscoretd">';
 				tx += x.data.games.game[selected_game].away_team_name+'</th><th class="fullboxscoretd">';
@@ -883,7 +883,7 @@ function setForNewSelectedGame(x) {
 				}
 				
 				// Now do all plays
-				console.log('tplays is', tplays);
+				// console.log('tplays is', tplays);
 			} // End if (ge)
 		});
 	} else {
@@ -1059,15 +1059,27 @@ function get_boxscore_row_for_batter(batteri) {
 	tx += batteri.name_display_first_last + '</div></a></td>';
 	// Option to add to favorite batters (or remove)
 	if (use_favBatters) {
-		if (!favBattersIds.includes(batteri.id)) {
-			tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"'  class='fullboxscoretd' ";
-			tx += "onclick='addFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
-			tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>+</td>";
-		} else {
-			tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"'  class='fullboxscoretd' ";
-			tx += "onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
-			tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>-</td>";
+		// if (!favBattersIds.includes(batteri.id)) {
+			// tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"'  class='fullboxscoretd' ";
+			// tx += "onclick='addFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
+			// tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>+</td>";
+		// } else {
+			// tx += "<td id='boxscoreaddfavBatterbutton" + batteri.id +"'  class='fullboxscoretd' ";
+			// tx += "onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\");";
+			// tx += "flip_boxscoreaddfavBatterbutton(\""+batteri.id+"\",\""+ batteri.name_display_first_last+"\");update_favBattersdiv();'>-</td>";
+		// }
+		
+		// Now use checkbox instead of +/-
+		if (favBattersIds.includes(batteri.id)) {
+			tx += "<td  class='fullboxscoretd' ";
+			tx += "><input type='checkbox' checked onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+			tx += "'></td>";
+		} else {			
+			tx += "<td  class='fullboxscoretd' ";
+			tx += "><input type='checkbox'  onclick='addFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+			tx += "'></td>";
 		}
+		
 	} else {
 		tx += "<td></td>";
 	}
@@ -1135,10 +1147,10 @@ function addFavoriteBatter(id, name_display_first_last, this_) {
 	
 	// If this_ was given, it means the onclick needs to be flipped to add player back
 	if (typeof this_ !== "undefined") {
-		console.log('this_ was not undefined');
+		// console.log('this_ was not undefined');
 		this_.onclick = function() {addFavoriteBatter(id, name_display_first_last, this_)};
 	} else {
-		console.log('this_ was undefined');
+		// console.log('this_ was undefined');
 	}
 	// Add to Notifications
 	favBattersUseNotifications[id] = true;;
@@ -1155,10 +1167,10 @@ function removeFavoriteBatter(id, name_display_first_last, this_) {
 	
 	// If this_ was given, it means the onclick needs to be flipped to add player back
 	if (typeof this_ !== "undefined") {
-		console.log('this_ was not undefined');
+		// console.log('this_ was not undefined');
 		this_.onclick = function() {addFavoriteBatter(id, name_display_first_last, this_)};
 	} else {
-		console.log('this_ was undefined');
+		// console.log('this_ was undefined');
 	}
 	// Delete from Notifications
 	delete favBattersUseNotifications[id];
@@ -1172,7 +1184,7 @@ function addFavoriteBatterNotification(id, name_display_first_last, this_) {
 	saveFavoriteBattersUseNotifications();
 	// If this_ was given, it means the onclick needs to be flipped to add player back
 	if (typeof this_ !== "undefined") {
-		this_.onclick = function() {addFavoriteBatterNotification(id, name_display_first_last, this_)};
+		this_.onclick = function() {removeFavoriteBatterNotification(id, name_display_first_last, this_)};
 	}
 	return;
 }
@@ -1403,7 +1415,7 @@ function openTab(evt, tabName) {
 	}
 	
 	if (tabName == "favhitterstab") {
-		make_fav_hitters_table()
+		do_fav_hitters_table()
 	}
 }
 
@@ -1556,7 +1568,10 @@ function get_player_stats_for_day() {
 			// })
 		)
 	});
-	return Promise.all(promises).then(x => {console.log("finished all promises");return tobj;});
+	return Promise.all(promises).then(x => {
+		// console.log("finished all promises");
+		return tobj;
+		});
 }
 
 
@@ -1594,102 +1609,303 @@ function get_player_stats_for_day() {
 	// .then(x => {document.getElementById("favhittersdiv").innerHTML = x; return x;})
 // }
 
-function make_fav_hitters_table() {
-	if (document.getElementById('favhittersdiv').innerHTML == "Not loaded yet") {
-		document.getElementById("favhittersdiv").innerHTML = "Loading... takes 5-10 seconds...";
-	} else {
-		document.getElementById("favhittersdiv").innerHTML = "<div>Loading... takes 5-10 seconds...\</div>" + document.getElementById("favhittersdiv").innerHTML;
+// function make_fav_hitters_table() {
+	// if (document.getElementById('favhittersdiv').innerHTML == "Not loaded yet") {
+		// document.getElementById("favhittersdiv").innerHTML = "Loading... takes 5-10 seconds...";
+	// } else {
+		// document.getElementById("favhittersdiv").innerHTML = "<div>Loading... takes 5-10 seconds...\</div>" + document.getElementById("favhittersdiv").innerHTML;
+	// }
+	// return get_player_stats_for_day()
+	// .then(batters => {
+		// // console.log('tobj is ', batters);
+		// var tx = "";
+		// tx += "<div style='margin-top:20px;'>You will get notifications when these players are ondeck/batting:";
+			// tx += "<button type='button' id='favBattersTabTurnOff' onclick='use_favBatters=false;use_notifications=false;update_favBattersdiv()'>Turn off</button>";
+			// tx += "<button type='button' id='favBattersTabTurnOn' onclick='use_favBatters=true;update_favBattersdiv()'>Turn on</button></div>";
+		// if (document.getElementById("selectreload").value == "never") {
+			// tx += "<div><strong>Turn on refresh rate (&#x21bb;) at top of page for this to be useful!</strong></div>";
+		// }
+		// tx +=  "Stats for " + month + "/" + day + "/" + year;
+
+		// tx += "<table class='fullboxscoretables'><tr>";
+		// tx += '<th class="fullboxscoretd" colspan=1>Name</td>';
+		// tx += '<th class="fullboxscoretd">' + 'POS' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'H' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'AB' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'BB' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'SO' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'RBI' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'R' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'SB' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'AVG' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'OBP' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'OPS' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'RBI' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'Favorites' + '</th>';
+		// tx += '<th class="fullboxscoretd">' + 'Notifications' + '</th>';
+		// tx += "</tr>";
+		
+		// // Loop over each batter
+		// for (let batid in batters) {
+			// let batteri = batters[batid];
+			// tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
+			// if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
+			// tx += batteri.name_display_first_last + '</div></a></td>';
+			// tx += '<td class="fullboxscoretd">' + batteri.pos + '</td>';
+			// tx += '<td class="fullboxscoretd">' + batteri.h + '</td>';
+			// tx += '<td class="fullboxscoretd">' + batteri.ab + '</td>';
+			// tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.bb) + '</td>';
+			// tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.so) + '</td>';
+			// tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.hr) + '</td>';
+			// tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.rbi) + '</td>';
+			// tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.r) + '</td>';
+			// if (batteri.sb == "0" && batteri.cs == "0") {
+				// tx += '<td class="fullboxscoretd">' + "" + '</td>';
+			// } else {
+				// tx += '<td class="fullboxscoretd">' + batteri.sb + "/" + (parseInt(batteri.cs) + parseInt(batteri.sb)) + '</td>';
+			// }
+			// tx += '<td class="fullboxscoretd">' + batteri.avg + '</td>';
+			// tx += '<td class="fullboxscoretd">' + batteri.obp + '</td>';
+			// tx += '<td class="fullboxscoretd">' + batteri.ops + '</td>';
+			// tx += '<td class="fullboxscoretd">' + batteri.s_hr + '</td>';
+			// tx += '<td class="fullboxscoretd">' + batteri.s_rbi + '</td>';
+			// // Option to add to favorite batters (or remove)
+			// // if (use_favBatters) {
+			// // Favorites checkbox
+			// tx += "<td  class='fullboxscoretd' ";
+			// tx += "><input type='checkbox' checked onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+			// tx += "'></td>";
+	
+			// // Notifications checkbox
+			// if (!(batteri.id in favBattersUseNotifications) || favBattersUseNotifications[batteri.id]) {
+				// tx += "<td  class='fullboxscoretd' ";
+				// tx += "><input type='checkbox' checked onclick='removeFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+				// tx += "'></td>";
+			// } else {
+				// // console.log("id no notif", batteri.id);
+				
+				// tx += "<td  class='fullboxscoretd' ";
+				// tx += "><input type='checkbox'  onclick='addFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+				// tx += "'></td>";
+			// }
+			// // } else {
+				// // tx += "<td></td>";
+			// // }
+			// tx += '</tr>';
+		// }
+		
+		
+		// tx += "</table>";
+		
+		// // Players not found in today's games, haven't played today
+		// var notplayedtoday = favBattersIds.filter(x => !Object.keys(batters).includes(x));
+		// if (notplayedtoday.length > 0) {
+			// tx += "<p>Have not played today</p>";
+			// // tx += JSON.stringify(notplayedtoday);
+			// tx += '<table><tr><th class="fullboxscoretd" >Name</th><th class="fullboxscoretd">Favorites</th><th class="fullboxscoretd">Notifications</th></tr>';
+			// for (let batteri of favBatters) {
+				// if (notplayedtoday.includes(batteri.id)) {
+					// tx += "<tr><td class='fullboxscoretd'>"+batteri.name_display_first_last+"</td>";
+				
+					// // Favorites checkbox
+					// tx += "<td  class='fullboxscoretd' style='text-align:center' ";
+					// tx += "><input type='checkbox' checked onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+					// tx += "'></td>";
+					
+					// // Notifications checkbox
+					// if (!(batteri.id in favBattersUseNotifications) || favBattersUseNotifications[batteri.id]) {
+						// tx += "<td  class='fullboxscoretd' style='text-align:center' ";
+						// tx += "><input type='checkbox' checked onclick='removeFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+						// tx += "'></td>";
+					// } else {
+						// tx += "<td  class='fullboxscoretd' style='text-align:center' ";
+						// tx += "><input type='checkbox'  onclick='addFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+						// tx += "'></td>";
+					// }
+					// tx += "</tr>";
+				// }
+			// }
+			// tx += "</table>";
+		// }
+		// // console.log('x is', x);
+		
+		// document.getElementById("favhittersdiv").innerHTML = tx;
+		
+		// if (use_favBatters) {
+			// document.getElementById('favBattersTabTurnOff').classList.toggle("favBattersButtonSelected");
+		// } else {
+			// document.getElementById('favBattersTabTurnOn').classList.toggle("favBattersButtonSelected");
+		// }
+		
+		// return tx;
+	// })
+	// // .then(x => {document.getElementById("favhittersdiv").innerHTML = x; return x;})
+	// .catch(er => {console.log("Couldn't get fav batters", er);document.getElementById("favhittersdiv").innerHTML = "Error loading"; return er;});
+// }
+
+function do_fav_hitters_table() {
+	// First do fast version, no stats
+	// document.getElementById("favhittersdiv").innerHTML = "<p>Loading... takes up to 10 seconds...</p>" + get_fav_hitters_table(true);
+	get_fav_hitters_table(true)
+	.then(tx => {
+		document.getElementById("favhittersdiv").innerHTML = "<p style='font-size:2em'>Loading... takes up to 10 seconds...</p>" + tx
+	})
+	// Then do stats version, takes longer
+	get_fav_hitters_table(false)
+	.then(tx => {
+		document.getElementById("favhittersdiv").innerHTML = tx;
+	});
+	// document.getElementById("favhittersdiv").innerHTML = get_fav_hitters_table(false);
+}
+
+function favBattersButtonClicked(turn_on = true) {
+	console.log("favBattersButtonClicked just now!", turn_on);
+	// Remove selected button
+	var buttons = document.getElementsByClassName('favBattersButton');
+	for (let i=0; i< buttons.length; i++) {buttons[i].classList.remove("favBattersButtonSelected")}
+	if (turn_on) {
+		// remove class selected from all, then add to the on button, 
+		use_favBatters=true;use_notifications=true;		
+		var buttons = document.getElementsByClassName('favBattersButtonOn');
+		for (let i=0; i< buttons.length; i++) {buttons[i].classList.toggle("favBattersButtonSelected");buttons[i].innerHTML="Currently on";}
+		var buttons = document.getElementsByClassName('favBattersButtonOff');
+		for (let i=0; i< buttons.length; i++) {buttons[i].classList.toggle("favBattersButtonNotSelected");buttons[i].innerHTML="Turn off!";}
+	} else { // turn off
+		use_favBatters=false;use_notifications=false;
+		var buttons = document.getElementsByClassName('favBattersButtonOff');
+		for (let i=0; i< buttons.length; i++) {buttons[i].classList.toggle("favBattersButtonSelected");buttons[i].innerHTML="Currently off";}
+		var buttons = document.getElementsByClassName('favBattersButtonOn');
+		for (let i=0; i< buttons.length; i++) {buttons[i].classList.toggle("favBattersButtonNotSelected");buttons[i].innerHTML="Turn on!";}
 	}
-	return get_player_stats_for_day()
-	.then(batters => {
+}
+
+function get_fav_hitters_table(fast_version=false) {
+	// if (document.getElementById('favhittersdiv').innerHTML == "Not loaded yet") {
+		// document.getElementById("favhittersdiv").innerHTML = "Loading... takes 5-10 seconds...";
+	// } else {
+		// document.getElementById("favhittersdiv").innerHTML = "<div>Loading... takes 5-10 seconds...\</div>" + document.getElementById("favhittersdiv").innerHTML;
+	// }
+	var batters;
+	if (fast_version) {
+		// batters = [];
+		batters = new Promise((resolve, reject) => {resolve([])});
+	} else {
+		batters = get_player_stats_for_day()
+         		  .catch(er => {
+					  console.log("Couldn't get fav batters", er);
+					  // document.getElementById("favhittersdiv").innerHTML = "Error loading";
+					  return er;
+					  });
+	}
+	return batters.then(batters => {
 		console.log('tobj is ', batters);
 		var tx = "";
 		tx += "<div style='margin-top:20px;'>You will get notifications when these players are ondeck/batting:";
-		tx += "<button type='button' id='favBattersTabOn' onclick='use_favBatters=false;use_notifications=false;update_favBattersdiv()'>Turn off</button></div>";
+			tx += "<button type='button' class='favBattersButton favBattersButtonOn  favBattersTabTurnOff  ";
+			if (use_favBatters) {tx += "favBattersButtonSelected"}
+			tx +="' id='favBattersTabTurnOff' onclick='favBattersButtonClicked(true)'>"; //Turn on
+			if (!use_favBatters) {tx += "Turn on!"} else {tx += "Currently on";}
+			tx += "</button>";
+			tx += "<button type='button' class='favBattersButton favBattersButtonOff favBattersTabTurnOn   ";
+			if (!use_favBatters) {tx += "favBattersButtonSelected"}
+			tx += "'  id='favBattersTabTurnOn'  onclick='favBattersButtonClicked(false)'>"; //Turn off
+			if (use_favBatters) {tx += "Turn off!"} else {tx += "Currently off";}
+			tx += "</button></div>";
 		if (document.getElementById("selectreload").value == "never") {
 			tx += "<div><strong>Turn on refresh rate (&#x21bb;) at top of page for this to be useful!</strong></div>";
 		}
-		tx +=  "Stats for " + month + "/" + day + "/" + year;
-
-		tx += "<table class='fullboxscoretables'><tr>";
-		tx += '<th class="fullboxscoretd" colspan=1>Name</td>';
-		tx += '<th class="fullboxscoretd">' + 'POS' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'H' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'AB' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'BB' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'SO' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'RBI' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'R' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'SB' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'AVG' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'OBP' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'OPS' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'RBI' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'Favorites' + '</th>';
-		tx += '<th class="fullboxscoretd">' + 'Notifications' + '</th>';
-		tx += "</tr>";
 		
-		// Loop over each batter
-		for (let batid in batters) {
-			let batteri = batters[batid];
-			tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
-			if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
-			tx += batteri.name_display_first_last + '</div></a></td>';
-			tx += '<td class="fullboxscoretd">' + batteri.pos + '</td>';
-			tx += '<td class="fullboxscoretd">' + batteri.h + '</td>';
-			tx += '<td class="fullboxscoretd">' + batteri.ab + '</td>';
-			tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.bb) + '</td>';
-			tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.so) + '</td>';
-			tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.hr) + '</td>';
-			tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.rbi) + '</td>';
-			tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.r) + '</td>';
-			if (batteri.sb == "0" && batteri.cs == "0") {
-				tx += '<td class="fullboxscoretd">' + "" + '</td>';
-			} else {
-				tx += '<td class="fullboxscoretd">' + batteri.sb + "/" + (parseInt(batteri.cs) + parseInt(batteri.sb)) + '</td>';
-			}
-			tx += '<td class="fullboxscoretd">' + batteri.avg + '</td>';
-			tx += '<td class="fullboxscoretd">' + batteri.obp + '</td>';
-			tx += '<td class="fullboxscoretd">' + batteri.ops + '</td>';
-			tx += '<td class="fullboxscoretd">' + batteri.s_hr + '</td>';
-			tx += '<td class="fullboxscoretd">' + batteri.s_rbi + '</td>';
-			// Option to add to favorite batters (or remove)
-			// if (use_favBatters) {
-			// Favorites checkbox
-			tx += "<td  class='fullboxscoretd' ";
-			tx += "><input type='checkbox' checked onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
-			tx += "'></td>";
-	
-			// Notifications checkbox
-			if (!(batteri.id in favBattersUseNotifications) || favBattersUseNotifications[batteri.id]) {
+		// do full stats for players that have them
+		if (!fast_version) {
+			// console.log("Will it do this?", batters);
+			tx +=  "Stats for " + month + "/" + day + "/" + year;
+
+			tx += "<table class='fullboxscoretables'><tr>";
+			tx += '<th class="fullboxscoretd" colspan=1>Name</td>';
+			tx += '<th class="fullboxscoretd">' + 'POS' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'H' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'AB' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'BB' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'SO' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'RBI' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'R' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'SB' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'AVG' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'OBP' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'OPS' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'RBI' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'Favorites' + '</th>';
+			tx += '<th class="fullboxscoretd">' + 'Notifications' + '</th>';
+			tx += "</tr>";
+			
+			// Loop over each batter
+			for (let batid in batters) {
+				let batteri = batters[batid];
+				tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
+				if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
+				tx += batteri.name_display_first_last + '</div></a></td>';
+				tx += '<td class="fullboxscoretd">' + batteri.pos + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.h + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.ab + '</td>';
+				tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.bb) + '</td>';
+				tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.so) + '</td>';
+				tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.hr) + '</td>';
+				tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.rbi) + '</td>';
+				tx += '<td class="fullboxscoretd">' + if_not_zero(batteri.r) + '</td>';
+				if (batteri.sb == "0" && batteri.cs == "0") {
+					tx += '<td class="fullboxscoretd">' + "" + '</td>';
+				} else {
+					tx += '<td class="fullboxscoretd">' + batteri.sb + "/" + (parseInt(batteri.cs) + parseInt(batteri.sb)) + '</td>';
+				}
+				tx += '<td class="fullboxscoretd">' + batteri.avg + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.obp + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.ops + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.s_hr + '</td>';
+				tx += '<td class="fullboxscoretd">' + batteri.s_rbi + '</td>';
+				// Option to add to favorite batters (or remove)
+				// if (use_favBatters) {
+				// Favorites checkbox
 				tx += "<td  class='fullboxscoretd' ";
-				tx += "><input type='checkbox' checked onclick='removeFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+				tx += "><input type='checkbox' checked onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
 				tx += "'></td>";
-			} else {
-				console.log("id no notif", batteri.id);
-				
-				tx += "<td  class='fullboxscoretd' ";
-				tx += "><input type='checkbox'  onclick='addFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
-				tx += "'></td>";
+
+				// Notifications checkbox
+				if (!(batteri.id in favBattersUseNotifications) || favBattersUseNotifications[batteri.id]) {
+					tx += "<td  class='fullboxscoretd' ";
+					tx += "><input type='checkbox' checked onclick='removeFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+					tx += "'></td>";
+				} else {
+					// console.log("id no notif", batteri.id);
+					
+					tx += "<td  class='fullboxscoretd' ";
+					tx += "><input type='checkbox'  onclick='addFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+					tx += "'></td>";
+				}
+				// } else {
+					// tx += "<td></td>";
+				// }
+				tx += '</tr>';
 			}
-			// } else {
-				// tx += "<td></td>";
-			// }
-			tx += '</tr>';
+			
+			
+			tx += "</table>";
 		}
 		
-		
-		tx += "</table>";
-		
-		// Players not found in today's games, haven't played today
+		// Players not found in today's games, haven't played today. Or if using fast_version
 		var notplayedtoday = favBattersIds.filter(x => !Object.keys(batters).includes(x));
 		if (notplayedtoday.length > 0) {
-			tx += "<p>Have not played today</p>";
-			// tx += JSON.stringify(notplayedtoday);
+			if (!fast_version) {
+				tx += "<p>Have not played today</p>";
+			}
 			tx += '<table><tr><th class="fullboxscoretd" >Name</th><th class="fullboxscoretd">Favorites</th><th class="fullboxscoretd">Notifications</th></tr>';
-			for (let batteri of favBatters) {
+			
+			var favBattersSorted = $.extend(true, [], favBatters) // deep copy
+			favBattersSorted.sort((a,b) => a.name_display_first_last.localeCompare(b.name_display_first_last)); // sort them
+			for (let batteri of favBattersSorted) {
 				if (notplayedtoday.includes(batteri.id)) {
 					tx += "<tr><td class='fullboxscoretd'>"+batteri.name_display_first_last+"</td>";
 				
@@ -1714,11 +1930,21 @@ function make_fav_hitters_table() {
 			tx += "</table>";
 		}
 		// console.log('x is', x);
+		
+		document.getElementById("favhittersdiv").innerHTML = tx;
+		
+		// if (use_favBatters) {
+			// document.getElementById('favBattersTabTurnOff').classList.toggle("favBattersButtonSelected");
+		// } else {
+			// document.getElementById('favBattersTabTurnOn').classList.toggle("favBattersButtonSelected");
+		// }
+		
 		return tx;
 	})
-	.then(x => {document.getElementById("favhittersdiv").innerHTML = x; return x;})
-	.catch(er => {console.log("Couldn't get fav batters", er);document.getElementById("favhittersdiv").innerHTML = "Error loading"; return er;});
 }
+
+
+
 
 // From here: https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
 function hashCode(s) {
