@@ -1156,6 +1156,13 @@ function addFavoriteBatter(id, name_display_first_last, this_) {
 	favBattersUseNotifications[id] = true;;
 	saveFavoriteBattersUseNotifications();
 	
+	// Request permission if first batter added and not already granted
+	if (favBattersIds.length == 1) {
+		if (Notification.permission !== "granted") {
+			Notification.requestPermission();
+		}
+	}
+	
 	return;
 }
 
@@ -1787,6 +1794,13 @@ function get_fav_hitters_table(fast_version=false) {
 	// } else {
 		// document.getElementById("favhittersdiv").innerHTML = "<div>Loading... takes 5-10 seconds...\</div>" + document.getElementById("favhittersdiv").innerHTML;
 	// }
+	// If no favBatters, tell them to make some
+	if (favBattersIds.length == 0) {
+		var tx = "<p>You have not selected any favorite batters yet.</p>";
+		tx += "</p>Find your favorite batters' names in a boxscore and check the box next to their name to add them to your favorite batters.</p>";
+		tx += "</p>Then you will be able to receive notifications when they are on deck with a link to their game on MLB.tv.</p>";
+		return new Promise((resolve, reject) => {resolve(tx)});
+	}
 	var batters;
 	if (fast_version) {
 		// batters = [];
