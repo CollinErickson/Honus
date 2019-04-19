@@ -539,6 +539,10 @@ function setBoxScores(x) {
 			if (x.data.games.game[i].game_media.media.free == "YES") {
 				tx += "<tr><td>FGOD</td></tr>";
 			}
+			if (x.data.games.game[i].status.status == "Warmup") {
+				var mlbtvlink = getStreamLink(x.data.games.game[i].game_pk);
+				tx += "<tr><td>" + "<a href='" + mlbtvlink + "' target='_blank'  style='text-decoration: none;color:inherit'>&#x1F4FA;</a>" + "</td></tr>";
+			}
 			tx += "</tr></table></td>";
 			// Third column is probables
 			tx += "<td><table>";
@@ -670,7 +674,7 @@ function setForNewSelectedGame(x) {
 		document.getElementById("toplinescore").innerHTML =  x.data.games.game[selected_game].time + " " + x.data.games.game[selected_game].time_zone;
 	}
 	// Set gameday link
-	gamedayurl = "https://mlb.mlb.com/mlb/gameday/index.jsp?gid=" + year + "_" + month + "_" + day + 
+	var gamedayurl = "https://mlb.mlb.com/mlb/gameday/index.jsp?gid=" + year + "_" + month + "_" + day + 
 	             "_" + x.data.games.game[selected_game].away_code + "mlb_" + 
 				 x.data.games.game[selected_game].home_code + "mlb_" + 
 				 x.data.games.game[selected_game].game_nbr;
