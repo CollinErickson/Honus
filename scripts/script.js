@@ -1029,15 +1029,19 @@ function setForNewSelectedGame(x) {
 		if (["I", "F"].includes(master_scoreboard_JSON.data.games.game[selected_game].status.ind)) {
 			let width_int =  250 + parseInt(document.getElementById("videowidthslider").value);
 			let height_int = Math.ceil(9/16* width_int);
+			let away_team_name = master_scoreboard_JSON.data.games.game[selected_game].away_team_name;
+			if (away_team_name == "D-backs") { // Fangraphs using full name, MLB does not
+				away_team_name = "Diamondbacks";
+			}
 			tx += '<iframe src="https://www.fangraphs.com/graphframe.aspx?config=0&';
 			tx += 'static=0&type=livewins&num=0&h=' + height_int;
 			tx += '&w='+ width_int +'&date='+year+'-'+month+'-'+day+'&team=';
-			tx += master_scoreboard_JSON.data.games.game[selected_game].away_team_name;
+			tx += away_team_name;
 			tx += '&dh=0" frameborder="0" scrolling="no" height="' + height_int;
 			tx += '" width = "'+ width_int + '" ';
 			tx += ' style="border:1px solid black;"></iframe><br /><span style="font-size:9pt;">';
 			tx += 'Source: <a href="https://www.fangraphs.com/livewins.aspx?date='+year+'-'+month+'-'+day;
-			tx += '&team='+master_scoreboard_JSON.data.games.game[selected_game].away_team_name+'&dh=0&season=2019">FanGraphs</a></span>';
+			tx += '&team=' + away_team_name + '&dh=0&season=2019">FanGraphs</a></span>';
 			// console.log('fg is', tx);
 		} else {
 			tx += 'Fangraphs win probability chart can only be shown for games that have started';
@@ -1153,7 +1157,7 @@ function addFavoriteBatter(id, name_display_first_last, this_) {
 		// console.log('this_ was undefined');
 	}
 	// Add to Notifications
-	favBattersUseNotifications[id] = true;;
+	favBattersUseNotifications[id] = true;
 	saveFavoriteBattersUseNotifications();
 	
 	// Request permission if first batter added and not already granted
