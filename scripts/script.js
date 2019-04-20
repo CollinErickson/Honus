@@ -1347,24 +1347,30 @@ function run_favBatters_notification(x) {
 			// console.log("About to give popup");
 			// Check if recently notified
 			var min_between_notif = 5;
-			if (!favBatters_last_notification[fbi.id] || (new Date()) - favBatters_last_notification[fbi.id] > 1000*60*min_between_notif) {
-				console.log("enough time since last notif", fbi);
-				var notif_body = "";
-				if (fbi.status == "batter") {
-					notif_body = fbi.first + " " + fbi.last + " is " + "batting!";
-				} else if (fbi.status == "ondeck") {
-					notif_body = fbi.first + " " + fbi.last + " is " + "on deck!";
+			// Make sure player isn't set to not get notifications
+			if (!(fbi.id in favBattersUseNotifications) || favBattersUseNotifications[fbi.id]) {
+				// Make sure it's been long enough
+				if (!favBatters_last_notification[fbi.id] || (new Date()) - favBatters_last_notification[fbi.id] > 1000*60*min_between_notif) {
+					console.log("enough time since last notif", fbi);
+					var notif_body = "";
+					if (fbi.status == "batter") {
+						notif_body = fbi.first + " " + fbi.last + " is " + "batting!";
+					} else if (fbi.status == "ondeck") {
+						notif_body = fbi.first + " " + fbi.last + " is " + "on deck!";
+					} else {
+						console.log("error with notif", fbi.status);
+					}
+					make_notification(notif_body,
+									  "Click here to open game on MLB.tv",
+									  // "https://www.mlb.com/tv/g" + fbi.game_pk
+									  getStreamLink(fbi.game_pk)
+									);
+					favBatters_last_notification[fbi.id] = new Date();
 				} else {
-					console.log("error with notif", fbi.status);
+					console.log("Was already notified about", fbi);
 				}
-				make_notification(notif_body,
-								  "Click here to open game on MLB.tv",
-								  // "https://www.mlb.com/tv/g" + fbi.game_pk
-								  getStreamLink(fbi.game_pk)
-								);
-				favBatters_last_notification[fbi.id] = new Date();
 			} else {
-				console.log("Was already notified about", fbi);
+				console.log("You turned off notifications for", fbi.first, fbi.last);
 			}
 		});
 	}

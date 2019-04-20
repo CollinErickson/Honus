@@ -18,10 +18,7 @@ link to bbref/fangraphs
 notification onshow
 localStorage tab
 Don't refresh if no active games
-Dbacks fangraphs win prob
-no favbats
-embed video
-
+Refresh button refreshes
 
 
 Maybe never
