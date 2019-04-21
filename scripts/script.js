@@ -550,7 +550,8 @@ function setBoxScores(x) {
 			tx += "<tr><td>" + x.data.games.game[i].home_probable_pitcher.name_display_roster + "(" + x.data.games.game[i].home_probable_pitcher.wins + "-" + x.data.games.game[i].home_probable_pitcher.losses + ")" + "</td></tr>";
 			tx += "</table></td>";
 		} else {
-			tx += "<td colspan=2>Status is " + x.data.games.game[i].status.status + "</td>";
+			// Unknown status, usually something like Delayed: Rain
+			tx += "<td colspan=2>" + x.data.games.game[i].status.status + "</td>";
 		}
 		tx += "</tr>";
 	}
@@ -600,7 +601,7 @@ function setForNewSelectedGame(x) {
 	doAllHighlights();
 	
 	// console.log("SELECTED GAME IS");
-	console.log(x);
+	// console.log(x);
 	
 	// Update URL
 	// console.log("About to change URL, protocol is ", window.location.protocol);
@@ -1032,7 +1033,7 @@ function setForNewSelectedGame(x) {
 			let away_team_name = master_scoreboard_JSON.data.games.game[selected_game].away_team_name;
 			let dh = "0";
 			if (master_scoreboard_JSON.data.games.game[selected_game].double_header_sw != "N") {
-				console.log("Is a dbh!!!!", master_scoreboard_JSON.data.games.game[selected_game].game_nbr);
+				// console.log("Is a dbh!!!!", master_scoreboard_JSON.data.games.game[selected_game].game_nbr);
 				dh = master_scoreboard_JSON.data.games.game[selected_game].game_nbr;
 			}
 			if (away_team_name == "D-backs") { // Fangraphs using full name, MLB does not
@@ -1592,7 +1593,7 @@ function get_player_stats_for_day() {
 		)
 	});
 	return Promise.all(promises).then(x => {
-		// console.log("finished all promises");
+		// console.log("finished all promises", tobj);
 		return tobj;
 		});
 }
@@ -1830,7 +1831,7 @@ function get_fav_hitters_table(fast_version=false) {
 					  });
 	}
 	return batters.then(batters => {
-		console.log('tobj is ', batters);
+		// console.log('tobj is ', batters);
 		var tx = "";
 		tx += "<div style='margin-top:20px;'>You will get notifications when these players are ondeck/batting:";
 			tx += "<button type='button' class='favBattersButton favBattersButtonOn  favBattersTabTurnOff  ";
@@ -1872,9 +1873,16 @@ function get_fav_hitters_table(fast_version=false) {
 			tx += '<th class="fullboxscoretd">' + 'Notifications' + '</th>';
 			tx += "</tr>";
 			
+			// Sort them to be alphabetical
+			let battersarray = []
+			for (let batid in batters) {battersarray.push(batters[batid]);}
+			battersarray.sort((a,b) => a.name_display_first_last.localeCompare(b.name_display_first_last));
+			
 			// Loop over each batter
-			for (let batid in batters) {
-				let batteri = batters[batid];
+			// for (let batid in batters) {
+				// let batteri = batters[batid];
+			// Now using the sorted array
+			for(let batteri of battersarray) {
 				tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
 				if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
 				tx += batteri.name_display_first_last + '</div></a></td>';
