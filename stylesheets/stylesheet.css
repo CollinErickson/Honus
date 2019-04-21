@@ -272,3 +272,7 @@ table {
 .favBattersButton:hover {
 	background-color:orange;
 }
+
+.pointeronhover:hover {
+	cursor:pointer;
+}

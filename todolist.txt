@@ -1,14 +1,7 @@
 Soon
 ----------------
-Clean up favorite batters
 Better CSS for play by play
-favBatters add button and description
-favBatters tab button add on/off to name
-favBatters add version that doesn't load stats
-use checkboxes in favbatters div
 Different stream games for select teams (in market)
-fav hitters alphabetical
-Doubleheaders
 
 Later
 ----------------
@@ -17,10 +10,8 @@ reload rate no boxscore update
 Favorite pitchers
 fail to get game_events, clear play by play
 link to bbref/fangraphs
-notification onshow
 localStorage tab
 Don't refresh if no active games
-Refresh button refreshes
 Live page. Show pitches, etc.
 
 

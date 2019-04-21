@@ -1275,7 +1275,9 @@ function update_favBattersdiv() {
 			tx += "<tr align='center'><th>Remove</th><th>Name</th></th>";
 			favBatters.forEach(b => {
 				tx += "<tr>";
-				tx += "<td align='center' onclick='removeFavoriteBatter(\"" + b.id + "\");update_favBattersdiv()'>-</td>";
+				// tx += "<td align='center' onclick='removeFavoriteBatter(\"" + b.id + "\");update_favBattersdiv()'>-</td>";
+				// Change to checkbox, not necessary
+				tx += "<td align='center'><input type='checkbox' checked onclick='removeFavoriteBatter(\"" + b.id + "\");update_favBattersdiv()'></td>";
 				tx += "<td>" + b.name_display_first_last + "</td>";
 				// tx += "</td>";
 				tx += "</tr>";
