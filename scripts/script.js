@@ -1563,20 +1563,22 @@ function get_player_stats_for_day() {
 	// var tx = ""; //"<table>";
 	// var counter = 0;
 	var promises = [];
-	var tobj = {};
+	var tobj = []; // use array. Using object with id as key was bad for double headers
 	master_scoreboard_JSON.data.games.game.forEach(game => {
 		// game_data_directory: "/components/game/mlb/year_2019/month_04/day_12/gid_2019_04_12_anamlb_chnmlb_1"
 		const url = "https://gd2.mlb.com" + game.game_data_directory + "/boxscore.json";
 		promises.push(
 			get_JSON_as_object(url)
 			.then(bs => {
+				console.log(url, bs);
 				([0,1]).forEach(home_or_away_01 => {
 					if (bs.data.boxscore && bs.data.boxscore.batting[home_or_away_01] && bs.data.boxscore.batting[home_or_away_01].batter) {
 						bs.data.boxscore.batting[home_or_away_01].batter.forEach(bat => {
 							if (favBattersIds.includes(bat.id)) {
 								// console.log("Found favbat", bat);
 								// tx += get_boxscore_row_for_batter(bat);
-								tobj[bat.id] = bat;
+								// tobj[bat.id] = bat;
+								tobj.push(bat);
 							}
 						})
 					}
@@ -1874,15 +1876,16 @@ function get_fav_hitters_table(fast_version=false) {
 			tx += "</tr>";
 			
 			// Sort them to be alphabetical
-			let battersarray = []
-			for (let batid in batters) {battersarray.push(batters[batid]);}
-			battersarray.sort((a,b) => a.name_display_first_last.localeCompare(b.name_display_first_last));
+			// let battersarray = []
+			// for (let batid in batters) {battersarray.push(batters[batid]);}
+			// battersarray.sort((a,b) => a.name_display_first_last.localeCompare(b.name_display_first_last));
+			batters.sort((a,b) => a.name_display_first_last.localeCompare(b.name_display_first_last));
 			
 			// Loop over each batter
 			// for (let batid in batters) {
 				// let batteri = batters[batid];
 			// Now using the sorted array
-			for(let batteri of battersarray) {
+			for(let batteri of batters) {
 				tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
 				if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
 				tx += batteri.name_display_first_last + '</div></a></td>';
@@ -1934,7 +1937,10 @@ function get_fav_hitters_table(fast_version=false) {
 		}
 		
 		// Players not found in today's games, haven't played today. Or if using fast_version
-		var notplayedtoday = favBattersIds.filter(x => !Object.keys(batters).includes(x));
+		let batterids_found = [];
+		for (let batteri of batters) {batterids_found.push(batteri.id);}
+		// var notplayedtoday = favBattersIds.filter(x => !Object.keys(batters).includes(x));
+		var notplayedtoday = favBattersIds.filter(x => !batterids_found.includes(x));
 		if (notplayedtoday.length > 0) {
 			if (!fast_version) {
 				tx += "<p>Have not played today</p>";
