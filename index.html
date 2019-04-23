@@ -382,6 +382,10 @@ var stream_service = "MLB.tv";
 if (localStorage.getItem("stream_service")) {
 	stream_service = localStorage.getItem("stream_service");
 }
+var stream_service_exceptions = {};
+if (localStorage.getItem("stream_service_exceptions")) {
+	stream_service = JSON.parse(localStorage.getItem("stream_service_exceptions"));
+}
 //var reload_rate = document.getElementById("selectreload").value;
 if (localStorage.getItem("reload_rate")) {
 	document.getElementById("selectreload").value = localStorage.getItem("reload_rate");

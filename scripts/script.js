@@ -509,7 +509,7 @@ function setBoxScores(x) {
 			}
 			// getting mlb.tv link
 			// var mlbtvlink = "https://www.mlb.com/tv/g" + x.data.games.game[i].game_pk;//x.data.games.game[i].links.mlbtv;
-			var mlbtvlink = getStreamLink(x.data.games.game[i].game_pk);
+			var mlbtvlink = getStreamLink(x.data.games.game[i].game_pk, x.data.games.game[i].away_name_abbrev, x.data.games.game[i].home_name_abbrev);
 			// console.log('mlbtvlink is', mlbtvlink);
 			tx += "</td><td rowspan='2'>";
 			if (x.data.games.game[i].game_media.media.free == "YES") {
@@ -540,7 +540,7 @@ function setBoxScores(x) {
 				tx += "<tr><td>FGOD</td></tr>";
 			}
 			if (x.data.games.game[i].status.status == "Warmup") {
-				var mlbtvlink = getStreamLink(x.data.games.game[i].game_pk);
+				var mlbtvlink = getStreamLink(x.data.games.game[i].game_pk, x.data.games.game[i].away_name_abbrev, x.data.games.game[i].home_name_abbrev);
 				tx += "<tr><td>" + "<a href='" + mlbtvlink + "' target='_blank'  style='text-decoration: none;color:inherit'>&#x1F4FA;</a>" + "</td></tr>";
 			}
 			tx += "</tr></table></td>";
@@ -1342,10 +1342,10 @@ function run_favBatters_notification(x) {
 				// fb_id.push(g.batter.id);
 				// fb_id.push(g.batter.first)0;
 				// console.log("batter", g.batter.last);
-				fb.push({id:g.batter.id, first:g.batter.first, last:g.batter.last, status:"batter", game_pk:g.game_pk});
+				fb.push({id:g.batter.id, first:g.batter.first, last:g.batter.last, status:"batter", game_pk:g.game_pk, away_name_abbrev:g.away_name_abbrev, home_name_abbrev:g.home_name_abbrev});
 			} else if (favBattersIds.includes(g.ondeck.id)) {
 				// console.log("ondeck", g.ondeck.last);
-				fb.push({id:g.ondeck.id, first:g.ondeck.first, last:g.ondeck.last, status:"ondeck", game_pk:g.game_pk});
+				fb.push({id:g.ondeck.id, first:g.ondeck.first, last:g.ondeck.last, status:"ondeck", game_pk:g.game_pk, away_name_abbrev:g.away_name_abbrev, home_name_abbrev:g.home_name_abbrev});
 			}
 		}
 	});
@@ -1372,7 +1372,7 @@ function run_favBatters_notification(x) {
 					make_notification(notif_body,
 									  "Click here to open game on MLB.tv",
 									  // "https://www.mlb.com/tv/g" + fbi.game_pk
-									  getStreamLink(fbi.game_pk)
+									  getStreamLink(fbi.game_pk, fbi.away_name_abbrev, fbi.home_name_abbrev)
 									);
 					favBatters_last_notification[fbi.id] = new Date();
 				} else {
@@ -1532,13 +1532,21 @@ function makeStandings() {
 	});
 }
 
-function getStreamLink(gpk) {
+function getStreamLink(gpk, away_name_abbrev, home_name_abbrev) {
+	// console.log('stream link in', gpk, away_name_abbrev, home_name_abbrev);
 	// Give stream link for given game_pk depending on choice of stream service
 	// Default is MLB.tv
 	var link = "https://www.mlb.com/tv/g" + gpk;
-	if (stream_service && stream_service == "sportsme") {
+	var stream_service_to_use = "MLB.tv";
+	
+	if ((stream_service && stream_service == "sportsme") || 
+		(stream_service_exceptions[away_name_abbrev] && stream_service_exceptions[away_name_abbrev]=="sportsme") || 
+		(stream_service_exceptions[home_name_abbrev] && stream_service_exceptions[home_name_abbrev]=="sportsme")) {
 		link = "http://www.worldcupfootball.me/mlb/" + gpk + "/h";
 	}
+	// if (stream_service && stream_service == "sportsme") {
+		// link = "http://www.worldcupfootball.me/mlb/" + gpk + "/h";
+	// }
 	// console.log("Returning stream link", link);
 	return link;
 }
