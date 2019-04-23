@@ -2,6 +2,8 @@ Soon
 ----------------
 Better CSS for play by play
 Different stream games for select teams (in market)
+Checkmarks for pitchers
+Load when click favpitchers
 
 Later
 ----------------

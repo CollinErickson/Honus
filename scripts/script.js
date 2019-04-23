@@ -1573,7 +1573,8 @@ function get_player_stats_for_day() {
 	// var tx = ""; //"<table>";
 	// var counter = 0;
 	var promises = [];
-	var tobj = []; // use array. Using object with id as key was bad for double headers
+	var tbatting = []; // use array. Using object with id as key was bad for double headers
+	var tpitching = [];
 	master_scoreboard_JSON.data.games.game.forEach(game => {
 		// game_data_directory: "/components/game/mlb/year_2019/month_04/day_12/gid_2019_04_12_anamlb_chnmlb_1"
 		const url = "https://gd2.mlb.com" + game.game_data_directory + "/boxscore.json";
@@ -1582,31 +1583,44 @@ function get_player_stats_for_day() {
 			.then(bs => {
 				console.log(url, bs);
 				([0,1]).forEach(home_or_away_01 => {
+					// Check batters
 					if (bs.data.boxscore && bs.data.boxscore.batting[home_or_away_01] && bs.data.boxscore.batting[home_or_away_01].batter) {
 						bs.data.boxscore.batting[home_or_away_01].batter.forEach(bat => {
 							if (favBattersIds.includes(bat.id)) {
 								// console.log("Found favbat", bat);
 								// tx += get_boxscore_row_for_batter(bat);
-								// tobj[bat.id] = bat;
-								tobj.push(bat);
+								// tbatting[bat.id] = bat;
+								tbatting.push(bat);
+							}
+						})
+					}
+					// Check pitchers
+					if (bs.data.boxscore && bs.data.boxscore.pitching[home_or_away_01] && bs.data.boxscore.pitching[home_or_away_01].pitcher) {
+						let pitcher_array;
+						if (Array.isArray(bs.data.boxscore.pitching[home_or_away_01].pitcher)) {
+							pitcher_array = bs.data.boxscore.pitching[home_or_away_01].pitcher;
+						} else {
+							pitcher_array = [bs.data.boxscore.pitching[home_or_away_01].pitcher];
+						}
+						console.log("Is this object/array?", bs.data.boxscore.pitching[home_or_away_01].pitcher);
+						// bs.data.boxscore.pitching[home_or_away_01].pitcher.forEach(bat => {
+						pitcher_array.forEach(bat => {
+							console.log("Pitcher id is", bat.id);
+							if (favBattersIds.includes(bat.id)) {
+								console.log("Found favpitcher!!!!!!", bat);
+								tpitching.push(bat);
 							}
 						})
 					}
 				})
 				return true;
-			})//.then( y => {
-				// counter++;
-				// if (counter == master_scoreboard_JSON.data.games.game.length) {
-					// console.log("Done now!!!!");
-					// tx += "</table>";
-					// console.log('gp table is', tx);
-				// }
-			// })
+			})
 		)
 	});
 	return Promise.all(promises).then(x => {
-		// console.log("finished all promises", tobj);
-		return tobj;
+		console.log("finished all promises", tbatting, tpitching);
+		// return {batting:tbatting, pitching:tpitching};
+		return new Promise((resolve, reject) => {resolve({batting:tbatting, pitching:tpitching})});
 		});
 }
 
@@ -1786,12 +1800,14 @@ function do_fav_hitters_table() {
 	// document.getElementById("favhittersdiv").innerHTML = "<p>Loading... takes up to 10 seconds...</p>" + get_fav_hitters_table(true);
 	get_fav_hitters_table(true)
 	.then(tx => {
-		document.getElementById("favhittersdiv").innerHTML = "<p style='font-size:2em'>Loading... takes up to 10 seconds...</p>" + tx
+		document.getElementById("favhittersdiv").innerHTML = "<p style='font-size:2em'>Loading... takes up to 10 seconds...</p>" + tx.batters;
+		document.getElementById("favpitchersdiv").innerHTML = "<p style='font-size:2em'>Loading... takes up to 10 seconds...</p>" + tx.pitchers;
 	})
 	// Then do stats version, takes longer
 	get_fav_hitters_table(false)
 	.then(tx => {
-		document.getElementById("favhittersdiv").innerHTML = tx;
+		document.getElementById("favhittersdiv").innerHTML = tx.batters;
+		document.getElementById("favpitchersdiv").innerHTML = tx.pitchers;
 	});
 	// document.getElementById("favhittersdiv").innerHTML = get_fav_hitters_table(false);
 }
@@ -1830,19 +1846,25 @@ function get_fav_hitters_table(fast_version=false) {
 		tx += "</p>Then you will be able to receive notifications when they are on deck with a link to their game on MLB.tv.</p>";
 		return new Promise((resolve, reject) => {resolve(tx)});
 	}
-	var batters;
+	var batterspitchers;
 	if (fast_version) {
 		// batters = [];
-		batters = new Promise((resolve, reject) => {resolve([])});
+		console.log("Doing fast version, don't worry");
+		batterspitchers = new Promise((resolve, reject) => {resolve([])});
 	} else {
-		batters = get_player_stats_for_day()
+		batterspitchers = get_player_stats_for_day()
          		  .catch(er => {
-					  console.log("Couldn't get fav batters", er);
+					  console.log("Couldn't get fav batterspitchers", er);
 					  // document.getElementById("favhittersdiv").innerHTML = "Error loading";
 					  return er;
 					  });
 	}
-	return batters.then(batters => {
+	return batterspitchers.then(batters_and_pitchers => {
+		console.log("Have batterspitchers, it is", batters_and_pitchers);
+		let batters = batters_and_pitchers.batting;
+		console.log("Batters is", batters);
+		let pitchers =batters_and_pitchers.pitching;
+		console.log("Pitchers is", pitchers);
 		// console.log('tobj is ', batters);
 		var tx = "";
 		tx += "<div style='margin-top:20px;'>You will get notifications when these players are ondeck/batting:";
@@ -1985,7 +2007,7 @@ function get_fav_hitters_table(fast_version=false) {
 		}
 		// console.log('x is', x);
 		
-		document.getElementById("favhittersdiv").innerHTML = tx;
+		// document.getElementById("favhittersdiv").innerHTML = tx;
 		
 		// if (use_favBatters) {
 			// document.getElementById('favBattersTabTurnOff').classList.toggle("favBattersButtonSelected");
@@ -1993,10 +2015,159 @@ function get_fav_hitters_table(fast_version=false) {
 			// document.getElementById('favBattersTabTurnOn').classList.toggle("favBattersButtonSelected");
 		// }
 		
-		return tx;
+		let tx_pitchers = get_fav_pitchers_text_from_array(pitchers);
+		
+		// return tx;
+		return {batters:tx, pitchers:tx_pitchers};
 	})
 }
 
+function get_fav_pitchers_text_from_array(pitchers) {
+	let fast_version = false;
+	var tx = "";
+	// tx += "<div style='margin-top:20px;'>You will get notifications when these players are ondeck/batting:";
+		// tx += "<button type='button' class='favBattersButton favBattersButtonOn  favBattersTabTurnOff  ";
+		// if (use_favBatters) {tx += "favBattersButtonSelected"}
+		// tx +="' id='favBattersTabTurnOff' onclick='favBattersButtonClicked(true)'>"; //Turn on
+		// if (!use_favBatters) {tx += "Turn on!"} else {tx += "Currently on";}
+		// tx += "</button>";
+		// tx += "<button type='button' class='favBattersButton favBattersButtonOff favBattersTabTurnOn   ";
+		// if (!use_favBatters) {tx += "favBattersButtonSelected"}
+		// tx += "'  id='favBattersTabTurnOn'  onclick='favBattersButtonClicked(false)'>"; //Turn off
+		// if (use_favBatters) {tx += "Turn off!"} else {tx += "Currently off";}
+		// tx += "</button></div>";
+	// if (document.getElementById("selectreload").value == "never") {
+		// tx += "<div><strong>Turn on refresh rate (&#x21bb;) at top of page for this to be useful!</strong></div>";
+	// }
+	tx += "<div>No notifications for pitchers</div>";
+	
+	// do full stats for players that have them
+	if (!fast_version) {
+		// console.log("Will it do this?", batters);
+		tx +=  "Stats for " + month + "/" + day + "/" + year;
+
+		tx += "<table class='fullboxscoretables'><tr>";
+		tx += '<th class="fullboxscoretd" colspan=1>Name</td>';
+		
+		tx += '<th class="fullboxscoretd">' + 'POS' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'INN' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'ER' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'R' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'H' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'BB' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'SO' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'HR' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'NP' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'W-L' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'SV' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'ERA' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'Favorites' + '</th>';
+		tx += '<th class="fullboxscoretd">' + 'Notifications' + '</th>';
+		tx += "</tr>";
+		
+		// Sort them to be alphabetical
+		// let battersarray = []
+		// for (let batid in batters) {battersarray.push(batters[batid]);}
+		// battersarray.sort((a,b) => a.name_display_first_last.localeCompare(b.name_display_first_last));
+		pitchers.sort((a,b) => a.name_display_first_last.localeCompare(b.name_display_first_last));
+		
+		// Loop over each batter
+		// for (let batid in batters) {
+			// let batteri = batters[batid];
+		// Now using the sorted array
+		for(let pitcheri of pitchers) {
+			// tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ pitcheri.id +'"><div style="text-align:left;" >';
+			// console.log(pitcheri);
+			// if (pitcheri.bo.substr(1,2) != "00") {tx += "- ";}
+			// tx += pitcheri.name_display_first_last + '</div></a></td>';
+			
+			tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ pitcheri.id +'"><div style="text-align:left;" >';
+			// if (pitcheri.bo.substr(1,2) != "00") {tx += "- ";}
+			tx += pitcheri.name_display_first_last;
+			if (pitcheri.win) {tx += " (W)"}
+			if (pitcheri.loss) {tx += " (L)"}
+			if (pitcheri.save) {tx += " (S)"}
+			tx += '</div></a></td>';
+			tx += '<td class="fullboxscoretd">' + pitcheri.pos + '</td>';
+			tx += '<td class="fullboxscoretd">' + Math.floor(pitcheri.out / 3) + "." + (pitcheri.out % 3) + '</td>';
+			tx += '<td class="fullboxscoretd">' + pitcheri.er + '</td>';
+			tx += '<td class="fullboxscoretd">' + pitcheri.r + '</td>';
+			tx += '<td class="fullboxscoretd">' + pitcheri.h + '</td>';
+			tx += '<td class="fullboxscoretd">' + pitcheri.bb + '</td>';
+			tx += '<td class="fullboxscoretd">' + pitcheri.so + '</td>';
+			tx += '<td class="fullboxscoretd">' + pitcheri.hr + '</td>';
+			tx += '<td class="fullboxscoretd">' + pitcheri.np + '</td>';
+			tx += '<td class="fullboxscoretd">' + pitcheri.w + "-" + pitcheri.l + '</td>';
+			tx += '<td class="fullboxscoretd">' + pitcheri.sv + '</td>';
+			tx += '<td class="fullboxscoretd">' + pitcheri.era + '</td>';
+					
+			// Option to add to favorite batters (or remove)
+			// if (use_favBatters) {
+			// Favorites checkbox
+			tx += "<td  class='fullboxscoretd' ";
+			tx += "><input type='checkbox' checked onclick='removeFavoriteBatter(\"" + pitcheri.id + "\",\"" + pitcheri.name_display_first_last + "\", this);";
+			tx += "'></td>";
+
+			// Notifications checkbox
+			if (!(pitcheri.id in favBattersUseNotifications) || favBattersUseNotifications[pitcheri.id]) {
+				tx += "<td  class='fullboxscoretd' ";
+				tx += "><input type='checkbox' checked onclick='removeFavoriteBatterNotification(\"" + pitcheri.id + "\",\"" + pitcheri.name_display_first_last + "\", this);";
+				tx += "'></td>";
+			} else {
+				// console.log("id no notif", pitcheri.id);
+				
+				tx += "<td  class='fullboxscoretd' ";
+				tx += "><input type='checkbox'  onclick='addFavoriteBatterNotification(\"" + pitcheri.id + "\",\"" + pitcheri.name_display_first_last + "\", this);";
+				tx += "'></td>";
+			}
+			// } else {
+				// tx += "<td></td>";
+			// }
+			tx += '</tr>';
+		}
+		
+		
+		tx += "</table>";
+	}
+	
+	// Players not found in today's games, haven't played today. Or if using fast_version
+	let batterids_found = [];
+	for (let batteri of pitchers) {batterids_found.push(batteri.id);}
+	var notplayedtoday = favBattersIds.filter(x => !batterids_found.includes(x));
+	if (notplayedtoday.length > 0) {
+		if (!fast_version) {
+			tx += "<p>Have not pitched today</p>";
+		}
+		tx += '<table><tr><th class="fullboxscoretd" >Name</th><th class="fullboxscoretd">Favorites</th><th class="fullboxscoretd">Notifications</th></tr>';
+		
+		var favBattersSorted = $.extend(true, [], favBatters) // deep copy
+		favBattersSorted.sort((a,b) => a.name_display_first_last.localeCompare(b.name_display_first_last)); // sort them
+		for (let batteri of favBattersSorted) {
+			if (notplayedtoday.includes(batteri.id)) {
+				tx += "<tr><td class='fullboxscoretd'>"+batteri.name_display_first_last+"</td>";
+			
+				// Favorites checkbox
+				tx += "<td  class='fullboxscoretd' style='text-align:center' ";
+				tx += "><input type='checkbox' checked onclick='removeFavoriteBatter(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+				tx += "'></td>";
+				
+				// Notifications checkbox
+				if (!(batteri.id in favBattersUseNotifications) || favBattersUseNotifications[batteri.id]) {
+					tx += "<td  class='fullboxscoretd' style='text-align:center' ";
+					tx += "><input type='checkbox' checked onclick='removeFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+					tx += "'></td>";
+				} else {
+					tx += "<td  class='fullboxscoretd' style='text-align:center' ";
+					tx += "><input type='checkbox'  onclick='addFavoriteBatterNotification(\"" + batteri.id + "\",\"" + batteri.name_display_first_last + "\", this);";
+					tx += "'></td>";
+				}
+				tx += "</tr>";
+			}
+		}
+		tx += "</table>";
+	}
+	return tx;
+}
 
 
 
