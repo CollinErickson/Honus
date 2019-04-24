@@ -942,7 +942,10 @@ function setForNewSelectedGame(x) {
 				tx += "</tr>";
 				// row for each player
 				x.data.boxscore.batting[away_or_home_01].batter.forEach(batteri => {
-					tx += get_boxscore_row_for_batter(batteri);
+					// Check if pitcher that isn't in batting order, don't get row if it is
+					if (batteri.bo && batteri.bo.length > 0) {
+						tx += get_boxscore_row_for_batter(batteri);
+					}
 				});
 			}
 			tx += "</table></td>";
@@ -964,7 +967,7 @@ function setForNewSelectedGame(x) {
 			// top row
 			if (x.data.boxscore.pitching[away_or_home_01] && x.data.boxscore.pitching[away_or_home_01].pitcher) {
 				tx += "<td style='vertical-align:top;'><table class='fullboxscoretables'><tr>";
-				tx += '<td class="fullboxscoretd">' + x.data.boxscore[away_or_home + "_sname"] + '</td>';
+				tx += '<td class="fullboxscoretd">' + x.data.boxscore[away_or_home + "_sname"] + '</td><td class="fullboxscoretd">&#9733;</td>';
 				tx += '<td class="fullboxscoretd">' + 'POS' + '</td>';
 				tx += '<td class="fullboxscoretd">' + 'INN' + '</td>';
 				tx += '<td class="fullboxscoretd">' + 'ER' + '</td>';
@@ -994,6 +997,16 @@ function setForNewSelectedGame(x) {
 					if (pitcheri.loss) {tx += " (L)"}
 					if (pitcheri.save) {tx += " (S)"}
 					tx += '</div></a></td>';
+					// Now use checkbox instead of +/-
+					if (favBattersIds.includes(pitcheri.id)) {
+						tx += "<td  class='fullboxscoretd' ";
+						tx += "><input type='checkbox' checked onclick='removeFavoriteBatter(\"" + pitcheri.id + "\",\"" + pitcheri.name_display_first_last + "\", this);";
+						tx += "'></td>";
+					} else {			
+						tx += "<td  class='fullboxscoretd' ";
+						tx += "><input type='checkbox'  onclick='addFavoriteBatter(\"" + pitcheri.id + "\",\"" + pitcheri.name_display_first_last + "\", this);";
+						tx += "'></td>";
+					}
 					tx += '<td class="fullboxscoretd">' + pitcheri.pos + '</td>';
 					tx += '<td class="fullboxscoretd">' + Math.floor(pitcheri.out / 3) + "." + (pitcheri.out % 3) + '</td>';
 					tx += '<td class="fullboxscoretd">' + pitcheri.er + '</td>';
@@ -1065,7 +1078,9 @@ function get_boxscore_row_for_batter(batteri) {
 	// console.log("batteri is", batteri);
 	// console.log("bo is", batteri.bo);
 	// Can't use https for these MLB links!
+	// console.log("batter is", batteri.bo, batteri.pos, batteri.name_display_first_last, batteri);
 	tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
+	if (batteri.bo.length == 0) {console.log("Getting row for batter not in lineup, probably a pitcher")}
 	if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
 	tx += batteri.name_display_first_last + '</div></a></td>';
 	// Option to add to favorite batters (or remove)
@@ -1581,7 +1596,7 @@ function get_player_stats_for_day() {
 		promises.push(
 			get_JSON_as_object(url)
 			.then(bs => {
-				console.log(url, bs);
+				// console.log(url, bs);
 				([0,1]).forEach(home_or_away_01 => {
 					// Check batters
 					if (bs.data.boxscore && bs.data.boxscore.batting[home_or_away_01] && bs.data.boxscore.batting[home_or_away_01].batter) {
@@ -1602,10 +1617,10 @@ function get_player_stats_for_day() {
 						} else {
 							pitcher_array = [bs.data.boxscore.pitching[home_or_away_01].pitcher];
 						}
-						console.log("Is this object/array?", bs.data.boxscore.pitching[home_or_away_01].pitcher);
+						// console.log("Is this object/array?", bs.data.boxscore.pitching[home_or_away_01].pitcher);
 						// bs.data.boxscore.pitching[home_or_away_01].pitcher.forEach(bat => {
 						pitcher_array.forEach(bat => {
-							console.log("Pitcher id is", bat.id);
+							// console.log("Pitcher id is", bat.id);
 							if (favBattersIds.includes(bat.id)) {
 								console.log("Found favpitcher!!!!!!", bat);
 								tpitching.push(bat);
