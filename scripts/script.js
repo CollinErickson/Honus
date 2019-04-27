@@ -1455,7 +1455,7 @@ function openTab(evt, tabName) {
 		makeStandings();
 	}
 	
-	if (tabName == "favhitterstab") {
+	if (tabName == "favhitterstab" || tabName == "favpitcherstab") {
 		do_fav_hitters_table()
 	}
 }
