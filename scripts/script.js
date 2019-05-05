@@ -735,7 +735,7 @@ function setForNewSelectedGame(x) {
 		})
 		.then( ge => {
 			// console.log("game_events.json is", ge);
-			// game_events = ge;
+			game_events = ge; // Set as global variable
 			// var tx = '<tr><td class="fullboxscoretd">Inning</td><td class="fullboxscoretd">Away</td><td class="fullboxscoretd">Home</td><td class="fullboxscoretd">Scoring Play</td></tr>';
 			var tx=""; // Text for scoring plays only
 			var tplays={}; // Text for all plays
@@ -832,7 +832,8 @@ function setForNewSelectedGame(x) {
 												tx += '<td class="fullboxscoretd" style="text-align:center;">' + eventi.home_team_runs + '</td>';
 											}
 											tx += '<td class="fullboxscoretd" style="text-align:left;">' + eventi.des            + '</td>';
-											tx += "<tr>";
+											tx += "<td><a href='https://baseballsavant.mlb.com/sporty-videos?playId="+eventi.play_guid+"' target='_blank' style='text-decoration: none;color:inherit'>Vid</a></td>"; // Add video link, only works for games at least two days old
+											// tx += "<tr>";
 											tx += "</tr>";
 										}
 									}
@@ -846,6 +847,7 @@ function setForNewSelectedGame(x) {
 									tplays[inn] += "<td style='text-align:center;'>" + eventi.o + "</td>";
 									// tplays += "<td>" + eventi["event"] + "</td>"; e.g. "Walk", "Pop out", etc
 									tplays[inn] += "<td>" + eventi.des + "</td>"; // sentence description of play
+									tplays[inn] += "<td><a href='https://baseballsavant.mlb.com/sporty-videos?playId="+eventi.play_guid+"' target='_blank' style='text-decoration: none;color:inherit'>Vid</a></td>"; // Add video link, only works for games at least two days old
 									// tplays += "<td>" +  + "</td>";
 									// tplays += "<td>" +  + "</td>";
 									// tplays += eventi.des;
