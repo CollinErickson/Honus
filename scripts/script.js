@@ -468,7 +468,7 @@ function setBoxScores(x) {
 				home_pitcher_text = losing_pitcher_text;
 			}
 			tx += "<td><table><tr><td>" + away_pitcher_text + "</td></tr><tr><td>"+ home_pitcher_text + "</td></tr></table></td>";
-		} else if (["In Progress", "Review", "Manager Challenge", "Delayed"].includes(x.data.games.game[i].status.status)) {
+		} else if (["In Progress", "Review", "Manager Challenge", "Delayed", "Delayed: Rain"].includes(x.data.games.game[i].status.status)) {
 			// Check if no hitter, add class if it is
 			if (parseInt(master_scoreboard_JSON.data.games.game[i].status.inning) >= 5 && (master_scoreboard_JSON.data.games.game[i].linescore.h.away == "0" || master_scoreboard_JSON.data.games.game[i].linescore.h.home == "0")) {
 				console.log("No hitter!", i);
@@ -520,13 +520,18 @@ function setBoxScores(x) {
 			// second row of center col is home score
 			tx += "</td></tr><tr><td>"+ x.data.games.game[i].linescore.r.home + "</td></tr></table>";
 			tx += "</td>";
-			// 3rd td is inning num, batter pitcher
-			tx += "<td>";
-			// Show batter and pitcher
-			tx += "<table><tr><td>P:" + x.data.games.game[i].pitcher.name_display_roster + "(" + x.data.games.game[i].pitcher.wins + "-" + x.data.games.game[i].pitcher.losses + ")" + "</td></tr>";
-			tx += "<tr><td>B:" + x.data.games.game[i].batter.name_display_roster + "(" + x.data.games.game[i].batter.avg + ")" + "</td></tr></table>";
-			tx += "</td>";
-			//tx += "<td><table><tr><td>" + x.data.games.game[i].status.inning_state + x.data.games.game[i].status.inning + "</td></tr><tr><td>"+ 123 + "</td></tr></table></td>";
+			// Third column
+			if (["Delayed", "Delayed: Rain"].includes(x.data.games.game[i].status.status)) { // If delayed, say delayed instead of batter/pitcher
+				tx += "<td>" + x.data.games.game[i].status.status + "</td>";
+			} else {
+				// 3rd td is inning num, batter pitcher
+				tx += "<td>";
+				// Show batter and pitcher
+				tx += "<table><tr><td>P:" + x.data.games.game[i].pitcher.name_display_roster + "(" + x.data.games.game[i].pitcher.wins + "-" + x.data.games.game[i].pitcher.losses + ")" + "</td></tr>";
+				tx += "<tr><td>B:" + x.data.games.game[i].batter.name_display_roster + "(" + x.data.games.game[i].batter.avg + ")" + "</td></tr></table>";
+				tx += "</td>";
+				//tx += "<td><table><tr><td>" + x.data.games.game[i].status.inning_state + x.data.games.game[i].status.inning + "</td></tr><tr><td>"+ 123 + "</td></tr></table></td>";
+			}
 			
 		} else if (["Postponed"].includes(x.data.games.game[i].status.status))  {
 			// tx += "<td></td><td>Postponed</td>";
