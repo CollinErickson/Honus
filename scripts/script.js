@@ -758,8 +758,9 @@ function setForNewSelectedGame(x) {
 					let inn = i + 1;
 					tplays[inn] = "";
 					["top", "bottom"].forEach(top_or_bottom => {
-						
-						tplays[inn] += "<tr><th>" + top_or_bottom + "</th></tr>";
+						let camelcase_top_or_bottom=""; if (top_or_bottom=="top") {camelcase_top_or_bottom="Top"} else {camelcase_top_or_bottom="Bottom"}
+						// tplays[inn] += "<tr><th>" + camelcase_top_or_bottom + "</th></tr>";
+						if (top_or_bottom == "bottom") {tplays[inn] += "<tr><td>&nbsp;</td></tr>"}
 						var atbat_array, action_array;
 						if (ge.data.game.inning[i][top_or_bottom] && ge.data.game.inning[i][top_or_bottom]["atbat"]) {
 							if (Array.isArray(ge.data.game.inning[i][top_or_bottom]["atbat"])) {
@@ -790,7 +791,7 @@ function setForNewSelectedGame(x) {
 						});
 						// console.log('at bat and action arrays are', atbat_array, action_array);
 						// console.log("Sorted atbat_and_action_array is", atbat_and_action_array);
-						
+						let firstrow = true;
 						atbat_and_action_array.forEach(eventi => {
 						
 						// //console.log(ge.data.game.inning[i][top_or_bottom]);
@@ -808,6 +809,7 @@ function setForNewSelectedGame(x) {
 									// Check for scoring play
 									var runscored = false;
 									var eventi_runner;
+									let runners_after_play = [false, false, false];
 									if (Array.isArray(eventi.runner)) {
 										eventi_runner = eventi.runner;
 									} else {
@@ -820,6 +822,9 @@ function setForNewSelectedGame(x) {
 											if (eventi_runner[j].end == "score") {
 												runscored = true;
 											}
+											if (eventi_runner[j].end == "1B") {runners_after_play[0] = true;}
+											if (eventi_runner[j].end == "2B") {runners_after_play[1] = true;}
+											if (eventi_runner[j].end == "3B") {runners_after_play[2] = true;}
 										}
 										if (runscored) {
 											//console.log("run scored, add to table");
@@ -837,26 +842,64 @@ function setForNewSelectedGame(x) {
 												tx += '<td class="fullboxscoretd" style="text-align:center;">' + eventi.home_team_runs + '</td>';
 											}
 											tx += '<td class="fullboxscoretd" style="text-align:left;">' + eventi.des            + '</td>';
-											tx += "<td><a href='https://baseballsavant.mlb.com/sporty-videos?playId="+eventi.play_guid+"' target='_blank' style='text-decoration: none;color:inherit'>Vid</a></td>"; // Add video link, only works for games at least two days old
+											tx += "<td class='fullboxscoretd' ><a href='https://baseballsavant.mlb.com/sporty-videos?playId="+eventi.play_guid+"' target='_blank' style='text-decoration: none;color:inherit'>&#128250;</a></td>"; // Add video link, only works for games at least two days old
 											// tx += "<tr>";
 											tx += "</tr>";
 										}
 									}
+									console.log('rap', runners_after_play);
 									
 									// Need to put atbat and actions in same array, sort by new Date(game_events.data.game.inning[3].bottom.atbat[2].end_tfs_zulu).
 									
 									// Add play to all plays
-									tplays[inn] += "<tr><td></td>";
-									tplays[inn] += "<td style='text-align:center;'>" + eventi.away_team_runs + "</td>";
-									tplays[inn] += "<td style='text-align:center;'>" + eventi.home_team_runs + "</td>";
-									tplays[inn] += "<td style='text-align:center;'>" + eventi.o + "</td>";
+									tplays[inn] += "<tr>";
+									if (firstrow) {
+										tplays[inn] += "<td class='fullboxscoretd' >" + camelcase_top_or_bottom + "</td>";
+										firstrow = false;
+									} else {
+										tplays[inn] += "<td></td>";
+									}
+									if (runscored && top_or_bottom=="top") {
+										tplays[inn] += "<td class='fullboxscoretd fullboxscoretdscoringteam'  style='text-align:center;'>" + eventi.away_team_runs + "</td>";
+									} else {
+										tplays[inn] += "<td class='fullboxscoretd'  style='text-align:center;'>" + eventi.away_team_runs + "</td>";
+									}
+									if (runscored && top_or_bottom=="bottom") {
+										tplays[inn] += "<td class='fullboxscoretd fullboxscoretdscoringteam'  style='text-align:center;'>" + eventi.home_team_runs + "</td>";
+									} else {
+										tplays[inn] += "<td class='fullboxscoretd'  style='text-align:center;'>" + eventi.home_team_runs + "</td>";
+									}
+									tplays[inn] += "<td class='fullboxscoretd'  style='text-align:center;'>" + eventi.o + "</td>";
+									tplays[inn] += "<td class='fullboxscoretd'  style='text-align:center;'><img src='./static/Baserunners";
+									let runners_after_play_string = JSON.stringify(runners_after_play);
+									// if (     runners_after_play_string == JSON.stringify([false, false, false])) {tplays[inn] += "0";}
+									// else if (runners_after_play_string == JSON.stringify([ true, false, false])) {tplays[inn] += "1";}
+									// else if (runners_after_play_string == JSON.stringify([false,  true, false])) {tplays[inn] += "2";}
+									// else if (runners_after_play_string == JSON.stringify([ true,  true, false])) {tplays[inn] += "4";}
+									// else if (runners_after_play_string == JSON.stringify([false, false,  true])) {tplays[inn] += "3";}
+									// else if (runners_after_play_string == JSON.stringify([ true, false,  true])) {tplays[inn] += "5";}
+									// else if (runners_after_play_string == JSON.stringify([false,  true,  true])) {tplays[inn] += "6";}
+									// else if (runners_after_play_string == JSON.stringify([ true,  true,  true])) {tplays[inn] += "7";}
+									// else {tplays[inn] += "0"; console.log("ERROR finding baserunner image for plays");};
+									// Above is normal colors, below is inverted
+									if (     runners_after_play_string == JSON.stringify([false, false, false])) {tplays[inn] += "7";}
+									else if (runners_after_play_string == JSON.stringify([ true, false, false])) {tplays[inn] += "6";}
+									else if (runners_after_play_string == JSON.stringify([false,  true, false])) {tplays[inn] += "5";}
+									else if (runners_after_play_string == JSON.stringify([ true,  true, false])) {tplays[inn] += "3";}
+									else if (runners_after_play_string == JSON.stringify([false, false,  true])) {tplays[inn] += "4";}
+									else if (runners_after_play_string == JSON.stringify([ true, false,  true])) {tplays[inn] += "2";console.log("Using tft", runners_after_play_string);}
+									else if (runners_after_play_string == JSON.stringify([false,  true,  true])) {tplays[inn] += "1";}
+									else if (runners_after_play_string == JSON.stringify([ true,  true,  true])) {tplays[inn] += "0";}
+									else {tplays[inn] += "0"; console.log("ERROR finding baserunner image for plays");};
+									tplays[inn] += ".png' alt='Baserunners' height='12' width='12' /></td>";
 									// tplays += "<td>" + eventi["event"] + "</td>"; e.g. "Walk", "Pop out", etc
-									tplays[inn] += "<td>" + eventi.des + "</td>"; // sentence description of play
-									tplays[inn] += "<td><a href='https://baseballsavant.mlb.com/sporty-videos?playId="+eventi.play_guid+"' target='_blank' style='text-decoration: none;color:inherit'>Vid</a></td>"; // Add video link, only works for games at least two days old
+									tplays[inn] += "<td class='fullboxscoretd' >" + eventi.des + "</td>"; // sentence description of play
+									tplays[inn] += "<td class='fullboxscoretd' ><a href='https://baseballsavant.mlb.com/sporty-videos?playId="+eventi.play_guid+"' target='_blank' style='text-decoration: none;color:inherit'>&#128250;</a></td>"; // Add video link, only works for games at least two days old
 									// tplays += "<td>" +  + "</td>";
 									// tplays += "<td>" +  + "</td>";
 									// tplays += eventi.des;
 									tplays[inn] += "</tr>\n";
+									// console.log("tplaysinn is", tplays[inn]);
 								// });
 							// }
 							
@@ -880,7 +923,8 @@ function setForNewSelectedGame(x) {
 						tinningbuttons += '<button class="playstablinks" id="playstabbutton'+inn+'"  onclick="openPlays(event, \'playstabsinning'+inn+'\')">'+inn+'</button>';
 						// console.log("inn is", inn);
 						tinnings += '<div id="playstabsinning'+inn+'" class="playstabcontent" style="display:none;"><div class="allplaysinningtitle">Inning '+ inn +'</div><table>';
-						tinnings += '<tr><th></th><th>'+x.data.games.game[selected_game].away_team_name+'</th><th>'+x.data.games.game[selected_game].home_team_name+'</th><th>Outs</th><th>Play</th> </tr>';
+						tinnings += '<tr><th ></th><th class="fullboxscoretd">'+x.data.games.game[selected_game].away_name_abbrev+'</th>';
+						tinnings += '<th class="fullboxscoretd">'+x.data.games.game[selected_game].home_name_abbrev+'</th><th  class="fullboxscoretd">Outs</th><th  class="fullboxscoretd">Bases</th><th  class="fullboxscoretd">Play</th> </tr>';
 						tinnings += tplays[inn];
 						tinnings += '</table></div>';
 					}
@@ -1047,7 +1091,7 @@ function setForNewSelectedGame(x) {
 	// Get FanGraphs win prob if game has changed
 	if (game_pk != last_selected_game_pk) {
 		var tx = "";
-		if (["I", "F"].includes(master_scoreboard_JSON.data.games.game[selected_game].status.ind)) {
+		if (["I", "F", "IR", "OR"].includes(master_scoreboard_JSON.data.games.game[selected_game].status.ind)) { // IR for rain delay, OR for game finished early b/c of rain
 			let width_int =  250 + parseInt(document.getElementById("videowidthslider").value);
 			let height_int = Math.ceil(9/16* width_int);
 			let away_team_name = master_scoreboard_JSON.data.games.game[selected_game].away_team_name;
@@ -1069,7 +1113,7 @@ function setForNewSelectedGame(x) {
 			tx += 'Source: <a href="https://www.fangraphs.com/livewins.aspx?date='+year+'-'+month+'-'+day;
 			tx += '&team=' + away_team_name + '&dh=' + dh;
 			tx +='&season=2019">FanGraphs</a></span>';
-			// console.log('fg is', tx);
+			console.log('fg is', tx);
 		} else {
 			tx += 'Fangraphs win probability chart can only be shown for games that have started';
 		}
