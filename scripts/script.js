@@ -847,7 +847,6 @@ function setForNewSelectedGame(x) {
 											tx += "</tr>";
 										}
 									}
-									console.log('rap', runners_after_play);
 									
 									// Need to put atbat and actions in same array, sort by new Date(game_events.data.game.inning[3].bottom.atbat[2].end_tfs_zulu).
 									
@@ -1091,7 +1090,7 @@ function setForNewSelectedGame(x) {
 	// Get FanGraphs win prob if game has changed
 	if (game_pk != last_selected_game_pk) {
 		var tx = "";
-		if (["I", "F", "IR", "OR"].includes(master_scoreboard_JSON.data.games.game[selected_game].status.ind)) { // IR for rain delay, OR for game finished early b/c of rain
+		if (["I", "F", "IR", "OR", "O"].includes(master_scoreboard_JSON.data.games.game[selected_game].status.ind)) { // IR for rain delay, OR for game finished early b/c of rain, O is over(?)
 			let width_int =  250 + parseInt(document.getElementById("videowidthslider").value);
 			let height_int = Math.ceil(9/16* width_int);
 			let away_team_name = master_scoreboard_JSON.data.games.game[selected_game].away_team_name;

@@ -1,6 +1,6 @@
 Soon
 ----------------
-Better CSS for play by play
+favs not loaded yet
 
 Later
 ----------------
