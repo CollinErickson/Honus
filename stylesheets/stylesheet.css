@@ -276,3 +276,11 @@ table {
 .pointeronhover:hover {
 	cursor:pointer;
 }
+
+.positiverundifferential {
+	color:#81ff6d;
+}
+
+.negativerundifferential {
+	color:#f96161;
+}

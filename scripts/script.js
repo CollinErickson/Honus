@@ -886,7 +886,7 @@ function setForNewSelectedGame(x) {
 									else if (runners_after_play_string == JSON.stringify([false,  true, false])) {tplays[inn] += "5";}
 									else if (runners_after_play_string == JSON.stringify([ true,  true, false])) {tplays[inn] += "3";}
 									else if (runners_after_play_string == JSON.stringify([false, false,  true])) {tplays[inn] += "4";}
-									else if (runners_after_play_string == JSON.stringify([ true, false,  true])) {tplays[inn] += "2";console.log("Using tft", runners_after_play_string);}
+									else if (runners_after_play_string == JSON.stringify([ true, false,  true])) {tplays[inn] += "2";console.log("Using tft", runners_after_play_string, "you didn't fix this error");}
 									else if (runners_after_play_string == JSON.stringify([false,  true,  true])) {tplays[inn] += "1";}
 									else if (runners_after_play_string == JSON.stringify([ true,  true,  true])) {tplays[inn] += "0";}
 									else {tplays[inn] += "0"; console.log("ERROR finding baserunner image for plays");};
@@ -1555,6 +1555,7 @@ function makeStandings() {
 	
 	var st = get_JSON_as_object_with_proxy("https://erikberg.com/mlb/standings.json")
 	.then(st => {
+		// console.log(st);
 		var tx = "";
 		tx += "<table id='standingstable'>";
 		for (let ileague=0; ileague<2; ileague++) {
@@ -1562,9 +1563,9 @@ function makeStandings() {
 			tx += "<td rowspan=7 class='standingsleaguetd'>";
 			if (ileague===0) {tx += "AL"} else {tx += "NL"}
 			tx += "</td>";
-			tx += "<td colSpan=5 class='standingsdivisionnametd'>West</td>";
-			tx += "<td colSpan=5 class='standingsdivisionnametd'>Central</td>";
-			tx += "<td colSpan=5 class='standingsdivisionnametd'>East</td>";
+			tx += "<td colSpan=8 class='standingsdivisionnametd'>West</td>";
+			tx += "<td colSpan=8 class='standingsdivisionnametd'>Central</td>";
+			tx += "<td colSpan=8 class='standingsdivisionnametd'>East</td>";
 			tx += "</tr>"; // end AL title row
 			tx += "<tr>"; // AL header row 
 			for(var i=0; i<3; i++) {
@@ -1573,6 +1574,9 @@ function makeStandings() {
 				tx += "<td>L</td>";
 				tx += "<td>GB</td>";
 				tx += "<td>W%</td>";
+				tx += "<td>RD</td>";
+				tx += "<td>Strk</td>";
+				tx += "<td>L10</td>";
 			}
 			tx += "</tr>"; // end AL header row 
 				// console.log('st is', st);
@@ -1586,6 +1590,15 @@ function makeStandings() {
 						tx += "<td>" + st.standing[ti].lost + "</td>";
 						tx += "<td>" + st.standing[ti].games_back + "</td>";
 						tx += "<td>" + st.standing[ti].win_percentage + "</td>";
+						tx += "<td ";
+						if (parseInt(st.standing[ti].point_differential)>0) {tx+="class='positiverundifferential'"} else if (parseInt(st.standing[ti].point_differential)<0) {tx+="class='negativerundifferential'"}
+						tx += ">" + st.standing[ti].point_differential + "</td>";
+						tx += "<td ";
+						if (st.standing[ti].streak[0]=="W") {tx+="class='positiverundifferential'"} else if (st.standing[ti].streak[0]=="L") {tx+="class='negativerundifferential'"}
+						tx +=">" + st.standing[ti].streak + "</td>";
+						tx += "<td ";
+						if (parseInt(st.standing[ti].last_ten.split('-')[0])>5) {tx+="class='positiverundifferential'"} else if (parseInt(st.standing[ti].last_ten.split('-')[0])<5) {tx+="class='negativerundifferential'"}
+						tx += ">" + st.standing[ti].last_ten + "</td>";
 					}
 					tx += "</tr>";
 				}
