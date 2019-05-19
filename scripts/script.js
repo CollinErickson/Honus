@@ -480,13 +480,13 @@ function setBoxScores(x) {
 			tx += "<td><table><tr><td>" + x.data.games.game[i].linescore.r.away;
 			tx += "</td><td rowspan='2'>";
 			if (x.data.games.game[i].status.inning_state == "Top") {
-				tx +="&#x25B2;";
-			} else if (x.data.games.game[i].status.inning_state == "Bottom") {
-				tx += "&#x25BC;";
-			} else if (x.data.games.game[i].status.inning_state == "End") {
-				tx += "E";
-			} else if (x.data.games.game[i].status.inning_state == "Middle") {
-				tx += "M";
+				tx +="&#x25B2;"; // up arrow
+			} else if (x.data.games.game[i].status.inning_state == "Bottom" ) {
+				tx += "&#x25BC;"; // down arrow
+			} else if (x.data.games.game[i].status.inning_state == "End") { // When 'End', the inning shown is for the inning starting next, so it should be up arrow.
+				tx += "&#x25B2;"; // up arrow
+			} else if (x.data.games.game[i].status.inning_state == "Middle") { // Middle was actually middle
+				tx += "&#x25BC;"; // down arrow
 			} else {
 				tx += "InningStatus is " + x.data.games.game[i].status.inning_state;
 			}
