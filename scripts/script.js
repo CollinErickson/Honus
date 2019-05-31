@@ -538,7 +538,9 @@ function setBoxScores(x) {
 		} else if (["Postponed"].includes(x.data.games.game[i].status.status))  {
 			// tx += "<td></td><td>Postponed</td>";
 			// tx += "<td colspan=2><table><tr><td>Postponed</td></tr><tr><td>" + x.data.games.game[i].description + "</td></tr></table></td>";
-			tx += "<td colspan=2>Postponed: " + x.data.games.game[i].description + "</td>";
+			tx += "<td colspan=2>Postponed";
+			if (x.data.games.game[i].description != "") {tx += ": " + x.data.games.game[i].description;}
+			tx += "</td>";
 		} else if (["Preview", "Pre-Game", "Warmup"].includes(x.data.games.game[i].status.status))  {
 			// Second column is start time
 			tx += "<td><table>";
