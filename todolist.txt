@@ -1,6 +1,11 @@
 Soon
 ----------------
 favs not loaded yet
+Boxscore loading
+Fav pitcher notifications
+Postponed:, no colon
+no hitter for completed game
+open stream resets timeout
 
 Later
 ----------------

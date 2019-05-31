@@ -76,7 +76,8 @@ function get_JSON_as_object_with_proxy(url) {
 }
 
 function get_JSON_as_response(url) {
-	// console.log("In get_JSON_as_response", url)
+	console.log("Sending request from get_JSON_as_response for", url);
+	// let send_time = new Date();
 	var ajaxout = new Promise((resolve, reject) => $.ajax({
 		url: url,
 		type: "GET",
@@ -85,6 +86,7 @@ function get_JSON_as_response(url) {
 		{
 			responseglobal = response;
 			// console.log("Success!", response);
+			// console.log("Received response for ", url, " after ", ((new Date()) - send_time)/1000, "sec");
 			// resolve({data:response});
 			resolve(response);
 		},
@@ -727,6 +729,7 @@ function setForNewSelectedGame(x) {
 		} else {
 			// document.getElementById("scoringplaystable").innerHTML = "Loading scoring plays... SAME GAME DONT DO THIS!";
 		}
+		// console.log("Going to get game_events now");
 		get_JSON_as_object("https://gd2.mlb.com/components/game/mlb/year_" + year + 
 							"/month_" + month + "/day_" + day + 
 							"/gid_" + year + "_" + month + "_" + day + "_" + 
@@ -739,6 +742,7 @@ function setForNewSelectedGame(x) {
 			// document.getElementById("scoringplaystabdiv").innerHTML = "";
 		})
 		.then( ge => {
+			// console.log("game_events is loaded, plays should show up now");
 			// console.log("game_events.json is", ge);
 			game_events = ge; // Set as global variable
 			// var tx = '<tr><td class="fullboxscoretd">Inning</td><td class="fullboxscoretd">Away</td><td class="fullboxscoretd">Home</td><td class="fullboxscoretd">Scoring Play</td></tr>';
@@ -1382,6 +1386,8 @@ function make_notification(title, body, link) {
 	// alert("Alerted");
 	// When you click it, open MLB.tv and then close the notification
 	mynot.onclick = function () {
+		console.log("updated last clicked from notif");
+		last_user_click_time=new Date(); setUserInactivityTimer();
 		window.open(link);     
 		mynot.close();
     };
@@ -1532,6 +1538,7 @@ function openPlays(evt, selected_inning) {
 function setUserInactivityTimer() {
 	// last_user_click_time= new Date();
 	// console.log("Setting up inactivity timer", last_user_click_time);
+	
 	var minutes_to_timeout = 60;
 	clearInterval(user_inactivity_timer_id);
 	
