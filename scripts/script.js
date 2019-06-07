@@ -1424,6 +1424,8 @@ function run_favBatters_notification(x) {
 			} else if (favBattersIds.includes(g.ondeck.id)) {
 				// console.log("ondeck", g.ondeck.last);
 				fb.push({id:g.ondeck.id, first:g.ondeck.first, last:g.ondeck.last, status:"ondeck", game_pk:g.game_pk, away_name_abbrev:g.away_name_abbrev, home_name_abbrev:g.home_name_abbrev});
+			} else if (favBattersIds.includes(g.pitcher.id)) {
+				fb.push({id:g.pitcher.id, first:g.pitcher.first, last:g.pitcher.last, status:"pitcher", game_pk:g.game_pk, away_name_abbrev:g.away_name_abbrev, home_name_abbrev:g.home_name_abbrev});
 			}
 		}
 	});
@@ -1433,7 +1435,8 @@ function run_favBatters_notification(x) {
 		fb.forEach(fbi => {
 			// console.log("About to give popup");
 			// Check if recently notified
-			var min_between_notif = 5;
+			var min_between_notif;
+			if (fbi.status=="pitcher") {min_between_notif = 60} else {min_between_notif = 5} // 5 minutes between batter notif, 60 for pitchers
 			// Make sure player isn't set to not get notifications
 			if (!(fbi.id in favBattersUseNotifications) || favBattersUseNotifications[fbi.id]) {
 				// Make sure it's been long enough
@@ -1444,6 +1447,8 @@ function run_favBatters_notification(x) {
 						notif_body = fbi.first + " " + fbi.last + " is " + "batting!";
 					} else if (fbi.status == "ondeck") {
 						notif_body = fbi.first + " " + fbi.last + " is " + "on deck!";
+					} else if (fbi.status == "pitcher") {
+						notif_body = fbi.first + " " + fbi.last + " is " + "pitching!";
 					} else {
 						console.log("error with notif", fbi.status);
 					}
