@@ -1947,7 +1947,8 @@ function get_fav_hitters_table(fast_version=false) {
 	if (fast_version) {
 		// batters = [];
 		console.log("Doing fast version, don't worry");
-		batterspitchers = new Promise((resolve, reject) => {resolve([])});
+		// batterspitchers = new Promise((resolve, reject) => {resolve([])});
+		batterspitchers = new Promise((resolve, reject) => {resolve({batting:[], pitching:[]})});
 	} else {
 		batterspitchers = get_player_stats_for_day()
          		  .catch(er => {

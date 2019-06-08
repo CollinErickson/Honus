@@ -2,7 +2,6 @@ Soon
 ----------------
 favs not loaded yet
 Boxscore loading
-Fav pitcher notifications
 
 Later
 ----------------
