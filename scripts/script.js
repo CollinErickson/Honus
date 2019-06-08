@@ -958,7 +958,8 @@ function setForNewSelectedGame(x) {
 	// Get full box score at bottom
 	// Only clear if it's a different game
 	if (game_pk != last_selected_game_pk) {
-		document.getElementById("fullboxscoretable").innerHTML = "";
+		document.getElementById("fullboxscoretable").innerHTML = "Loading box score...";
+		document.getElementById("fullboxscoretabdiv").innerHTML = "Loading box score...";
 	}
 	get_JSON_as_object("https://gd2.mlb.com/components/game/mlb/year_" + year + 
 						"/month_" + month + "/day_" + day + 

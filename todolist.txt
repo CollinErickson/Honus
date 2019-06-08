@@ -1,13 +1,10 @@
 Soon
 ----------------
-favs not loaded yet
-Boxscore loading
 
 Later
 ----------------
 No notifications for game/day/dayplayer
 reload rate no boxscore update
-Favorite pitchers
 fail to get game_events, clear play by play
 link to bbref/fangraphs
 localStorage tab
