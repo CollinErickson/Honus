@@ -335,6 +335,7 @@ function doAllHighlights() {
 					}
 					tx += "document.getElementById(\"videoplayer\").autoplay=true;";
 					tx += "document.getElementById(\"headlinetr"+i+"\").classList.toggle(\"headlinestabletr_selected\");";
+					tx += "document.getElementById(\"headlinetr"+i+"\").classList.remove(\"headlinestabletr_alreadyseen\");";
 					tx += "document.getElementById(\"headlinetr"+i+"\").classList.toggle(\"headlinestabletr_alreadyseen\");";
 					tx += "' >"; // end onclick
 					tx += gh[i].headline + "</td>";
@@ -2277,7 +2278,10 @@ function hashCode(s) {
 function add_highlight_to_already_seen(url) {
 	console.log("Adding highlight", url);
 	// Not sure hash is necessary, but I don't want to save a lot of text
-	highlight_videos_already_seen.push(hashCode(url));
+	var hashCode_url = hashCode(url);
+	if (!highlight_videos_already_seen.includes(hashCode_url)) {
+		highlight_videos_already_seen.push(hashCode_url);
+	}
 }
 function highlight_videos_already_seen_includes(url) {
 	// Put this in a function because of hashCode

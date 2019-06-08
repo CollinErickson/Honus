@@ -13,6 +13,7 @@ Don't refresh if no active games
 Live page. Show pitches, etc.
 Error in plays showing baserunners. Shows multiple if error.
 Show pitch speeds in order
+Save highlights for two days
 
 Maybe never
 -----------------
