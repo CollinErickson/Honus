@@ -689,7 +689,7 @@ function setForNewSelectedGame(x) {
 		document.getElementById("toplinescore").innerHTML =  x.data.games.game[selected_game].time + " " + x.data.games.game[selected_game].time_zone;
 	}
 	// Set gameday link
-	var gamedayurl = "https://mlb.mlb.com/mlb/gameday/index.jsp?gid=" + year + "_" + month + "_" + day + 
+	var gamedayurl = "http://mlb.mlb.com/mlb/gameday/index.jsp?gid=" + year + "_" + month + "_" + day + 
 	             "_" + x.data.games.game[selected_game].away_code + "mlb_" + 
 				 x.data.games.game[selected_game].home_code + "mlb_" + 
 				 x.data.games.game[selected_game].game_nbr;
