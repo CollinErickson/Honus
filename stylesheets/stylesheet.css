@@ -61,9 +61,9 @@ table {
 }
 /* selected takes precedence over alreadyseen since it is below */
 /* Not using selected since it is hard to remove selected class when clicking new one */
-/* .headlinestabletr_selected { */
-	/* background-color:#9eff9b; /*light green */ */
-/* } */
+.headlinestabletr_selected {
+	background-color: yellow; /*#9eff9b; */ /*light green */
+}
 
 .headlinestabletd {
 	border-top: 1px solid black;	

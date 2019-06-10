@@ -334,6 +334,7 @@ function doAllHighlights() {
 						tx += "add_highlight_to_already_seen(\"" + gh[i].playbacks[0].url + "\");";
 					}
 					tx += "document.getElementById(\"videoplayer\").autoplay=true;";
+					tx += "for (let j=0;j<"+gh.length+";j++) {document.getElementById(\"headlinetr\"+j).classList.remove(\"headlinestabletr_selected\");}";
 					tx += "document.getElementById(\"headlinetr"+i+"\").classList.toggle(\"headlinestabletr_selected\");";
 					tx += "document.getElementById(\"headlinetr"+i+"\").classList.remove(\"headlinestabletr_alreadyseen\");";
 					tx += "document.getElementById(\"headlinetr"+i+"\").classList.toggle(\"headlinestabletr_alreadyseen\");";
