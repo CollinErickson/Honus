@@ -381,16 +381,25 @@ function setBoxScores(x) {
 	//////////////////////
 	
 	// Get selected_game from given team
+	if (game_nbr != "1" && game_nbr !="2") {console.log("Error with game_nbr!!!", game_nbr); game_nbr = "1";}
 	for (let i=0; i < x.data.games.game.length; i++) {
 		if (team == x.data.games.game[i].away_name_abbrev) {
 			selected_game = i;
 			team_is_home = false;
 			game_pk = x.data.games.game[i].game_pk;
+			if (game_nbr == x.data.games.game[i].game_nbr) {
+				break;
+			}
+			game_nbr = x.data.games.game[i].game_nbr;
 		}
 		if (team == x.data.games.game[i].home_name_abbrev) {
 			selected_game = i;
 			team_is_home = true;
 			game_pk = x.data.games.game[i].game_pk;
+			if (game_nbr == x.data.games.game[i].game_nbr) {
+				break;
+			}
+			game_nbr = x.data.games.game[i].game_nbr;
 		}
 	}
 	// If team doesn't match any, set it first on list
@@ -440,6 +449,7 @@ function setBoxScores(x) {
 		tx += " onclick='";
 		// tx += "console.log(\"UPDATING VIDEO\");";
 		tx += "team=\"" + x.data.games.game[i].home_name_abbrev + "\";selected_game=\""+i+"\";";
+		tx += "game_nbr=\"" + x.data.games.game[i].game_nbr + "\";";
 		tx += "team_is_home=\"true\";game_pk=\""+x.data.games.game[i].game_pk+"\"; ";
 		tx += "setForNewSelectedGame(master_scoreboard_JSON)'";
 		tx += ">";
