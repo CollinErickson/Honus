@@ -135,15 +135,16 @@ Video width
 
 <!-- Tab links -->
 <div class="tab" align="center" style="height:18px">
-  <button class="tablinks" id="highlightsbutton" onclick="openTab(event, 'highlightstab')">Highlights</button>
-  <button class="tablinks" id="fullboxscorebutton" onclick="openTab(event, 'fullboxscoretab')">Box score</button>
+  <button class="tablinks" id="highlightsbutton"      onclick="openTab(event, 'highlightstab')"  >Highlights</button>
+  <button class="tablinks" id="fullboxscorebutton"    onclick="openTab(event, 'fullboxscoretab')">Box score</button>
   <!-- <button class="tablinks" id="scoringplaysbutton" onclick="openTab(event, 'scoringplaystab')">Scoring plays</button> -->
-  <button class="tablinks" id="playsbutton" onclick="openTab(event, 'playstab')">Plays</button>
-  <button class="tablinks" id="winprobbutton"    onclick="openTab(event, 'winprobtab')"   >Win probability</button>
-  <button class="tablinks" id="newsbutton"       onclick="openTab(event, 'newstab')"      >News</button>
+  <button class="tablinks" id="playsbutton"           onclick="openTab(event, 'playstab')"       >Plays</button>
+  <button class="tablinks" id="winprobbutton"         onclick="openTab(event, 'winprobtab')"     >Win probability</button>
+  <button class="tablinks" id="newsbutton"            onclick="openTab(event, 'newstab')"        >News</button>
   <button class="tablinks" id="standingsbutton"       onclick="openTab(event, 'standingstab')"   >Standings</button>
   <button class="tablinks" id="favhittersbutton"      onclick="openTab(event, 'favhitterstab')"  >Favorite Hitters</button>
   <button class="tablinks" id="favpitchersbutton"     onclick="openTab(event, 'favpitcherstab')" >Favorite Pitchers</button>
+  <button class="tablinks" id="livebutton"            onclick="openTab(event, 'livetab')"        >Live (WIP)</button>
 </div>
 
 <!-- highlights tab -->
@@ -283,6 +284,12 @@ Video width
 <div id="favpitcherstab" class="tabcontent">
 	<div id="favpitchersdiv">
 	Not loaded yet
+	</div>
+</div>
+
+<div id="livetab" class="tabcontent">
+	<div id="livediv">
+	Game is not live
 	</div>
 </div>
 

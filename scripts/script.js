@@ -952,6 +952,9 @@ function setForNewSelectedGame(x) {
 					}
 					document.getElementById("playstabsinnings").innerHTML = tinnings;
 					document.getElementById('playstabinningbuttons').innerHTML = tinningbuttons;
+					
+					// Make live tab if game is live
+					if (x.data.games.game[selected_game].status.ind == "I") {make_live_tab(x.data.games.game[selected_game], ge);}
 				} else {
 					// Doesn't match current game, just do nothing since that update should be coming soon
 				}
@@ -963,6 +966,7 @@ function setForNewSelectedGame(x) {
 	} else {
 		// Game hasn't started yet, no scoring plays
 		document.getElementById("scoringplaystable").innerHTML = "";
+		document.getElementById("livediv").innerHTML = "Game is not live.";
 		// document.getElementById("scoringplaystabdiv").innerHTML = "";
 
 	}
@@ -982,6 +986,7 @@ function setForNewSelectedGame(x) {
 	// .then(x => {console.log("FOUND boxscore.json"); return x;})
 	.catch(() => {console.log("FAILED getting boxscore.json");})
 	.then(x => {
+		if (x.data.boxscore.home_fname == "Chicago Cubs") {aboxscore = x;}
 		// console.log("boxscore is");
 		// console.log(x);
 		var tx = "";
@@ -1136,7 +1141,7 @@ function setForNewSelectedGame(x) {
 			tx += 'Source: <a href="https://www.fangraphs.com/livewins.aspx?date='+year+'-'+month+'-'+day;
 			tx += '&team=' + away_team_name + '&dh=' + dh;
 			tx +='&season=2019">FanGraphs</a></span>';
-			console.log('fg is', tx);
+			// console.log('fg is', tx);
 		} else {
 			tx += 'Fangraphs win probability chart can only be shown for games that have started';
 		}
@@ -1538,6 +1543,11 @@ function openTab(evt, tabName) {
 	
 	if (tabName == "favhitterstab" || tabName == "favpitcherstab") {
 		do_fav_hitters_table()
+	}
+  
+	if (tabName=="livetab") {
+		// make_live_tab();
+		// putting this in scoring plays update
 	}
 }
 
@@ -2297,4 +2307,40 @@ function add_highlight_to_already_seen(url) {
 function highlight_videos_already_seen_includes(url) {
 	// Put this in a function because of hashCode
 	return highlight_videos_already_seen.includes(hashCode(url));
+}
+function make_live_tab(tg, ge) {
+	// tg is this game from master scoreboard, ge is game events
+	var tx = "";
+	console.log('thisgame is', tg);
+	thisgame = tg;
+	
+	tx += "<div>Pitcher: "+tg.pitcher.first+" "+tg.pitcher.last+tg.pitcher.wins+'-'+tg.pitcher.losses+' '+tg.pitcher.era+"</div>";
+	tx += "<div>Batter: "+tg.batter.first+" "+tg.batter.last+" "+tg.batter.avg+"/"+tg.batter.obp+"/"+tg.batter.ops+", "+tg.batter.hr+"/"+tg.batter.rbi+"</div>";
+	tx += "<div>On deck: "+tg.ondeck.first+" "+tg.ondeck.last+"</div>";
+	tx += "<div>"+tg.pbp.last+"</div>";
+	if (tg.runners_on_base.runner_on_1b) {
+		tx += "<div>On first: "+tg.runners_on_base.runner_on_1b.first+' '+tg.runners_on_base.runner_on_1b.last+"</div>";
+	}
+	if (tg.runners_on_base.runner_on_2b) {
+		tx += "<div>On second: "+tg.runners_on_base.runner_on_2b.first+' '+tg.runners_on_base.runner_on_2b.last+"</div>";
+	}
+	if (tg.runners_on_base.runner_on_3b) {
+		tx += "<div>On third: "+tg.runners_on_base.runner_on_3b.first+' '+tg.runners_on_base.runner_on_3b.last+"</div>";
+	}
+	tx += "<div>"+"</div>";
+	tx += "<div>"+"</div>";
+	tx += "<div>"+"</div>";
+	let latestinning = ge.data.game.inning[ge.data.game.inning.length - 1];
+	let latesthalfinning;
+	if (latestinning.bottom) {latesthalfinning = latestinning.bottom} else {latesthalfinning = latestinning.top}
+	let latestatbat = latesthalfinning.atbat[latesthalfinning.atbat.length-1];
+	if (latestatbat.pitch) {
+		for (let pitch of latestatbat.pitch) {
+			
+			tx += "<div>Pitch: " + pitch.des+"</div>";
+		}
+	}
+	
+	
+	document.getElementById("livediv").innerHTML = tx;
 }
