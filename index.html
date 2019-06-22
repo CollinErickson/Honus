@@ -145,6 +145,7 @@ Video width
   <button class="tablinks" id="favhittersbutton"      onclick="openTab(event, 'favhitterstab')"  >Favorite Hitters</button>
   <button class="tablinks" id="favpitchersbutton"     onclick="openTab(event, 'favpitcherstab')" >Favorite Pitchers</button>
   <button class="tablinks" id="livebutton"            onclick="openTab(event, 'livetab')"        >Live (WIP)</button>
+  <button class="tablinks" id="settingsbutton"            onclick="openTab(event, 'settingstab')"        >Settings (WIP)</button>
 </div>
 
 <!-- highlights tab -->
@@ -293,6 +294,18 @@ Video width
 	</div>
 </div>
 
+<div id="settingstab" class="tabcontent">
+	<div id="settingsdiv">
+		<div>
+			Favorite team:
+			<span id='favoriteteamspan'></span>
+		</div>
+		<div>
+			- To change favorite team, set in bar above and click "Go!" It always updates favorite team to last team chosen this way.
+		</div>
+	</div>
+</div>
+
 </td>
 </tr></table>
 
@@ -383,6 +396,7 @@ var team = "NYY";
 if (localStorage.getItem("team")) {
 	team = localStorage.getItem("team");
 }
+document.getElementById('favoriteteamspan').innerHTML = team;
 var selected_game = -1;
 var game_nbr = "1"; // For doubleheaders, either "1" or "2"
 var game_pk = null;
