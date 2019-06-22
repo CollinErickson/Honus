@@ -1454,7 +1454,7 @@ function run_favBatters_notification(x) {
 			// console.log("About to give popup");
 			// Check if recently notified
 			var min_between_notif;
-			if (fbi.status=="pitcher") {min_between_notif = 60} else {min_between_notif = 5} // 5 minutes between batter notif, 60 for pitchers
+			if (fbi.status=="pitcher") {min_between_notif = 60} else {min_between_notif = 10} // 10 minutes between batter notif, 60 for pitchers
 			// Make sure player isn't set to not get notifications
 			if (!(fbi.id in favBattersUseNotifications) || favBattersUseNotifications[fbi.id]) {
 				// Make sure it's been long enough
