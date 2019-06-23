@@ -1,6 +1,8 @@
 Soon
 ----------------
 Live
+Drop down favorite team
+Notif when on deck, batting, or both
 
 Later
 ----------------
