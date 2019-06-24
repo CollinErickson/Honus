@@ -58,7 +58,8 @@
 		Team:
 	</td>
 	<td>
-		<select name="team" id="selectteam" onchange='console.log("Changed team!!!!");localStorage.setItem("team",document.getElementById("selectteam").value);'>
+		<!-- <select name="team" id="selectteam" onchange='console.log("Changed favorite team!!!!");localStorage.setItem("team",document.getElementById("selectteam").value);'> -->
+		<select name="team" id="selectteam" onchange=''> <!--No longer changing favorite team when changing this-->
 			<!-- <option value="ANA" >ANA</option><option value="ARI" >ARI</option><option value="ATL" >ATL</option><option value="BAL" >BAL</option> -->
 			<!-- <option value="BOS" >BOS</option><option value="CHA" >CHA</option><option value="CHN" >CHN</option><option value="CIN" >CIN</option> -->
 			<!-- <option value="CLE" >CLE</option><option value="COL" >COL</option><option value="DET" >DET</option><option value="HOU" >HOU</option> -->
@@ -298,7 +299,21 @@ Video width
 	<div id="settingsdiv">
 		<div>
 			Favorite team:
-			<span id='favoriteteamspan'></span>
+			<!-- <span id='favoriteteamspan'></span> -->
+			<span id='favoriteteamspan'>
+				<select name="favoriteteam" id="selectfavoriteteam" onchange='console.log("Changed team!!!!");localStorage.setItem("team",document.getElementById("selectfavoriteteam").value);'>
+					<option value="ARI" >ARI</option><option value="ATL" >ATL</option><option value="BAL" >BAL</option>
+					<option value="BOS" >BOS</option><option value="CHC" >CHC</option><option value="CIN" >CIN</option>
+					<option value="CLE" >CLE</option><option value="COL" >COL</option><option value="CWS" >CWS</option>
+					<option value="DET" >DET</option><option value="HOU" >HOU</option><option value="KC"  >KC </option>
+					<option value="LAA" >LAA</option><option value="LAD" >LAD</option><option value="MIA" >MIA</option>
+					<option value="MIL" >MIL</option><option value="MIN" >MIN</option><option value="NYM" >NYM</option>
+					<option value="NYY" >NYY</option><option value="OAK" >OAK</option><option value="PHI" >PHI</option>
+					<option value="PIT" >PIT</option><option value="SD"  >SD </option><option value="SEA" >SEA</option>
+					<option value="SF"  >SF </option><option value="STL" >STL</option><option value="TB"  >TB </option>
+					<option value="TEX" >TEX</option><option value="TOR" >TOR</option><option value="WSH" >WSH</option>
+				</select>
+			</span>
 		</div>
 		<div>
 			- To change favorite team, set in bar above and click "Go!" It always updates favorite team to last team chosen this way.
@@ -396,7 +411,7 @@ var team = "NYY";
 if (localStorage.getItem("team")) {
 	team = localStorage.getItem("team");
 }
-document.getElementById('favoriteteamspan').innerHTML = team;
+document.getElementById('selectfavoriteteam').value = team;
 var selected_game = -1;
 var game_nbr = "1"; // For doubleheaders, either "1" or "2"
 var game_pk = null;
