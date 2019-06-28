@@ -2,7 +2,7 @@ Soon
 ----------------
 Live
 Drop down favorite team
-Notif when on deck, batting, or both
+Notif when on deck, batting, or both: need to track reason for last notification
 
 Later
 ----------------
