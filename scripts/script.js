@@ -368,6 +368,11 @@ function setBoxScores(x) {
 	// console.log("in setBoxScores", "game_pk is", game_pk);
 	// console.log("x is ", x);
 	
+	// If only one game, it won't be an array, just the dict. Convert it.
+	if (!Array.isArray(x.data.games.game)) {
+		x.data.games.game = [x.data.games.game];
+	}
+	
 	// save this JSON for future use
 	master_scoreboard_JSON = x;
 	
@@ -609,6 +614,11 @@ function setForNewSelectedGame(x) {
 	// If no games on day, don't do this
 	if (!(x.data.games.game)) {
 		return;
+	}
+	
+	// If only one game, it won't be an array, just the dict. Convert it.
+	if (!Array.isArray(x.data.games.game)) {
+		x.data.games.game = [x.data.games.game];
 	}
 	
 	// Set selectteam
