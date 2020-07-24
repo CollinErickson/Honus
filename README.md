@@ -5,3 +5,5 @@ The goal of this project is to create an interface of the highlight videos found
 
 The original version used PHP along with HTML/CSS and JavaScript.
 The is a new version that will hopefully only need JavaScript and HTML/CSS.
+
+Go to https://collinerickson.github.io/Honus/
