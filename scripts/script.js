@@ -16,6 +16,39 @@ $(document).ready(
 
 );*/
 
+var team_abbr_to_namelowerhyphen = {
+  "NYY":"new-york-yankees",
+  "TB":"tampa-bay-rays",
+  "BAL":"baltimore-orioles",
+  "BOS":"boston-red-sox",
+  "TOR":"toronto-blue-jays",
+  "CWS":"chicago-white-sox",
+  "MIN":"minnesota-twins",
+  "KC":"kansas-city-royals",
+  "DET":"detroit-tigers",
+  "CLE":"cleveland-indians",
+  "OAK":"oakland-athletics",
+  "HOU":"houston-texans",
+  "SEA":"seattle-mariners",
+  "TEX":"texas-rangers",
+  "LAA":"los-angeles-angels",
+  "NYM":"new-york-mets",
+  "MIA":"miami-marlins",
+  "PHI":"philadelphia-phillies",
+  "WSH":"washington-nationals",
+  "ATL":"atlanta-braves",
+  "CIN":"cincinnati-reds",
+  "CHC":"chicago-cubs",
+  "STL":"st-louis-cardinals",
+  "PIT":"pittsburgh-pirates",
+  "MIL":"milwaukee-brewers",
+  "SD":"san-diego-padres",
+  "SF":"san-francisco-padres",
+  "LAD":"los-angeles-dodgers",
+  "COL":"colorado-dodgers",
+  "ARI":"arizona-diamondbacks"
+}
+
 
 function goToDatePicked() {
 	console.log("in goToDatePicked");
@@ -926,6 +959,8 @@ function setForNewSelectedGame(x) {
 									tplays[inn] += ".png' alt='Baserunners' height='12' width='12' /></td>";
 									// tplays += "<td>" + eventi["event"] + "</td>"; e.g. "Walk", "Pop out", etc
 									tplays[inn] += "<td class='fullboxscoretd' >" + eventi.des + "</td>"; // sentence description of play
+                  //console.log("eventi is");
+                  //console.log(eventi);
 									tplays[inn] += "<td class='fullboxscoretd' ><a href='https://baseballsavant.mlb.com/sporty-videos?playId="+eventi.play_guid+"' target='_blank' style='text-decoration: none;color:inherit'>&#128250;</a></td>"; // Add video link, only works for games at least two days old
 									// tplays += "<td>" +  + "</td>";
 									// tplays += "<td>" +  + "</td>";
@@ -1669,10 +1704,14 @@ function getStreamLink(gpk, away_name_abbrev, home_name_abbrev) {
 	var link = "https://www.mlb.com/tv/g" + gpk;
 	var stream_service_to_use = "MLB.tv";
 	
+  //console.log("link here:", home_name_abbrev, away_name_abbrev);
+  //console.log("http://www.worldcupfootball.me/mlb/" + team_abbr_to_namelowerhyphen[home_name_abbrev] + "-live-stream");
 	if ((stream_service && stream_service == "sportsme") || 
 		(stream_service_exceptions[away_name_abbrev] && stream_service_exceptions[away_name_abbrev]=="sportsme") || 
 		(stream_service_exceptions[home_name_abbrev] && stream_service_exceptions[home_name_abbrev]=="sportsme")) {
-		link = "http://www.worldcupfootball.me/mlb/" + gpk + "/h";
+    //console.log("link here:", home_name_abbrev, away_name_abbrev);
+		//link = "http://www.worldcupfootball.me/mlb/" + gpk + "/h";
+    link = "http://www.worldcupfootball.me/mlb/" + team_abbr_to_namelowerhyphen[home_name_abbrev] + "-live-stream";
 	}
 	// if (stream_service && stream_service == "sportsme") {
 		// link = "http://www.worldcupfootball.me/mlb/" + gpk + "/h";
@@ -2321,7 +2360,7 @@ function highlight_videos_already_seen_includes(url) {
 function make_live_tab(tg, ge) {
 	// tg is this game from master scoreboard, ge is game events
 	var tx = "";
-	console.log('thisgame is', tg);
+	//console.log('thisgame is', tg);
 	thisgame = tg;
 	
 	tx += "<div>Pitcher: "+tg.pitcher.first+" "+tg.pitcher.last+tg.pitcher.wins+'-'+tg.pitcher.losses+' '+tg.pitcher.era+"</div>";
