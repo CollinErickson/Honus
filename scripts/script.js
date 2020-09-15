@@ -1596,6 +1596,11 @@ function openTab(evt, tabName) {
 	}
 }
 
+// play_guid to url
+//fetch("https://raw.githubusercontent.com/CollinErickson/Honus/master/URLsJSON/test1.json")
+  //.then(response => response.json())
+  //.then(response => JSON.parse(response[0])[0]);
+
 function openPlays(evt, selected_inning) {
 	console.log("sel inning is", selected_inning);
 	var tabcontent = document.getElementsByClassName("playstabcontent");

@@ -316,7 +316,17 @@ Video width
 			</span>
 		</div>
 		<div>
-			Give batter notification when
+			<!-- Give batter notification when -->
+		</div>
+		<div>
+			Stream service:
+			<span id='streamservicespan'>
+				<select name="selectstreamservice" id="selectstreamservice" 
+						onchange='console.log("Changed stream service!!!!");localStorage.setItem("stream_service",document.getElementById("selectstreamservice").value);'>
+					<option value="mlbtv">MLB.tv</option>
+					<option value="sportsme">worldcupfootball.me</option>
+				</select>
+			</span>
 		</div>
 	</div>
 </div>
