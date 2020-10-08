@@ -28,7 +28,7 @@ var team_abbr_to_namelowerhyphen = {
   "DET":"detroit-tigers",
   "CLE":"cleveland-indians",
   "OAK":"oakland-athletics",
-  "HOU":"houston-texans",
+  "HOU":"houston-astros",
   "SEA":"seattle-mariners",
   "TEX":"texas-rangers",
   "LAA":"los-angeles-angels",
@@ -45,7 +45,7 @@ var team_abbr_to_namelowerhyphen = {
   "SD":"san-diego-padres",
   "SF":"san-francisco-padres",
   "LAD":"los-angeles-dodgers",
-  "COL":"colorado-dodgers",
+  "COL":"colorado-rockies",
   "ARI":"arizona-diamondbacks"
 }
 
