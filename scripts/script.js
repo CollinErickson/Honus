@@ -494,7 +494,7 @@ function setBoxScores(x) {
 		// first td is team names
 		tx += "<td class='scorestablegametd'><table><tr><td>" + x.data.games.game[i].away_team_name + "</td></tr><tr><td>"+ x.data.games.game[i].home_team_name + "</td></tr></table></td>";
 		// 2nd and 3rd td depend on status, go over cases
-		if (["Final", "Game Over", "Completed Early", "Completed Early: Rain"].includes(x.data.games.game[i].status.status)) {
+		if (["Final", "Game Over", "Completed Early", "Completed Early: Rain", "Final: Tied"].includes(x.data.games.game[i].status.status)) {
 			// Check if no hitter, add class if it is, will be done at end
 			if (master_scoreboard_JSON.data.games.game[i].linescore.h.away == "0" || master_scoreboard_JSON.data.games.game[i].linescore.h.home == "0") {
 				console.log("No hitter for finished game!", i);
