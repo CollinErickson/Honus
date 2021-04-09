@@ -43,7 +43,7 @@ var team_abbr_to_namelowerhyphen = {
   "PIT":"pittsburgh-pirates",
   "MIL":"milwaukee-brewers",
   "SD":"san-diego-padres",
-  "SF":"san-francisco-padres",
+  "SF":"san-francisco-giants",
   "LAD":"los-angeles-dodgers",
   "COL":"colorado-rockies",
   "ARI":"arizona-diamondbacks"
