@@ -1114,7 +1114,11 @@ function setForNewSelectedGame(x) {
 					// console.log("pitcheri is", pitcheri);
 					// console.log("bo is", pitcheri.bo);
 					// Can't use https for these MLB links!
-					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ pitcheri.id +'"><div style="text-align:left;" >';
+					//tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ pitcheri.id +'"><div style="text-align:left;" >';
+					// MLB.com changed link to player page
+					//tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="https://mlb.com/player/'+ pitcheri.id +'"><div style="text-align:left;" >';
+					// Baseball Savant is better
+					tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="https://baseballsavant.mlb.com/savant-player/'+ pitcheri.id +'"><div style="text-align:left;" >';
 					// if (pitcheri.bo.substr(1,2) != "00") {tx += "- ";}
 					tx += pitcheri.name_display_first_last;
 					if (pitcheri.win) {tx += " (W)"}
@@ -1203,7 +1207,11 @@ function get_boxscore_row_for_batter(batteri) {
 	// console.log("bo is", batteri.bo);
 	// Can't use https for these MLB links!
 	// console.log("batter is", batteri.bo, batteri.pos, batteri.name_display_first_last, batteri);
-	tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
+	//tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="http://m.mlb.com/gameday/player/'+ batteri.id +'"><div style="text-align:left;" >';
+	// MLB.com updated player page link format
+	//tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="https://mlb.com/player/'+ batteri.id +'"><div style="text-align:left;" >';
+	// Use Baseball Savant, much better
+	tx += '<td class="fullboxscoretd"><a class="playernamelink" target="_blank" href="https://baseballsavant.mlb.com/savant-player/'+ batteri.id +'"><div style="text-align:left;" >';
 	if (batteri.bo.length == 0) {console.log("Getting row for batter not in lineup, probably a pitcher")}
 	if (batteri.bo.substr(1,2) != "00") {tx += "- ";}
 	tx += batteri.name_display_first_last + '</div></a></td>';
